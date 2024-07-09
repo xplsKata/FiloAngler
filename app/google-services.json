@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1015978428089",
+    "project_id": "filoangler-24b41",
+    "storage_bucket": "filoangler-24b41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015978428089:android:72e5152ff55157a5e83d68",
+        "android_client_info": {
+          "package_name": "com.example.filoangler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3mzrNhw6Aa4jo4k1Wl-i9y9APS2WvwZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

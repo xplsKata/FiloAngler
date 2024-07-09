@@ -1,0 +1,15 @@
+<resources>
+    <string name="facebook_app_id">2543949672475098</string>
+    <string name="fb_login_protocol_scheme">fb2543949672475098</string>
+    <string name="facebook_client_token">9c126f5a3d90062a6ecac08636687590</string>
+
+    <string name="app_name">FiloAngler</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="forgotPw">Forgot Password?</string>
+    <string name="username">Username</string>
+    <string name="confirmPw">Confirm Password</string>
+    <string name="register">Create Account</string>
+    <string name="resetPw">Reset Password</string>
+</resources>
