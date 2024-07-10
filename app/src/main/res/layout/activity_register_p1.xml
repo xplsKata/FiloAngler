@@ -59,7 +59,7 @@
                 android:backgroundTint="@color/white"
                 android:ems="10"
                 android:hint="@string/email"
-                android:inputType="text"
+                android:inputType="text|textEmailAddress"
                 android:text="@null"
                 android:textAlignment="center"
                 android:textColor="@color/white"
