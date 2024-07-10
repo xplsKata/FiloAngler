@@ -10,7 +10,9 @@
     <string name="register">Create Account</string>
     <string name="offlineMode">Offline Mode</string>
     <string name="lblResetPassword">Reset Password</string>
-    <string name="lblResetPasswordInfo">Input the email of your account that you want to reset the password to. Upon submitting, you will receive an email to proceed with your password reset.</string>
+    <string name="lblResetPasswordDesc">Input the email of your account that you want to reset the password to. Upon submitting, you will receive an email to proceed with your password reset.</string>
     <string name="Confirm">Confirm</string>
     <string name="lblRegister">Register Account</string>
+    <string name="lblVerify">Verify Your Email</string>
+    <string name="lblVerifyDesc">A code was sent to your email. To proceed with the registration, input the code sent to your email into the space below.</string>
 </resources>

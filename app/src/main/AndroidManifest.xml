@@ -15,6 +15,9 @@
         android:theme="@style/Theme.FiloAngler"
         tools:targetApi="31">
         <activity
+            android:name=".RegisterP2"
+            android:exported="false" />
+        <activity
             android:name=".RegisterP1"
             android:exported="false" />
         <activity
