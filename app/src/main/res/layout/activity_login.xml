@@ -82,7 +82,8 @@
                     android:layout_weight="1"
                     android:text="@string/forgotPw"
                     android:textAlignment="center"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    app:cornerRadius="0px" />
 
                 <Button
                     android:id="@+id/button2"
@@ -91,7 +92,8 @@
                     android:layout_weight="1"
                     android:text="@string/register"
                     android:textAlignment="center"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    app:cornerRadius="0px" />
 
             </LinearLayout>
 
@@ -101,27 +103,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/iconBlue"
-                android:backgroundTint="@color/iconBlue"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:text="@string/login"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:background="@color/iconBlue"
+                app:backgroundTint="@color/iconBlue"
+                app:cornerRadius="50px" />
 
             <Button
                 android:id="@+id/btnGoogle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/iconBlue"
-                android:backgroundTint="@color/iconBlue"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:text="Google"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:background="@color/iconBlue"
+                app:backgroundTint="@color/iconBlue"
+                app:cornerRadius="50px" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -137,12 +141,13 @@
                 android:id="@+id/btnOfflineMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/iconBlue"
-                android:backgroundTint="@color/iconBlue"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:text="@string/offlineMode"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:background="@color/iconBlue"
+                app:backgroundTint="@color/iconBlue"
+                app:cornerRadius="50px" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

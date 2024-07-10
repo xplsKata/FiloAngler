@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">FiloAngler</string>
+    <string name="app_name" translatable="false">FiloAngler</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
@@ -8,6 +8,8 @@
     <string name="username">Username</string>
     <string name="confirmPw">Confirm Password</string>
     <string name="register">Create Account</string>
-    <string name="resetPw">Reset Password</string>
     <string name="offlineMode">Offline Mode</string>
+    <string name="lblResetPassword">Reset Password</string>
+    <string name="lblResetPasswordInfo">Input the email of your account that you want to reset the password to. Upon submitting, you will receive an email to proceed with your password reset.</string>
+    <string name="Confirm">Confirm</string>
 </resources>
