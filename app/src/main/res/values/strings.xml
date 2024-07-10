@@ -12,4 +12,5 @@
     <string name="lblResetPassword">Reset Password</string>
     <string name="lblResetPasswordInfo">Input the email of your account that you want to reset the password to. Upon submitting, you will receive an email to proceed with your password reset.</string>
     <string name="Confirm">Confirm</string>
+    <string name="lblRegister">Register Account</string>
 </resources>

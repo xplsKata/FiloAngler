@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgBlue"
-    tools:context=".ForgotPassword">
+    tools:context=".RegisterP1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="350dp"
@@ -39,29 +39,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="0dp"
+                android:layout_marginVertical="15dp"
                 android:backgroundTint="@color/white"
-                android:text="@string/lblResetPassword"
+                android:text="@string/lblRegister"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
                 android:textSize="34sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:backgroundTint="@color/white"
-                android:text="@string/lblResetPasswordInfo"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white" />
 
             <EditText
                 android:id="@+id/txtEmail"
@@ -72,6 +60,53 @@
                 android:ems="10"
                 android:hint="@string/email"
                 android:inputType="text"
+                android:text="@null"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/txtUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/username"
+                android:inputType="text"
+                android:text="@null"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/txtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/password"
+                android:inputType="text"
+                android:password="true"
+                android:text="@null"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/txtConfirmPw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:hint="@string/confirmPw"
+                android:inputType="text"
+                android:password="true"
                 android:text="@null"
                 android:textAlignment="center"
                 android:textColor="@color/white"
@@ -93,6 +128,7 @@
                 app:background="@color/iconBlue"
                 app:backgroundTint="@color/iconBlue"
                 app:cornerRadius="50px" />
+
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
