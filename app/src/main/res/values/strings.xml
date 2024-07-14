@@ -20,4 +20,9 @@
     <string name="lblStatus">Angler Status:</string>
     <string name="txtFirstName">First Name</string>
     <string name="txtLastName">Last Name</string>
+    <string name="lblBirthdate">Birthdate</string>
+    <string name="rbtAspiring">Aspiring</string>
+    <string name="rbtNovice">Novice</string>
+    <string name="rbtProficient">Proficient</string>
+    <string name="lblAddress">Address</string>
 </resources>

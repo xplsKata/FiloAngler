@@ -9,8 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="350dp"
-        android:layout_height="680dp"
-        android:layout_marginTop="75dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,8 +22,10 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
 
             <TextView
                 android:id="@+id/textView2"
@@ -57,47 +59,87 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editTextText"
+                    android:id="@+id/txtFirstName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="#FFFFFF"
                     android:ems="10"
+                    android:hint="@string/txtFirstName"
                     android:inputType="text"
-                    android:text="Name"
+                    android:text="@null"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#FFFFFF"
                     android:textSize="24sp" />
 
                 <EditText
-                    android:id="@+id/editTextText2"
+                    android:id="@+id/txtLastName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:backgroundTint="#FFFFFF"
                     android:ems="10"
+                    android:hint="@string/txtLastName"
                     android:inputType="text"
-                    android:text="Name"
+                    android:text="@null"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#FFFFFF"
                     android:textSize="24sp" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/editTextText3"
+            <TextView
+                android:id="@+id/textView9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="15dp"
-                android:backgroundTint="#FFFFFF"
-                android:ems="10"
-                android:inputType="text"
-                android:text="Name"
+                android:text="@string/lblBirthdate"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/dateBirthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:inputType="date"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblAddress"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="15dp"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spnrCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white" />
+
+                <Spinner
+                    android:id="@+id/spnrProvince"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView7"
@@ -118,39 +160,43 @@
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/radioButton2"
+                        android:id="@+id/rbtAspiring"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RadioButton"
+                        android:layout_marginHorizontal="8dp"
+                        android:text="@string/rbtAspiring"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         app:buttonTint="@color/iconBlue" />
 
                     <RadioButton
-                        android:id="@+id/radioButton3"
+                        android:id="@+id/rbtNovice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RadioButton"
+                        android:layout_marginHorizontal="8dp"
+                        android:text="@string/rbtNovice"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         app:buttonTint="@color/iconBlue" />
 
                     <RadioButton
-                        android:id="@+id/radioButton4"
+                        android:id="@+id/rbtProficient"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RadioButton"
+                        android:layout_marginHorizontal="8dp"
+                        android:text="@string/rbtProficient"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         app:buttonTint="@color/iconBlue" />
                 </RadioGroup>
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/lblStatusDesc"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginVertical="15dp"
