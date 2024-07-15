@@ -25,6 +25,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        btnForgotPassword = findViewById(R.id.btnForgotPw);
+        btnCreateAccount = findViewById(R.id.btnRegister);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnGoogle = findViewById(R.id.btnGoogle);
+        btnOfflineMode = findViewById(R.id.btnOfflineMode);
+
         //ForgotPassword Button
         btnForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,4 +72,5 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+
 }
