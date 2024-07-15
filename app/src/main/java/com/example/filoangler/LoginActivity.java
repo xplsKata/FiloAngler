@@ -2,7 +2,6 @@ package com.example.filoangler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,20 +9,25 @@ import android.widget.EditText;
 
 public class LoginActivity extends AppCompatActivity {
 
-    //Elements
-    EditText txtEmail;
-    EditText txtPassword;
+    //Auth
+    private AuthManager AuthManager;
 
-    Button btnForgotPassword;
-    Button btnCreateAccount;
-    Button btnLogin;
-    Button btnGoogle;
-    Button btnOfflineMode;
+    //Elements
+    private EditText txtEmail;
+    private EditText txtPassword;
+
+    private Button btnForgotPassword;
+    private Button btnCreateAccount;
+    private Button btnLogin;
+    private Button btnGoogle;
+    private Button btnOfflineMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        AuthManager = new AuthManager(this);
 
         btnForgotPassword = findViewById(R.id.btnForgotPw);
         btnCreateAccount = findViewById(R.id.btnRegister);
@@ -31,11 +35,14 @@ public class LoginActivity extends AppCompatActivity {
         btnGoogle = findViewById(R.id.btnGoogle);
         btnOfflineMode = findViewById(R.id.btnOfflineMode);
 
+        txtEmail = findViewById(R.id.txtEmail);
+        txtPassword = findViewById(R.id.txtPassword);
+
         //ForgotPassword Button
         btnForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.ChangeIntent(LoginActivity.this, ForgotPassword.class);
+                Utils.ChangeIntent(LoginActivity.this, ForgotPasswordActivity.class);
             }
         });
 
@@ -43,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.ChangeIntent(LoginActivity.this, RegisterP1.class);
+                Utils.ChangeIntent(LoginActivity.this, RegisterP1Activity.class);
             }
         });
 
@@ -51,7 +58,10 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String Email = txtEmail.getText().toString();
+                String Password = txtEmail.getText().toString();
+                User User = new User(Email, Password);
+                AuthManager.LoginUser(User);
             }
         });
 
