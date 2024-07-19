@@ -10,7 +10,7 @@ import android.widget.EditText;
 public class LoginActivity extends AppCompatActivity {
 
     //Auth
-    private AuthManager AuthManager;
+    private LoginManager LoginManager;
 
     //Elements
     private EditText txtEmail;
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        AuthManager = new AuthManager(this);
+        LoginManager = new LoginManager(this);
 
         btnForgotPassword = findViewById(R.id.btnForgotPw);
         btnCreateAccount = findViewById(R.id.btnRegister);
@@ -59,9 +59,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String Email = txtEmail.getText().toString();
-                String Password = txtEmail.getText().toString();
+                String Password = txtPassword.getText().toString();
                 User User = new User(Email, Password);
-                AuthManager.LoginUser(User);
+                LoginManager.LoginUser(User);
             }
         });
 
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         btnGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Utils.ChangeIntent(LoginActivity.this, GoogleLoginActivity.class);
             }
         });
 

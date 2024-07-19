@@ -64,14 +64,14 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/txtEmail"
+                android:id="@+id/txtCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="15dp"
                 android:backgroundTint="@color/white"
                 android:ems="10"
-                android:hint="@string/email"
-                android:inputType="text|textEmailAddress"
+                android:hint="@string/txtCode"
+                android:inputType="text"
                 android:text="@null"
                 android:textAlignment="center"
                 android:textColor="@color/white"

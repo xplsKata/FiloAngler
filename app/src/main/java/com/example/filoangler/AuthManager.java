@@ -1,62 +1,23 @@
 package com.example.filoangler;
 
-import android.app.Activity;
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class AuthManager {
     private FirebaseAuth mAuth;
-    private Context Context;
 
-    public AuthManager(Context Context){
+    private FirebaseDatabase mDb;
+
+    public AuthManager(){
         this.mAuth = FirebaseAuth.getInstance();
-        this.Context = Context;
+        this.mDb = FirebaseDatabase.getInstance("https://filoangler-24b41-default-rtdb.asia-southeast1.firebasedatabase.app/");
     }
 
-    public void RegisterUser(User User){
-        mAuth.createUserWithEmailAndPassword(User.GetEmail(), User.GetPassword())
-                .addOnCompleteListener((Activity) Context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            //Register complete
-
-                        }else{
-                            //Register failed
-
-                        }
-                    }
-                });
+    public FirebaseAuth GetAuth(){
+        return mAuth;
     }
 
-    public void LoginUser(User User){
-        mAuth.signInWithEmailAndPassword(User.GetEmail(), User.GetPassword())
-                .addOnCompleteListener((Activity) Context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            //Login complete
-
-                        }else{
-                            //Login failed
-
-                        }
-                    }
-                });
-    }
-
-    public void LogOut(){
-        mAuth.signOut();
-    }
-
-    public FirebaseUser GetCurrentUser(){
-        return mAuth.getCurrentUser();
+    public FirebaseDatabase GetDb(){
+        return mDb;
     }
 }

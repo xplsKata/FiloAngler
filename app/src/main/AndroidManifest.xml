@@ -15,6 +15,11 @@
         android:theme="@style/Theme.FiloAngler"
         tools:targetApi="31">
         <activity
+            android:name=".GoogleLoginActivity"
+            android:exported="false"
+            android:label="@string/title_activity_google_login"
+            android:theme="@style/Theme.FiloAngler" />
+        <activity
             android:name=".RegisterP3Activity"
             android:exported="false" />
         <activity
@@ -25,15 +30,6 @@
             android:exported="false" />
         <activity
             android:name=".ForgotPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BlogActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ForgotPwActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Aspiring",
+    "description": "Aspiring angler: No experience yet, but interested in the sport or learning more about marine life!"
+  },
+  {
+    "name": "Novice",
+    "description": "Novice angler: Takes part in angling but has limited experience. Interested in learning more about marine life!"
+  },
+  {
+    "name": "Proficient",
+    "description": "Proficient angler: Proficient angler takes part in angling for leisure and sport. Interested in teaching and helping other anglers and intake more information with marine life!"
+  }
+]

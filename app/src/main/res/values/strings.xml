@@ -25,4 +25,10 @@
     <string name="rbtNovice">Novice</string>
     <string name="rbtProficient">Proficient</string>
     <string name="lblAddress">Address</string>
+    <string name="title_activity_google_login">GoogleLoginActivity</string>
+    <string name="txtCode">Code</string>
+    <string name="Aspiring_Angler">Aspiring angler: No experience yet, but interested in the sport or learning more about marine life!</string>
+    <string name="Novice_Angler">Novice angler: Takes part in angling but has limited experience. Interested in learning more about marine life!</string>
+    <string name="Proficient_Angler">Proficient angler: Proficient angler takes part in angling for leisure and sport. Interested in teaching and helping other anglers and intake more information with marine life!</string>
+    <string name="FirebaseInstanceUrl" translatable="false">https://filoangler-24b41-default-rtdb.asia-southeast1.firebasedatabase.app/</string>
 </resources>
