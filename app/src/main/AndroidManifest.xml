@@ -20,10 +20,10 @@
             android:label="@string/title_activity_google_login"
             android:theme="@style/Theme.FiloAngler" />
         <activity
-            android:name=".RegisterP3Activity"
+            android:name=".RegisterP2Activity"
             android:exported="false" />
         <activity
-            android:name=".RegisterP2Activity"
+            android:name=".RegisterP3Activity"
             android:exported="false" />
         <activity
             android:name=".RegisterP1Activity"

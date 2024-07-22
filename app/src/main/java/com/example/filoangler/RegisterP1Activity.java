@@ -48,7 +48,7 @@ public class RegisterP1Activity extends AppCompatActivity {
                     String Username = txtUsername.getText().toString();
                     String Password = txtPassword.getText().toString();
 
-                    Intent intent = new Intent(RegisterP1Activity.this, RegisterP2Activity.class);
+                    Intent intent = new Intent(RegisterP1Activity.this, RegisterP3Activity.class);
                     intent.putExtra("Email", Email);
                     intent.putExtra("Username", Username);
                     intent.putExtra("Password", Password);
