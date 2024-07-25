@@ -3,6 +3,8 @@ package com.example.filoangler;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -20,15 +22,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginManager {
-    private Context Context;
     public static final int RC_SIGN_IN = 9001;
-    private GoogleSignInClient mGoogleSignInClient;
-
-    private FirebaseAuth mAuth;
     AuthManager authManager = new AuthManager();
+    private Context Context;
+    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth mAuth;
 
     //Handles the login
-    public LoginManager(Context Context){
+    public LoginManager(Context Context) {
         this.mAuth = authManager.GetAuth();
         this.Context = Context;
 
@@ -39,24 +40,31 @@ public class LoginManager {
         this.mGoogleSignInClient = GoogleSignIn.getClient(Context, gso);
     }
 
-    public void LoginUser(User User){
+    public void LoginUser(User User) {
         mAuth.signInWithEmailAndPassword(User.GetEmail(), User.GetPassword())
                 .addOnCompleteListener((Activity) Context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            //Login complete
-
-                        }else{
-                            //Login failed
-
+                        if (task.isSuccessful()) {
+                            // Sign in success, check if email is verified
+                            if (GetCurrentUser() != null && GetCurrentUser().isEmailVerified()) {
+                                //verified, toast login goods
+                                Toast.makeText(Context, "Logged In Successfully!", Toast.LENGTH_SHORT).show();
+                                Utils.ChangeIntent(Context, BloggingActivity.class);
+                                ((Activity) Context).finish();
+                            } else {
+                                Toast.makeText(Context, "Email not verified! Verify email first before proceeding!", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(Context, "No matching accounts, please try again!", Toast.LENGTH_LONG).show();
+                            Log.e("LoginActivity", "signInWithEmail:failure", task.getException());
                         }
                     }
                 });
     }
 
     //Handles Google login
-    public void GoogleLogin(){
+    public void GoogleLogin() {
         Intent intent = mGoogleSignInClient.getSignInIntent();
         ((GoogleLoginActivity) Context).startActivityForResult(intent, RC_SIGN_IN);
     }
@@ -67,36 +75,32 @@ public class LoginManager {
                 .addOnCompleteListener((GoogleLoginActivity) Context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //Add user
-                        } else {
-                            //User does not exist
-                        }
+
                     }
                 });
     }
 
-    public void SignInResult(Intent data){
+    public void SignInResult(Intent data) {
         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-        try{
+        try {
             GoogleSignInAccount account = task.getResult(ApiException.class);
-            if (account != null){
+            if (account != null) {
                 firebaseAuthWithGoogle(account.getIdToken());
             }
-        } catch (ApiException e){
+        } catch (ApiException e) {
             //Error
         }
     }
 
-    public void LogOut(){
+    public void LogOut() {
         mAuth.signOut();
     }
 
-    public FirebaseUser GetCurrentUser(){
+    public FirebaseUser GetCurrentUser() {
         return mAuth.getCurrentUser();
     }
 
-    public FirebaseAuth GetFirebaseAuth(){
+    public FirebaseAuth GetFirebaseAuth() {
         return mAuth;
     }
 }

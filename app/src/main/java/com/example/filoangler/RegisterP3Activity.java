@@ -9,10 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+
+import java.util.Objects;
 
 public class RegisterP3Activity extends AppCompatActivity {
 
@@ -45,13 +48,23 @@ public class RegisterP3Activity extends AppCompatActivity {
                 try{
                     registerManager.RegisterUser(user, new OnCompleteListener<AuthResult>() {
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                registerManager.AddUserToDatabase(user, task);
-                                Utils.ChangeIntent(RegisterP3Activity.this, LoginActivity.class);
-                                finish();
-                            }else{
-
+                        public void onComplete(@NonNull Task<AuthResult> taskAuth) {
+                            if(taskAuth.isSuccessful()){
+                                Objects.requireNonNull(taskAuth.getResult().getUser()).sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> taskVerify) {
+                                        try{
+                                            if(taskVerify.isSuccessful()){
+                                                registerManager.AddUserToDatabase(user, taskAuth);
+                                                Toast.makeText(RegisterP3Activity.this, "Verification email sent!", Toast.LENGTH_SHORT).show();
+                                                Utils.ChangeIntent(RegisterP3Activity.this, LoginActivity.class);
+                                                finish();
+                                            }
+                                        }catch(Exception e){
+                                            Log.e("RegisterActivity", "sendEmailVerification", taskVerify.getException());
+                                        }
+                                    }
+                                });
                             }
                         }
                     });

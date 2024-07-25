@@ -2,10 +2,14 @@ package com.example.filoangler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.appsearch.observer.DocumentChangeInfo;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -60,8 +64,20 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String Email = txtEmail.getText().toString();
                 String Password = txtPassword.getText().toString();
-                User User = new User(Email, Password);
-                LoginManager.LoginUser(User);
+
+                if(TextUtils.isEmpty(Email) || TextUtils.isEmpty(Password)){
+                    Toast.makeText(LoginActivity.this, "Input fields must not be empty! Try again.", Toast.LENGTH_LONG).show();
+                }else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(Email).matches()) {
+                    Toast.makeText(LoginActivity.this, "Please input a valid email!", Toast.LENGTH_LONG).show();
+                }else{
+                    try{
+                        User User = new User(Email, Password);
+                        LoginManager.LoginUser(User);
+                    }catch(Exception e){
+                        Toast.makeText(LoginActivity.this, "Something went wrong. Please try again!", Toast.LENGTH_LONG).show();
+                        Log.e("LoginActivity", "Error in logging in the user!" + e);
+                    }
+                }
             }
         });
 

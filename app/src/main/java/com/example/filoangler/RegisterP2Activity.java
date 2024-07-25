@@ -19,6 +19,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegisterP2Activity extends AppCompatActivity {
 
@@ -107,6 +109,8 @@ public class RegisterP2Activity extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
+
                 String Email = getIntent().getStringExtra("Email");
                 String Username = getIntent().getStringExtra("Username");
                 String Password = getIntent().getStringExtra("Password");
@@ -122,17 +126,41 @@ public class RegisterP2Activity extends AppCompatActivity {
                     AnglerStatus = SelectedRadioButton.getText().toString();
                 }
 
-                Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
-                intent.putExtra("Email", Email);
-                intent.putExtra("Username", Username);
-                intent.putExtra("Password", Password);
-                intent.putExtra("FirstName", FirstName);
-                intent.putExtra("LastName", LastName);
-                intent.putExtra("Birthdate", Birthdate);
-                intent.putExtra("ProvinceAddress", ProvinceAddress);
-                intent.putExtra("CityAddress", CityAddress);
-                intent.putExtra("AnglerStatus", AnglerStatus);
-                startActivity(intent);
+                try{
+                    if (loginManager.GetCurrentUser() != null && loginManager.GetCurrentUser().isEmailVerified()) {
+                        RegisterManager registerManager = new RegisterManager();
+                        User user = new User(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
+                        try{
+                            registerManager.RegisterUser(user, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> taskAuth) {
+                                    if(taskAuth.isSuccessful()){
+                                        registerManager.AddUserToDatabase(user, taskAuth);
+                                        Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
+                                        Utils.ChangeIntent(RegisterP2Activity.this, LoginActivity.class);
+                                        finish();
+                                    }
+                                }
+                            });
+                        }catch(Exception e){
+                            Log.e("TAG", "Error with adding user to db" + e);
+                        }
+                    }else{
+                        Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
+                        intent.putExtra("Email", Email);
+                        intent.putExtra("Username", Username);
+                        intent.putExtra("Password", Password);
+                        intent.putExtra("FirstName", FirstName);
+                        intent.putExtra("LastName", LastName);
+                        intent.putExtra("Birthdate", Birthdate);
+                        intent.putExtra("ProvinceAddress", ProvinceAddress);
+                        intent.putExtra("CityAddress", CityAddress);
+                        intent.putExtra("AnglerStatus", AnglerStatus);
+                        startActivity(intent);
+                    }
+                }catch(Exception e){
+                    Log.e("RegisterP2Activity", "Add to database: failure" + e);
+                }
             }
         });
     }

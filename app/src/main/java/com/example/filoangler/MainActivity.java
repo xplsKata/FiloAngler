@@ -17,6 +17,9 @@ public class MainActivity extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LoginManager loginManager = new LoginManager(MainActivity.this);
+                loginManager.LogOut();
+
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }

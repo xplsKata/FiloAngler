@@ -14,7 +14,7 @@
     <string name="Confirm">Confirm</string>
     <string name="lblRegister">Register Account</string>
     <string name="lblVerify">Verify Your Email</string>
-    <string name="lblVerifyDesc">A verification email has been sent to your provided email address. Please check your inbox and follow the instructions to verify your account. You must verify your account to log in or continue using the app. If you don\'t see the email, please check your spam folder. Thank you!</string>
+    <string name="lblVerifyDesc">Upon pressing confirm, a verification email will be sent to your provided email address. Please check your inbox and follow the instructions to verify your account. You must verify your account to log in. If you don\'t see the email, please check your spam folder. Thank you!</string>
     <string name="lblMoreAboutYourself">More About Yourself</string>
     <string name="lblMoreAboutYourselfDesc">Tell us more about yourself and your angling journey!</string>
     <string name="lblStatus">Angler Status:</string>

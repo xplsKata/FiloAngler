@@ -15,6 +15,9 @@
         android:theme="@style/Theme.FiloAngler"
         tools:targetApi="31">
         <activity
+            android:name=".BloggingActivity"
+            android:exported="false" />
+        <activity
             android:name=".GoogleLoginActivity"
             android:exported="false"
             android:label="@string/title_activity_google_login"

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.firebase.database.annotations.Nullable;
 
@@ -14,14 +15,9 @@ public class GoogleLoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LoginManager = new LoginManager(this);
-
-        GoogleLogin();
-
-    }
-
-    public void GoogleLogin(){
+        LoginManager = new LoginManager(GoogleLoginActivity.this);
         LoginManager.GoogleLogin();
+
     }
 
     @Override

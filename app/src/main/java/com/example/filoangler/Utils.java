@@ -9,5 +9,6 @@ public class Utils {
     public static void ChangeIntent(Context MainIntent, Class GoTo){
         Intent intent = new Intent(MainIntent, GoTo);
         MainIntent.startActivity(intent);
+
     }
 }
