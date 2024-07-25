@@ -4,9 +4,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class AuthManager {
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth;
 
-    private FirebaseDatabase mDb;
+    private final FirebaseDatabase mDb;
 
     public AuthManager(){
         this.mAuth = FirebaseAuth.getInstance();

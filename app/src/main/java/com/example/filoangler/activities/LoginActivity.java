@@ -1,8 +1,7 @@
-package com.example.filoangler;
+package com.example.filoangler.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.appsearch.observer.DocumentChangeInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,10 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.filoangler.LoginManager;
+import com.example.filoangler.R;
+import com.example.filoangler.User;
+import com.example.filoangler.Utils;
+
 public class LoginActivity extends AppCompatActivity {
 
     //Auth
-    private LoginManager LoginManager;
+    private com.example.filoangler.LoginManager LoginManager;
 
     //Elements
     private EditText txtEmail;

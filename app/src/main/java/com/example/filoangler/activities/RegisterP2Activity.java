@@ -1,4 +1,4 @@
-package com.example.filoangler;
+package com.example.filoangler.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.filoangler.LoginManager;
+import com.example.filoangler.R;
+import com.example.filoangler.RegisterManager;
+import com.example.filoangler.User;
+import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,7 +41,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class RegisterP2Activity extends AppCompatActivity {
 

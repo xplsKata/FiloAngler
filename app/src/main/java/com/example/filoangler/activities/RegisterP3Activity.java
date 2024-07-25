@@ -1,16 +1,18 @@
-package com.example.filoangler;
+package com.example.filoangler.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.example.filoangler.R;
+import com.example.filoangler.RegisterManager;
+import com.example.filoangler.User;
+import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

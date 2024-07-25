@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.filoangler.activities.BloggingActivity;
+import com.example.filoangler.activities.GoogleLoginActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -24,9 +26,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginManager {
     public static final int RC_SIGN_IN = 9001;
     AuthManager authManager = new AuthManager();
-    private Context Context;
-    private GoogleSignInClient mGoogleSignInClient;
-    private FirebaseAuth mAuth;
+    private final Context Context;
+    private final GoogleSignInClient mGoogleSignInClient;
+    private final FirebaseAuth mAuth;
 
     //Handles the login
     public LoginManager(Context Context) {

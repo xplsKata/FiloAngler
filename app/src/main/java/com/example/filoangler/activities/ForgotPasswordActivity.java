@@ -1,8 +1,10 @@
-package com.example.filoangler;
+package com.example.filoangler.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.filoangler.R;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 

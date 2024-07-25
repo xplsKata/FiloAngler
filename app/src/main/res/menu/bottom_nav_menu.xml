@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/Home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/Map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Map"
+        android:icon="@drawable/baseline_map_24"/>
+    <item
+        android:id="@+id/Weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Weather"
+        android:icon="@drawable/baseline_sunny_snowing_24"/>
+    <item
+        android:id="@+id/Tide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Tide"
+        android:icon="@drawable/baseline_water_24"/>
+    <item
+        android:id="@+id/Notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Notifications"
+        android:icon="@drawable/baseline_notifications_24"/>
+</menu>

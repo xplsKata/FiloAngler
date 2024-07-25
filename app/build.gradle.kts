@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -68,6 +69,18 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.navigation:navigation-fragment:2.7.6")
+    implementation("androidx.navigation:navigation-ui:2.7.6")
+    implementation ("com.google.android.material:material:1.4.0")
+
+    //SocialView
+    implementation ("com.hendraanggrian.appcompat:socialview:0.1")
+    implementation ("com.hendraanggrian.appcompat:socialview-autocomplete:0.1")
+
+    //ImageCropper
+    api ("com.theartofdev.edmodo:android-image-cropper:2.8.0")
 
     testImplementation("junit:junit:4.13.2")
 

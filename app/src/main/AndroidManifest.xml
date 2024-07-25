@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -13,30 +22,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FiloAngler"
-        tools:targetApi="31">
+        tools:targetApi="31" >
         <activity
-            android:name=".BloggingActivity"
+            android:name=".activities.BloggingActivity"
             android:exported="false" />
         <activity
-            android:name=".GoogleLoginActivity"
+            android:name=".activities.GoogleLoginActivity"
             android:exported="false"
             android:label="@string/title_activity_google_login"
             android:theme="@style/Theme.FiloAngler" />
         <activity
-            android:name=".RegisterP2Activity"
+            android:name=".activities.RegisterP2Activity"
             android:exported="false" />
         <activity
-            android:name=".RegisterP3Activity"
+            android:name=".activities.RegisterP3Activity"
             android:exported="false" />
         <activity
-            android:name=".RegisterP1Activity"
+            android:name=".activities.RegisterP1Activity"
             android:exported="false" />
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name=".activities.ForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".activities.MainActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +53,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="false" />
     </application>
 

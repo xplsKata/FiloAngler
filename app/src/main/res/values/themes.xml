@@ -9,4 +9,10 @@
     </style>
 
     <style name="Theme.FiloAngler" parent="Base.Theme.FiloAngler" />
+    <style name="Theme.FiloAngler.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.FiloAngler.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.FiloAngler.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

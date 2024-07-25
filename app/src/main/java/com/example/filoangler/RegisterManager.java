@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.filoangler.activities.BloggingActivity;
+import com.example.filoangler.activities.RegisterP2Activity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -24,8 +26,8 @@ import java.util.Map;
 
 public class RegisterManager {
 
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase mDb;
+    private final FirebaseAuth mAuth;
+    private final FirebaseDatabase mDb;
     AuthManager authManager = new AuthManager();
 
     public RegisterManager(){

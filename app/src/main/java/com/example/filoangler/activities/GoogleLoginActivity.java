@@ -1,15 +1,15 @@
-package com.example.filoangler;
+package com.example.filoangler.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
+import com.example.filoangler.LoginManager;
 import com.google.firebase.database.annotations.Nullable;
 
 public class GoogleLoginActivity extends AppCompatActivity {
-    private LoginManager LoginManager;
+    private com.example.filoangler.LoginManager LoginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == LoginManager.RC_SIGN_IN) {
+        if (requestCode == com.example.filoangler.LoginManager.RC_SIGN_IN) {
             LoginManager.SignInResult(data);
         }
     }

@@ -31,4 +31,17 @@
     <string name="Novice_Angler">Novice angler: Takes part in angling but has limited experience. Interested in learning more about marine life!</string>
     <string name="Proficient_Angler">Proficient angler: Proficient angler takes part in angling for leisure and sport. Interested in teaching and helping other anglers and intake more information with marine life!</string>
     <string name="FirebaseInstanceUrl" translatable="false">https://filoangler-24b41-default-rtdb.asia-southeast1.firebasedatabase.app/</string>
+    <string name="title_activity_side_bar_test">SideBarTest</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
