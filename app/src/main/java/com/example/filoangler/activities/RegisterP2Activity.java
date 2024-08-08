@@ -141,7 +141,7 @@ public class RegisterP2Activity extends AppCompatActivity {
                                     if(taskAuth.isSuccessful()){
                                         registerManager.AddUserToDatabase(user, taskAuth);
                                         Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
-                                        Utils.ChangeIntent(RegisterP2Activity.this, LoginActivity.class);
+                                        Utils.ChangeIntent(RegisterP2Activity.this, RegisterP3Activity.class);
                                         finish();
                                     }
                                 }
@@ -264,6 +264,7 @@ public class RegisterP2Activity extends AppCompatActivity {
                 ProvincesMap.put(ProvinceName, ProvinceKey);
                 ProvincesList.add(ProvinceName);
             }
+            Log.e("JSON", "Loaded Json File");
         }catch(Exception e){
             Log.e("TAG", "LoadJson Provinces: Error" + e);
         }

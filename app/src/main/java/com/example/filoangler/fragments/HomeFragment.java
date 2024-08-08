@@ -4,11 +4,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
+import com.example.filoangler.activities.PostActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +30,7 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ImageButton btnAddPost;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -61,6 +67,17 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        btnAddPost = view.findViewById(R.id.btnAddPost);
+
+        btnAddPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.ChangeIntent(getActivity(), PostActivity.class);
+            }
+        });
+
+        return view;
     }
 }

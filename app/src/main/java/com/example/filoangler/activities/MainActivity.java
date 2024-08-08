@@ -9,25 +9,32 @@ import android.widget.Button;
 
 import com.example.filoangler.LoginManager;
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 
 public class MainActivity extends AppCompatActivity {
+
+    private LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnNext = findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager loginManager = new LoginManager(MainActivity.this);
-                loginManager.LogOut();
+        loginManager = new LoginManager(this);
 
-                Intent intent = new Intent(MainActivity.this, BloggingActivity.class);
-                startActivity(intent);
-            }
-        });
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        if(loginManager.GetCurrentUser() != null){
+            Utils.ChangeIntent(this, BloggingActivity.class);
+            finish();
+        }else{
+            Utils.ChangeIntent(this, LoginActivity.class);
+            finish();
+        }
     }
 
 }

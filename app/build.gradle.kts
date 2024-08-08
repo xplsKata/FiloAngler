@@ -80,7 +80,19 @@ dependencies {
     implementation ("com.hendraanggrian.appcompat:socialview-autocomplete:0.1")
 
     //ImageCropper
-    api ("com.theartofdev.edmodo:android-image-cropper:2.8.0")
+    implementation ("com.vanniktech:android-image-cropper:4.5.0")
+
+    //Camera X
+    val cameraxVersion = "1.3.4"
+    implementation ("androidx.camera:camera-core:${cameraxVersion}")
+    implementation ("androidx.camera:camera-camera2:${cameraxVersion}")
+    implementation ("androidx.camera:camera-lifecycle:${cameraxVersion}")
+
+    // CameraX View class
+    implementation ("androidx.camera:camera-view:${cameraxVersion}")
+
+    //Exif
+    implementation ("androidx.exifinterface:exifinterface:1.3.7")
 
     testImplementation("junit:junit:4.13.2")
 
