@@ -21,10 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.filoangler.LoginManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
-import com.example.filoangler.RegisterManager;
-import com.example.filoangler.User;
+import com.example.filoangler.Manager.RegisterManager;
+import com.example.filoangler.UserModel;
 import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -133,13 +133,13 @@ public class RegisterP2Activity extends AppCompatActivity {
                 try{
                     if (loginManager.GetCurrentUser() != null && loginManager.GetCurrentUser().isEmailVerified()) {
                         RegisterManager registerManager = new RegisterManager();
-                        User user = new User(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
+                        UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
                         try{
-                            registerManager.RegisterUser(user, new OnCompleteListener<AuthResult>() {
+                            registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> taskAuth) {
                                     if(taskAuth.isSuccessful()){
-                                        registerManager.AddUserToDatabase(user, taskAuth);
+                                        registerManager.AddUserToDatabase(userModel, taskAuth);
                                         Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
                                         Utils.ChangeIntent(RegisterP2Activity.this, RegisterP3Activity.class);
                                         finish();
@@ -147,7 +147,7 @@ public class RegisterP2Activity extends AppCompatActivity {
                                 }
                             });
                         }catch(Exception e){
-                            Log.e("TAG", "Error with adding user to db" + e);
+                            Log.e("TAG", "Error with adding userModel to db" + e);
                         }
                     }else{
                         Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);

@@ -10,15 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.filoangler.LoginManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
-import com.example.filoangler.User;
+import com.example.filoangler.UserModel;
 import com.example.filoangler.Utils;
 
 public class LoginActivity extends AppCompatActivity {
 
     //Auth
-    private com.example.filoangler.LoginManager LoginManager;
+    private com.example.filoangler.Manager.LoginManager LoginManager;
 
     //Elements
     private EditText txtEmail;
@@ -75,8 +75,8 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Please input a valid email!", Toast.LENGTH_LONG).show();
                 }else{
                     try{
-                        User User = new User(Email, Password);
-                        LoginManager.LoginUser(User);
+                        UserModel UserModel = new UserModel(Email, Password);
+                        LoginManager.LoginUser(UserModel);
                     }catch(Exception e){
                         Toast.makeText(LoginActivity.this, "Something went wrong. Please try again!", Toast.LENGTH_LONG).show();
                         Log.e("LoginActivity", "Error in logging in the user!" + e);

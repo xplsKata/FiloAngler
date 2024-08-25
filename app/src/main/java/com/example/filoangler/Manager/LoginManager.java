@@ -1,4 +1,4 @@
-package com.example.filoangler;
+package com.example.filoangler.Manager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.filoangler.UserModel;
+import com.example.filoangler.Utils;
 import com.example.filoangler.activities.BloggingActivity;
 import com.example.filoangler.activities.GoogleLoginActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -42,8 +44,8 @@ public class LoginManager {
         this.mGoogleSignInClient = GoogleSignIn.getClient(Context, gso);
     }
 
-    public void LoginUser(User User) {
-        mAuth.signInWithEmailAndPassword(User.GetEmail(), User.GetPassword())
+    public void LoginUser(UserModel UserModel) {
+        mAuth.signInWithEmailAndPassword(UserModel.getEmail(), UserModel.getPassword())
                 .addOnCompleteListener((Activity) Context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

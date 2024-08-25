@@ -2,12 +2,9 @@ package com.example.filoangler.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
-import com.example.filoangler.LoginManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
 

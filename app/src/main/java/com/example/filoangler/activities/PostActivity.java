@@ -35,9 +35,9 @@ import android.widget.Toast;
 import androidx.camera.view.PreviewView;
 
 import com.canhub.cropper.CropImageContractOptions;
-import com.example.filoangler.LoginManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
-import com.example.filoangler.StorageManager;
+import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;

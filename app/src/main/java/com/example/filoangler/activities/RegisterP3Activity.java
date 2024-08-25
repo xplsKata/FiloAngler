@@ -10,8 +10,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.filoangler.R;
-import com.example.filoangler.RegisterManager;
-import com.example.filoangler.User;
+import com.example.filoangler.Manager.RegisterManager;
+import com.example.filoangler.UserModel;
 import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,9 +46,9 @@ public class RegisterP3Activity extends AppCompatActivity {
                 String CityAddress = getIntent().getStringExtra("CityAddress");
                 String AnglerStatus = getIntent().getStringExtra("AnglerStatus");
 
-                User user = new User(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
+                UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
                 try{
-                    registerManager.RegisterUser(user, new OnCompleteListener<AuthResult>() {
+                    registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> taskAuth) {
                             if(taskAuth.isSuccessful()){
@@ -57,7 +57,7 @@ public class RegisterP3Activity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> taskVerify) {
                                         try{
                                             if(taskVerify.isSuccessful()){
-                                                registerManager.AddUserToDatabase(user, taskAuth);
+                                                registerManager.AddUserToDatabase(userModel, taskAuth);
                                                 Toast.makeText(RegisterP3Activity.this, "Verification email sent!", Toast.LENGTH_SHORT).show();
                                                 Utils.ChangeIntent(RegisterP3Activity.this, LoginActivity.class);
                                                 finish();
@@ -71,7 +71,7 @@ public class RegisterP3Activity extends AppCompatActivity {
                         }
                     });
                 }catch(Exception e){
-                    Log.e("TAG", "Error with adding user to db" + e);
+                    Log.e("TAG", "Error with adding userModel to db" + e);
                 }
             }
         });

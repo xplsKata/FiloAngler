@@ -1,4 +1,4 @@
-package com.example.filoangler;
+package com.example.filoangler.Manager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;

@@ -94,6 +94,9 @@ dependencies {
     //Exif
     implementation ("androidx.exifinterface:exifinterface:1.3.7")
 
+    //Picasso
+    implementation ("com.squareup.picasso:picasso:2.8")
+
     testImplementation("junit:junit:4.13.2")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -1,4 +1,4 @@
-package com.example.filoangler;
+package com.example.filoangler.Manager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.filoangler.UserModel;
+import com.example.filoangler.Utils;
 import com.example.filoangler.activities.BloggingActivity;
 import com.example.filoangler.activities.RegisterP2Activity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,29 +37,29 @@ public class RegisterManager {
         this.mDb = authManager.GetDb();
     }
 
-    public void RegisterUser(User User, OnCompleteListener<AuthResult> onCompleteListener){
-        mAuth.createUserWithEmailAndPassword(User.GetEmail(), User.GetPassword())
+    public void RegisterUser(UserModel UserModel, OnCompleteListener<AuthResult> onCompleteListener){
+        mAuth.createUserWithEmailAndPassword(UserModel.getEmail(), UserModel.getPassword())
                 .addOnCompleteListener(onCompleteListener);
     }
 
-    public void AddUserToDatabase(User User, Task<AuthResult> Task){
+    public void AddUserToDatabase(UserModel UserModel, Task<AuthResult> Task){
         try{
             if(Task.isSuccessful()){
                 Map<String, Object> AccountDetailsMap = new HashMap<>();
                 Map<String, Object> PersonalInformationMap = new HashMap<>();
 
-                AccountDetailsMap.put("User ID", (Task.getResult().getUser()).getUid());
-                AccountDetailsMap.put("Email", User.GetEmail());
-                AccountDetailsMap.put("Password", User.GetPassword());
-                AccountDetailsMap.put("Username", User.GetUsername());
-                AccountDetailsMap.put("Profile Icon", "null");
-                AccountDetailsMap.put("Class", User.GetClass());
+                AccountDetailsMap.put("UserID", (Task.getResult().getUser()).getUid());
+                AccountDetailsMap.put("Email", UserModel.getEmail());
+                AccountDetailsMap.put("Password", UserModel.getPassword());
+                AccountDetailsMap.put("Username", UserModel.getUsername());
+                AccountDetailsMap.put("ProfileIconURL", UserModel.getProfileIconURL());
+                AccountDetailsMap.put("AnglerStatus", UserModel.getAnglerStatus());
 
-                PersonalInformationMap.put("First Name", User.GetFirstName());
-                PersonalInformationMap.put("Last Name", User.GetLastname());
-                PersonalInformationMap.put("Birthdate", User.GetBirthdate());
-                PersonalInformationMap.put("City Address", User.GetCityAddress());
-                PersonalInformationMap.put("Province Address", User.GetProvinceAddress());
+                PersonalInformationMap.put("FirstName", UserModel.getFirstName());
+                PersonalInformationMap.put("LastName", UserModel.getLastName());
+                PersonalInformationMap.put("Birthdate", UserModel.getBirthdate());
+                PersonalInformationMap.put("CityAddress", UserModel.getCityAddress());
+                PersonalInformationMap.put("ProvinceAddress", UserModel.getProvinceAddress());
 
                 Map<String, Object> UserMap = new HashMap<>();
                 UserMap.put("Account Details", AccountDetailsMap);
@@ -97,10 +99,10 @@ public class RegisterManager {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // User exists, proceed to BloggingActivity
+                        // UserModel exists, proceed to BloggingActivity
                         Utils.ChangeIntent(Context, BloggingActivity.class);
                     } else {
-                        // User does not exist, proceed to RegisterP2Activity
+                        // UserModel does not exist, proceed to RegisterP2Activity
                         Utils.ChangeIntent(Context, RegisterP2Activity.class);
                     }
                     ((Activity) Context).finish();
