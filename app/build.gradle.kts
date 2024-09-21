@@ -27,6 +27,9 @@ android {
         properties.load(project.rootProject.file("local.properties").inputStream())
         buildConfigField ("String","googleLoginApiKey","\"${properties.getProperty("googleLoginApiKey")}\"")
         buildConfigField ("String","firebaseDatabaseApiKey","\"${properties.getProperty("firebaseDatabaseApiKey")}\"")
+        buildConfigField ("String","googleMapsApiKey","\"${properties.getProperty("googleMapsApiKey")}\"")
+
+        manifestPlaceholders += mapOf("googleMapsApiKey" to "\"${properties.getProperty("googleMapsApiKey")}\"")
 
         buildFeatures{
             viewBinding=true
@@ -110,6 +113,10 @@ dependencies {
 
     //Picasso
     implementation ("com.squareup.picasso:picasso:2.8")
+
+    //Google Maps
+    implementation ("com.google.android.gms:play-services-maps:19.0.0")
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
 
     testImplementation("junit:junit:4.13.2")
 
