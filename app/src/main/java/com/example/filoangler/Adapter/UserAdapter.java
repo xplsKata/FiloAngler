@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
-import com.example.filoangler.UserModel;
+import com.example.filoangler.Model.UserModel;
+import com.example.filoangler.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +44,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.user_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_user, parent, false);
         return new UserAdapter.ViewHolder(view);
     }
 
@@ -66,18 +67,40 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             holder.btnFollow.setVisibility(View.GONE);
         }
 
+        holder.btnFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.followUser(authManager, holder.btnFollow, loginManager, userModel, mContext);
+            }
+        });
+
+        holder.Name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.goToProfile(userModel.getUserID(), mContext);
+            }
+        });
+
+        holder.imgProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.goToProfile(userModel.getUserID(), mContext);
+            }
+        });
+
     }
 
     private void isFollowed(final String id, Button btnFollow){
-        DatabaseReference reference = mDb.getReference().child("Follow").child(loginManager.GetCurrentUser().getUid())
+        DatabaseReference reference = mDb.getReference().child("Users")
+                .child(loginManager.GetCurrentUser().getUid())
                 .child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.child(id).exists()){
-                    btnFollow.setText("Following");
+                    btnFollow.setText(R.string.txtFollowing);
                 }else{
-                    btnFollow.setText("Follow");
+                    btnFollow.setText(R.string.txtFollow);
                 }
             }
 

@@ -85,7 +85,7 @@ public class PostActivity extends AppCompatActivity {
 
     //Uri
     private Uri imageUri;
-    private String imageUrl;
+    private String imageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +140,12 @@ public class PostActivity extends AppCompatActivity {
                Upload();
             }
         });
+
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
 
     }
 
@@ -344,7 +350,7 @@ public class PostActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Uri> task) {
                         try{
                             Uri downloadUri = task.getResult();
-                            imageUrl = downloadUri.toString();
+                            imageURL = downloadUri.toString();
 
                             LoginManager loginManager = new LoginManager(PostActivity.this);
 
@@ -353,9 +359,9 @@ public class PostActivity extends AppCompatActivity {
 
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("PostId", postId);
-                            map.put("ImageUrl", imageUrl);
+                            map.put("ImageURL", imageURL);
                             map.put("Description", txtImageDescription.getText().toString());
-                            map.put("PublisherDetails", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
+                            map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
 
                             databaseReference.child(postId).setValue(map);
 

@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.RegisterManager;
-import com.example.filoangler.UserModel;
+import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,8 +45,10 @@ public class RegisterP3Activity extends AppCompatActivity {
                 String ProvinceAddress = getIntent().getStringExtra("ProvinceAddress");
                 String CityAddress = getIntent().getStringExtra("CityAddress");
                 String AnglerStatus = getIntent().getStringExtra("AnglerStatus");
+                String Bio = "null";
+                String ProfileIconURL = "null";
 
-                UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
+                UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus, Bio, ProfileIconURL);
                 try{
                     registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
                         @Override

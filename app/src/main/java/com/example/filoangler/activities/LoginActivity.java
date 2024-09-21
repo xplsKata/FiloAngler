@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
-import com.example.filoangler.UserModel;
+import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.Utils;
 
 public class LoginActivity extends AppCompatActivity {

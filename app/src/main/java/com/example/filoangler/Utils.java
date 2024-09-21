@@ -2,13 +2,118 @@ package com.example.filoangler;
 
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.widget.Button;
+
+import com.example.filoangler.Manager.AuthManager;
+import com.example.filoangler.Manager.LoginManager;
+import com.example.filoangler.Model.CommentModel;
+import com.example.filoangler.Model.NotificationModel;
+import com.example.filoangler.Model.PostModel;
+import com.example.filoangler.Model.UserModel;
+import com.example.filoangler.activities.UserProfileActivity;
+import com.google.android.gms.auth.api.Auth;
+
+import java.util.HashMap;
 
 public class Utils {
     public static void ChangeIntent(Context MainIntent, Class GoTo){
         Intent intent = new Intent(MainIntent, GoTo);
         MainIntent.startActivity(intent);
+    }
+
+    public static void goToProfile(String UserId, Context mContext){
+        Intent intent = new Intent(mContext, UserProfileActivity.class);
+        intent.putExtra("UserId", UserId);
+        mContext.startActivity(intent);
+    }
+
+    public static void followUser(AuthManager authManager, Button btnFollow, LoginManager loginManager, UserModel userModel, Context mContext){
+        if(btnFollow.getText().toString().equals("Follow")){
+            authManager.GetDb().getReference().child("Users")
+                    .child(loginManager.GetCurrentUser().getUid())
+                    .child("Following")
+                    .child(userModel.getUserID()).setValue(true);
+
+            authManager.GetDb().getReference().child("Users")
+                    .child(userModel.getUserID())
+                    .child("Followers")
+                    .child(loginManager.GetCurrentUser().getUid()).setValue(true);
+            notifyAuthor(userModel.getUserID(), mContext.getString(R.string.txtFollowed) , loginManager, authManager, loginManager.GetCurrentUser().getUid());
+        }else{
+            authManager.GetDb().getReference().child("Users")
+                    .child(loginManager.GetCurrentUser().getUid())
+                    .child("Following")
+                    .child(userModel.getUserID()).removeValue();
+
+            authManager.GetDb().getReference().child("Users")
+                    .child(userModel.getUserID())
+                    .child("Followers")
+                    .child(loginManager.GetCurrentUser().getUid()).removeValue();
+        }
+    }
+
+    public static void followUser(AuthManager authManager, Button btnFollow, LoginManager loginManager, String UserId, Context mContext){
+        if(btnFollow.getText().toString().equals("Follow")){
+            authManager.GetDb().getReference().child("Users")
+                    .child(loginManager.GetCurrentUser().getUid())
+                    .child("Following")
+                    .child(UserId).setValue(true);
+
+            authManager.GetDb().getReference().child("Users")
+                    .child(UserId)
+                    .child("Followers")
+                    .child(loginManager.GetCurrentUser().getUid()).setValue(true);
+            notifyAuthor(UserId, mContext.getString(R.string.txtFollowed) , loginManager, authManager, loginManager.GetCurrentUser().getUid());
+        }else{
+            authManager.GetDb().getReference().child("Users")
+                    .child(loginManager.GetCurrentUser().getUid())
+                    .child("Following")
+                    .child(UserId).removeValue();
+
+            authManager.GetDb().getReference().child("Users")
+                    .child(UserId)
+                    .child("Followers")
+                    .child(loginManager.GetCurrentUser().getUid()).removeValue();
+        }
+    }
+
+    public static void notifyAuthor(String postId, String authorId,
+                                    String description, LoginManager loginManager,
+                                    AuthManager authManager){
+
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("UserId", loginManager.GetCurrentUser().getUid());
+        map.put("Description", description);
+        map.put("PostId", postId);
+        map.put("isPost", true);
+
+        authManager.GetDb().getReference().child("Users")
+                .child(authorId)
+                .child("Notifications")
+                .push()
+                .setValue(map);
+
+    }
+
+    public static void notifyAuthor(String authorId, String description, LoginManager loginManager, AuthManager authManager, String userId){
+
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("UserId", loginManager.GetCurrentUser().getUid());
+        map.put("Description", description);
+        map.put("PostId", userId);
+        map.put("isPost", false);
+
+        authManager.GetDb().getReference().child("Users")
+                .child(authorId)
+                .child("Notifications")
+                .push()
+                .setValue(map);
 
     }
 }

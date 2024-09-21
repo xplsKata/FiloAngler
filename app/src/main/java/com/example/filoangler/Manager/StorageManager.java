@@ -1,5 +1,6 @@
 package com.example.filoangler.Manager;
 
+import com.example.filoangler.BuildConfig;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -14,7 +15,7 @@ public class StorageManager {
     }
 
     public DatabaseReference getDatabaseReference(String Reference){
-        return databaseReference = FirebaseDatabase.getInstance("https://filoangler-24b41-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        return databaseReference = FirebaseDatabase.getInstance(BuildConfig.firebaseDatabaseApiKey)
                 .getReference(Reference);
     }
 }

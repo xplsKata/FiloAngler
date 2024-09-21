@@ -27,7 +27,7 @@ public class RegisterP1Activity extends AppCompatActivity {
         setContentView(R.layout.activity_register_p1);
 
         txtEmail = findViewById(R.id.txtEmail);
-        txtUsername = findViewById(R.id.txtName);
+        txtUsername = findViewById(R.id.txtUsername);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirmPassword = findViewById(R.id.txtConfirmPw);
         btnConfirm = findViewById(R.id.btnConfirm);

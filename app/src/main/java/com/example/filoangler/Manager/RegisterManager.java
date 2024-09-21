@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.filoangler.UserModel;
+import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.Utils;
 import com.example.filoangler.activities.BloggingActivity;
 import com.example.filoangler.activities.RegisterP2Activity;

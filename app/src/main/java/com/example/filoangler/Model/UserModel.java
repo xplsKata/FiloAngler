@@ -1,4 +1,4 @@
-package com.example.filoangler;
+package com.example.filoangler.Model;
 
 public class UserModel {
     private String UserID;
@@ -40,10 +40,9 @@ public class UserModel {
     }
 
     //Constructor for UserModel
-    public UserModel(String UserID, String Email, String Password, String Username,
+    public UserModel(String Email, String Password, String Username,
                      String FirstName, String LastName, String Birthdate,
                      String ProvinceAddress, String CityAddress, String AnglerStatus, String Bio, String ProfileIconURL){
-        this.UserID = UserID;
         this.Email = Email;
         this.Password = Password;
         this.Username = Username;

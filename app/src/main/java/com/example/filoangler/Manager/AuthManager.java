@@ -1,5 +1,6 @@
 package com.example.filoangler.Manager;
 
+import com.example.filoangler.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -10,7 +11,7 @@ public class AuthManager {
 
     public AuthManager(){
         this.mAuth = FirebaseAuth.getInstance();
-        this.mDb = FirebaseDatabase.getInstance("https://filoangler-24b41-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        this.mDb = FirebaseDatabase.getInstance(BuildConfig.firebaseDatabaseApiKey);
     }
 
     public FirebaseAuth GetAuth(){

@@ -24,8 +24,8 @@ public class GoogleLoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == com.example.filoangler.Manager.LoginManager.RC_SIGN_IN) {
-            LoginManager.SignInResult(data);
+        if (requestCode == LoginManager.RC_SIGN_IN) {
+            LoginManager.handleSignInResult(data);
         }
     }
 }

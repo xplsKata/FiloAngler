@@ -45,4 +45,19 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btnPost">Post</string>
+    <string name="txtPosts">Posts</string>
+    <string name="txtFollowers">Followers</string>
+    <string name="txtFollowing">Following</string>
+    <string name="title_activity_test1">test1</string>
+    <string name="txtEditProfile">Edit Profile</string>
+    <string name="txtFollow">Follow</string>
+    <string name="txtDelete">Delete</string>
+    <string name="txtReport">Report</string>
+    <string name="txtSave">Save</string>
+    <string name="txtChangePhoto">Change Photo</string>
+    <string name="txtBio">Bio</string>
+    <string name="txtNotifications">Notifications</string>
+    <string name="txtLiked">Liked your post</string>
+    <string name="txtFollowed">Followed you</string>
+    <string name="txtCommented">Commented on your post</string>
 </resources>

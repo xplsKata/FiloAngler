@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.RegisterManager;
-import com.example.filoangler.UserModel;
+import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -297,7 +297,7 @@ public class RegisterP2Activity extends AppCompatActivity {
     //Handles spinner content
     private void ProvincesSpinnerContent(){
         Collections.sort(ProvincesList);
-        ArrayAdapter<String> ProvinceAdapter = new ArrayAdapter<>(this, R.layout.spinner_selected_item, ProvincesList);
+        ArrayAdapter<String> ProvinceAdapter = new ArrayAdapter<>(this, R.layout.item_spinner_selected, ProvincesList);
         ProvinceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnrProvince.setAdapter(ProvinceAdapter);
 
@@ -327,7 +327,7 @@ public class RegisterP2Activity extends AppCompatActivity {
         }
 
         Collections.sort(CitiesList);
-        ArrayAdapter<String> CityAdapter = new ArrayAdapter<>(this, R.layout.spinner_selected_item, CitiesList);
+        ArrayAdapter<String> CityAdapter = new ArrayAdapter<>(this, R.layout.item_spinner_selected, CitiesList);
         CityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnrCity.setAdapter(CityAdapter);
     }

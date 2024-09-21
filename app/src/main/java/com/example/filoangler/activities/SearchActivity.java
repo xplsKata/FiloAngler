@@ -14,18 +14,14 @@ import android.util.Log;
 import com.example.filoangler.Adapter.UserAdapter;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.R;
-import com.example.filoangler.UserModel;
-import com.google.android.gms.auth.api.Auth;
+import com.example.filoangler.Model.UserModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.auth.User;
 import com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;

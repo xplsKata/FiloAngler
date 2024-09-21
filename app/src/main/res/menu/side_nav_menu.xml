@@ -2,8 +2,48 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:title="LogOut" />
+        android:title="Anglers Corner">
+
+        <menu>
+
+            <item
+                android:id="@+id/navFishDatabank"
+                android:title="Fish Databank"
+                android:icon="@drawable/baseline_stars_24"/>
+
+            <item
+                android:id="@+id/navEquipments"
+                android:title="Equipments"
+                android:icon="@drawable/baseline_stars_24"/>
+
+            <item
+                android:id="@+id/navMustKnow"
+                android:title="Must Know"
+                android:icon="@drawable/baseline_lightbulb_outline_24"/>
+
+
+        </menu>
+
+    </item>
+
+    <item
+        android:title="Personal">
+
+        <menu>
+
+            <item
+                android:id="@+id/navProfile"
+                android:title="Profile"
+                android:icon="@drawable/baseline_person_outline_24"/>
+
+            <item
+                android:id="@+id/navSettings"
+                android:title="Settings"
+                android:icon="@drawable/outline_settings_24"/>
+
+        </menu>
+
+    </item>
 
 </menu>
+

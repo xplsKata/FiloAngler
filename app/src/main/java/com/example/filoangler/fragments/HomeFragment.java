@@ -2,74 +2,73 @@ package com.example.filoangler.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
+import com.example.filoangler.Adapter.PostAdapter;
+import com.example.filoangler.Manager.AuthManager;
+import com.example.filoangler.Manager.LoginManager;
+import com.example.filoangler.Model.PostModel;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
 import com.example.filoangler.activities.PostActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private ImageButton btnAddPost;
+    private RecyclerView recyclerViewPosts;
+    private PostAdapter postAdapter;
+    private List<PostModel> postList;
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+    private List<String> followingList;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private LoginManager loginManager;
+    private AuthManager authManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        loginManager = new LoginManager(getContext());
+        authManager = new AuthManager();
+
+        recyclerViewPosts = view.findViewById(R.id.resultPosts);
+        recyclerViewPosts.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setStackFromEnd(true);
+        linearLayoutManager.setReverseLayout(true);
+
+        recyclerViewPosts.setLayoutManager(linearLayoutManager);
+
+        postList = new ArrayList<>();
+
+        postAdapter = new PostAdapter(getContext(), postList);
+
+        recyclerViewPosts.setAdapter(postAdapter);
+
         btnAddPost = view.findViewById(R.id.btnAddPost);
+
+        followingList = new ArrayList<>();
+
+        readPosts();
 
         btnAddPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,5 +78,59 @@ public class HomeFragment extends Fragment {
         });
 
         return view;
+    }
+
+    /*private void checkFollowingUsers() {
+
+        authManager.GetDb().getReference().child("Users")
+                .child(loginManager.GetCurrentUser().getUid())
+                .child("Following")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        followingList.clear();
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            followingList.add(dataSnapshot.getKey());
+                        }
+                        
+                        readPosts();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+    } THIS WILL GET IMPLEMENTED ON THE FOLLOWINGS TAB*/
+
+    private void readPosts() {
+
+        authManager.GetDb().getReference().child("Posts").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    PostModel postModel = dataSnapshot.getValue(PostModel.class);
+
+                    if(postModel != null){
+                        postList.add(postModel);
+                    }
+
+                    /*for(String id : followingList){
+                        if(postModel.getAuthor().equals(id)){
+                            postList.add(postModel);
+                        }
+                    } THIS IS FOR WHEN I IMPLEMENT THE FOLLOWING TAB*/
+                }
+                postAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("HomeError", "Failed to read posts: " + error.getMessage());
+            }
+        });
+
     }
 }

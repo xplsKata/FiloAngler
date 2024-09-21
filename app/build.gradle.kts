@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -19,6 +21,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        //FOR API KEY
+        val properties=Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField ("String","googleLoginApiKey","\"${properties.getProperty("googleLoginApiKey")}\"")
+        buildConfigField ("String","firebaseDatabaseApiKey","\"${properties.getProperty("firebaseDatabaseApiKey")}\"")
+
+        buildFeatures{
+            viewBinding=true
+            buildConfig = true
+        }
+        //END
     }
 
     buildTypes {
