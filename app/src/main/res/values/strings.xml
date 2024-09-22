@@ -60,4 +60,5 @@
     <string name="txtLiked">Liked your post</string>
     <string name="txtFollowed">Followed you</string>
     <string name="txtCommented">Commented on your post</string>
+    <string name="txtSearch">Search</string>
 </resources>
