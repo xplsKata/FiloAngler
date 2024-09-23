@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/txtDetails"
+            android:id="@+id/txtDescriptionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -38,7 +38,7 @@
             app:layout_constraintTop_toBottomOf="@+id/txtLocationName" />
 
         <TextView
-            android:id="@+id/textView20"
+            android:id="@+id/txtDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -49,25 +49,26 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtDetails" />
+            app:layout_constraintTop_toBottomOf="@+id/txtDescriptionLabel" />
 
         <TextView
             android:id="@+id/txtCommonFish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="TextView"
+            android:text="@string/txtCommonFish"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/textView20"
-            app:layout_constraintTop_toBottomOf="@+id/textView20" />
+            app:layout_constraintStart_toStartOf="@+id/txtDescription"
+            app:layout_constraintTop_toBottomOf="@+id/txtDescription" />
 
         <HorizontalScrollView
+            android:id="@+id/scrollView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            app:layout_constraintEnd_toEndOf="@+id/textView20"
+            app:layout_constraintEnd_toEndOf="@+id/txtDescription"
             app:layout_constraintStart_toStartOf="@+id/txtCommonFish"
             app:layout_constraintTop_toBottomOf="@+id/txtCommonFish">
 
