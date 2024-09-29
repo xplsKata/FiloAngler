@@ -1,0 +1,30 @@
+{
+  "A": [
+    {
+      "FishName": "Arracuda",
+      "FishImage": "fish_barracuda",
+      "Description": "Looks cute",
+      "Behavior": "cutesy",
+      "Habitat": "Saltwater and Freshwater",
+      "Law": "none"
+    },
+    {
+      "FishName": "Arararacuda",
+      "FishImage": "fish_barracuda",
+      "Description": "Looks cute",
+      "Behavior": "cutesy",
+      "Habitat": "Saltwater and Freshwater",
+      "Law": "none"
+    }
+  ],
+  "B": [
+    {
+      "FishName": "Barracuda",
+      "FishImage": "fish_barracuda",
+      "Description": "Looks mean AF",
+      "Behavior": "Aggressive as sh",
+      "Habitat": "Saltwater and Freshwater",
+      "Law": "none"
+    }
+  ]
+}
