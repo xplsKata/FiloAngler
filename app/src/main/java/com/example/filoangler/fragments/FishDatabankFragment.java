@@ -12,11 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.filoangler.Adapter.FishDatabankAdapter;
-import com.example.filoangler.FishSectionedData;
 import com.example.filoangler.Model.FishDatabankModel;
 import com.example.filoangler.R;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -32,7 +31,7 @@ public class FishDatabankFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_fish_databank, container, false);
 
         // Read JSON from the assets folder
-        String json = loadJSONFromAsset(getContext(), "fish_data.json");
+        String json = loadJSONFromAsset(getContext(), "fish_databank.json");
 
         // Parse JSON to a map where key is the section (A, B, C, etc.) and value is the list of fish
         Gson gson = new Gson();

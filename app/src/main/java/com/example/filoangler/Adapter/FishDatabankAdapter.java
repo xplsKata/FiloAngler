@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,28 +24,28 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final List<Object> itemList;
 
     private static final int TYPE_SECTION_HEADER = 0;
-    private static final int TYPE_FISH_BUTTON = 1;
+    private static final int TYPE_FISH_ITEM = 1;
 
     public FishDatabankAdapter(Context context, Map<String, List<FishDatabankModel>> sectionedFishMap) {
         this.mContext = context;
         this.itemList = new ArrayList<>();
 
-        // Flatten the map into a list with alternating headers and buttons
+        // Flatten the map into a list with alternating headers and fish items
         for (Map.Entry<String, List<FishDatabankModel>> entry : sectionedFishMap.entrySet()) {
             String header = entry.getKey();
-            List<FishDatabankModel> fishNames = entry.getValue();
+            List<FishDatabankModel> fishList = entry.getValue();
 
             itemList.add(header); // Add the section header
-            itemList.addAll(fishNames); // Add all fish names under the header
+            itemList.addAll(fishList); // Add all fish items under the header
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (itemList.get(position) instanceof String && ((String) itemList.get(position)).length() == 1) {
-            return TYPE_SECTION_HEADER; // Section header
+        if (itemList.get(position) instanceof String) {
+            return TYPE_SECTION_HEADER;
         } else {
-            return TYPE_FISH_BUTTON; // Fish button
+            return TYPE_FISH_ITEM;
         }
     }
 
@@ -59,7 +59,7 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return new SectionHeaderViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_fish_button, parent, false);
-            return new FishButtonViewHolder(view);
+            return new FishItemViewHolder(view);
         }
     }
 
@@ -68,15 +68,21 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (holder instanceof SectionHeaderViewHolder) {
             String sectionHeader = (String) itemList.get(position);
             ((SectionHeaderViewHolder) holder).headerTextView.setText(sectionHeader);
-        } else if (holder instanceof FishButtonViewHolder) {
-            String fishName = (String) itemList.get(position);
-            ((FishButtonViewHolder) holder).fishName.setText(fishName);
+        } else if (holder instanceof FishItemViewHolder) {
+            FishDatabankModel fish = (FishDatabankModel) itemList.get(position);
+            FishItemViewHolder fishHolder = (FishItemViewHolder) holder;
 
-            ((FishButtonViewHolder) holder).fishButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Handle button click for fish
-                }
+            fishHolder.fishName.setText(fish.getFishName());
+
+            // Set fish image
+            int resourceId = mContext.getResources().getIdentifier(fish.getFishImage(), "drawable", mContext.getPackageName());
+            if (resourceId != 0) {
+                fishHolder.fishImage.setImageResource(resourceId);
+            }
+
+            fishHolder.fishButton.setOnClickListener(v -> {
+                // Handle button click for fish
+                // You can add your click logic here
             });
         }
     }
@@ -95,14 +101,16 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    static class FishButtonViewHolder extends RecyclerView.ViewHolder {
+    static class FishItemViewHolder extends RecyclerView.ViewHolder {
         LinearLayout fishButton;
         TextView fishName;
+        ImageView fishImage;
 
-        FishButtonViewHolder(View itemView) {
+        FishItemViewHolder(View itemView) {
             super(itemView);
             fishButton = itemView.findViewById(R.id.btnFish);
             fishName = itemView.findViewById(R.id.txtFishName);
+            fishImage = itemView.findViewById(R.id.imgFish);
         }
     }
 }
