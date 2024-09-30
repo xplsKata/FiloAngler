@@ -1,6 +1,7 @@
 package com.example.filoangler.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.filoangler.Model.FishDatabankModel;
 import com.example.filoangler.R;
+import com.example.filoangler.activities.FishDetailsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +83,13 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             fishHolder.fishButton.setOnClickListener(v -> {
-                // Handle button click for fish
-                // You can add your click logic here
+                Intent intent = new Intent(mContext, FishDetailsActivity.class);
+                intent.putExtra("FishName", fish.getFishName());
+                intent.putExtra("FishDescription", fish.getDescription());
+                intent.putExtra("FishBehavior", fish.getBehavior());
+                intent.putExtra("FishHabitat", fish.getHabitat());
+                intent.putExtra("FishLaw", fish.getLaw());
+                mContext.startActivity(intent);
             });
         }
     }
