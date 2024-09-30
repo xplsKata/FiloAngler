@@ -99,6 +99,7 @@ dependencies {
 
     //ImageCropper
     implementation ("com.vanniktech:android-image-cropper:4.5.0")
+    implementation("androidx.activity:activity:1.9.2")
 
     //Camera X
     val cameraxVersion = "1.3.4"

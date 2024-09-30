@@ -64,4 +64,8 @@
     <string name="txtCommonFish">Common Species:</string>
     <string name="txtTerrain">Terrain:</string>
     <string name="txtDetails">Details:</string>
+    <string name="txtFishDescription">Description</string>
+    <string name="txtFishBehavior">Behavior</string>
+    <string name="txtFishHabitat">Habitat</string>
+    <string name="txtFishLaw">Law</string>
 </resources>
