@@ -27,6 +27,7 @@ import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
+import com.example.filoangler.fragments.FishDatabankFragment;
 import com.example.filoangler.fragments.HomeFragment;
 import com.example.filoangler.fragments.MapFragment;
 import com.example.filoangler.fragments.NotificationsFragment;
@@ -148,7 +149,10 @@ public class BloggingActivity extends AppCompatActivity {
 
                 if (id == R.id.navFishDatabank) {
                     Log.d("SideNav", "Fish Databank clicked");
-                    // Handle Fish Databank action
+                    SelectedFragment = new FishDatabankFragment();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.bloggingActivityFrameLayout, SelectedFragment)
+                            .commit();
                 } else if (id == R.id.navEquipments) {
                     Log.d("SideNav", "Equipments clicked");
                     // Handle Equipments action
