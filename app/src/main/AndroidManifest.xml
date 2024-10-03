@@ -30,10 +30,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FiloAngler"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.FishDetailsActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${googleMapsApiKey}"/>
+            android:value="${googleMapsApiKey}" />
 
         <activity
             android:name=".Dialog.PostDetailsDialog"
