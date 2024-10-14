@@ -37,7 +37,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/imageView7"
+            android:id="@+id/imgMoonTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"

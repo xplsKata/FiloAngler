@@ -29,6 +29,7 @@ android {
         buildConfigField ("String","googleLoginApiKey","\"${properties.getProperty("googleLoginApiKey")}\"")
         buildConfigField ("String","firebaseDatabaseApiKey","\"${properties.getProperty("firebaseDatabaseApiKey")}\"")
         buildConfigField ("String","googleMapsApiKey","\"${properties.getProperty("googleMapsApiKey")}\"")
+        buildConfigField("String","openWeatherApiKey","\"${properties.getProperty("openWeatherApiKey")}\"")
 
         manifestPlaceholders += mapOf("googleMapsApiKey" to "\"${properties.getProperty("googleMapsApiKey")}\"")
 
@@ -67,6 +68,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -121,8 +123,14 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.3.0")
 
     //JSON Files
-    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation ("com.google.code.gson:gson:2.10.1")
 
+    //Sceneform
+    implementation ("com.gorisse.thomas.sceneform:core:1.23.0")
+    implementation ("com.gorisse.thomas.sceneform:ux:1.23.0")
+
+    //OkHttp
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
 
     testImplementation("junit:junit:4.13.2")
 

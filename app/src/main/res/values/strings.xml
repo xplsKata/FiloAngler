@@ -68,4 +68,7 @@
     <string name="txtFishBehavior">Behavior</string>
     <string name="txtFishHabitat">Habitat</string>
     <string name="txtFishLaw">Law</string>
+    <string name="txtMore">See More</string>
+    <string name="txtToday">Today</string>
+    <string name="txtTonight">Tonight</string>
 </resources>

@@ -85,6 +85,7 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             fishHolder.fishButton.setOnClickListener(v -> {
                 Intent intent = new Intent(mContext, FishDetailsActivity.class);
                 intent.putExtra("FishName", fish.getFishName());
+                intent.putExtra("Fish3DModel", fish.getFish3DModel());
                 intent.putExtra("FishDescription", fish.getDescription());
                 intent.putExtra("FishBehavior", fish.getBehavior());
                 intent.putExtra("FishHabitat", fish.getHabitat());

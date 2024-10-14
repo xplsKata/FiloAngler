@@ -3,6 +3,7 @@
     {
       "FishName": "Arracuda",
       "FishImage": "fish_barracuda",
+      "Fish3DModel": "barracuda.glb",
       "Description": "Looks cute",
       "Behavior": "cutesy",
       "Habitat": "Saltwater and Freshwater",
@@ -11,6 +12,7 @@
     {
       "FishName": "Arararacuda",
       "FishImage": "fish_barracuda",
+      "Fish3DModel": "barracuda.glb",
       "Description": "Looks cute",
       "Behavior": "cutesy",
       "Habitat": "Saltwater and Freshwater",
@@ -21,6 +23,7 @@
     {
       "FishName": "Barracuda",
       "FishImage": "fish_barracuda",
+      "Fish3DModel": "barracuda.glb",
       "Description": "Looks mean AF",
       "Behavior": "Aggressive as sh",
       "Habitat": "Saltwater and Freshwater",
