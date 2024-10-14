@@ -1,12 +1,10 @@
 package com.example.filoangler.fragments;
 
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.filoangler.BuildConfig;
 import com.example.filoangler.Manager.AuthManager;
@@ -38,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,8 +101,6 @@ public class WeatherFragment extends Fragment {
 
     //OpenWeatherApi
     private String openWeather_API = BuildConfig.openWeatherApiKey;
-    private static final String GEOCODING_API_URL = "http://api.openweathermap.org/geo/1.0/direct";
-    private static final String FORECAST_API_URL = "https://api.openweathermap.org/data/3.0/onecall";
 
     private AuthManager authManager;
     private LoginManager loginManager;
@@ -194,7 +188,7 @@ public class WeatherFragment extends Fragment {
         List<String> cityProvinceNames = new ArrayList<>();
         for (CitiesModel city : cityList) {
             String provinceName = provinceMap.get(city.getProvince());
-            String fullName = city.getName() + ", " + provinceName + ", Philippines";
+            String fullName = provinceName + ", " + city.getName();
             cityProvinceNames.add(fullName);
         }
 
@@ -221,26 +215,23 @@ public class WeatherFragment extends Fragment {
                         String province = snapshot.child("ProvinceAddress").getValue(String.class);
                         String city = snapshot.child("CityAddress").getValue(String.class);
 
-                        String location = city + ", " + province + ", Philippines";
-                        Log.e("Location", location);//LOG
-                        getCoordinatesAndFetchWeather(location);
+                        String location = province + "," + city;
+                        getWeatherData(location);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle error
-                        Toast.makeText(getContext(), "Failed to get user location", Toast.LENGTH_SHORT).show();
+
                     }
                 });
     }
 
-    private void getWeatherData(double lat, double lon) {
-        String url = FORECAST_API_URL
-                + "?lat=" + lat
-                + "&lon=" + lon
-                + "&exclude=minutely,hourly&appid="
-                + openWeather_API + "&units=metric";
-        Log.e("Location", url);//LOG
+    private void getWeatherData(String location) {
+        String url = "https://api.openweathermap.org/data/2.5/forecast?q="
+                + location
+                + "&appid="
+                + openWeather_API
+                + "&units=metric";
 
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
@@ -262,35 +253,36 @@ public class WeatherFragment extends Fragment {
     private void updateUI(String jsonData) {
         try {
             JSONObject json = new JSONObject(jsonData);
-            JSONObject current = json.getJSONObject("current");
-            JSONArray daily = json.getJSONArray("daily");
+            JSONArray list = json.getJSONArray("list");
 
             // Update current weather
-            String description = current.getJSONArray("weather").getJSONObject(0).getString("description");
-            double temp = current.getDouble("temp");
-            int humidity = current.getInt("humidity");
-            double windSpeed = current.getDouble("wind_speed");
+            JSONObject currentWeather = list.getJSONObject(0);
+            String description = currentWeather.getJSONArray("weather").getJSONObject(0).getString("description");
+            double temp = currentWeather.getJSONObject("main").getDouble("temp");
+            int humidity = currentWeather.getJSONObject("main").getInt("humidity");
+            double windSpeed = currentWeather.getJSONObject("wind").getDouble("speed");
 
             txtWeatherDescription.setText(description);
+
             txtTemperature.setText(String.format("%.1f°C", temp));
+            loadImageFromStorage("Weather/thermometer.png", imgTemperature);
+
             txtHumidity.setText(humidity + "%");
+            loadImageFromStorage("Weather/humidity.png", imgTemperature);
+
             txtWindSpeed.setText(String.format("%.1f m/s", windSpeed));
+            loadImageFromStorage("Weather/wind.png", imgTemperature);
 
-            updateWeatherIcon(current, imgWeatherToday);
+            updateWeatherIcon(currentWeather, imgWeatherToday);
 
-            // Update 7-day forecast
+            // Update 6-day forecast
             TextView[] forecastTexts = {txtWeatherOne, txtWeatherTwo, txtWeatherThree, txtWeatherFour, txtWeatherFive, txtWeatherSix};
             ImageView[] forecastImages = {imgWeatherOne, imgWeatherTwo, imgWeatherThree, imgWeatherFour, imgWeatherFive, imgWeatherSix};
 
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
-
             for (int i = 0; i < 6; i++) {
-                JSONObject forecast = daily.getJSONObject(i + 1); // Skip today, start from tomorrow
-                long timestamp = forecast.getLong("dt") * 1000; // Convert to milliseconds
-                Date date = new Date(timestamp);
-                double maxTemp = forecast.getJSONObject("temp").getDouble("max");
-
-                forecastTexts[i].setText(String.format("%s\n%.1f°C", sdf.format(date), maxTemp));
+                JSONObject forecast = list.getJSONObject((i + 1) * 8); // Every 24 hours
+                double forecastTemp = forecast.getJSONObject("main").getDouble("temp");
+                forecastTexts[i].setText(String.format("%.1f°C", forecastTemp));
                 updateWeatherIcon(forecast, forecastImages[i]);
             }
 
@@ -304,45 +296,6 @@ public class WeatherFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private void getCoordinatesAndFetchWeather(String location) {
-        // Encode the location string to handle spaces and special characters
-        String encodedLocation = Uri.encode(location);
-        String url = GEOCODING_API_URL + "?q=" + encodedLocation + "&limit=1&appid=" + openWeather_API;
-        Log.e("Location", url);//LOG
-
-        Request request = new Request.Builder().url(url).build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonData = response.body().string();
-                    try {
-                        JSONArray jsonArray = new JSONArray(jsonData);
-                        if (jsonArray.length() > 0) {
-                            JSONObject locationData = jsonArray.getJSONObject(0);
-                            double lat = locationData.getDouble("lat");
-                            double lon = locationData.getDouble("lon");
-                            getWeatherData(lat, lon);
-                        } else {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show());
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
-                    }
-                } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
     }
 
     private void updateWeatherIcon(JSONObject weatherData, ImageView imageView) {
