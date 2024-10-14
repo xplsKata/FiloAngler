@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.example.filoangler.BuildConfig;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
-import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.Model.CitiesModel;
 import com.example.filoangler.Model.ProvinceModel;
 import com.example.filoangler.R;
@@ -252,6 +251,9 @@ public class WeatherFragment extends Fragment {
 
     private void updateUI(String jsonData) {
         try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
+
             JSONObject json = new JSONObject(jsonData);
             JSONArray list = json.getJSONArray("list");
 
@@ -268,10 +270,10 @@ public class WeatherFragment extends Fragment {
             loadImageFromStorage("Weather/thermometer.png", imgTemperature);
 
             txtHumidity.setText(humidity + "%");
-            loadImageFromStorage("Weather/humidity.png", imgTemperature);
+            loadImageFromStorage("Weather/humidity.png", imgHumidity);
 
             txtWindSpeed.setText(String.format("%.1f m/s", windSpeed));
-            loadImageFromStorage("Weather/wind.png", imgTemperature);
+            loadImageFromStorage("Weather/wind.png", imgWind);
 
             updateWeatherIcon(currentWeather, imgWeatherToday);
 
@@ -279,11 +281,18 @@ public class WeatherFragment extends Fragment {
             TextView[] forecastTexts = {txtWeatherOne, txtWeatherTwo, txtWeatherThree, txtWeatherFour, txtWeatherFive, txtWeatherSix};
             ImageView[] forecastImages = {imgWeatherOne, imgWeatherTwo, imgWeatherThree, imgWeatherFour, imgWeatherFive, imgWeatherSix};
 
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 7; i++) {
                 JSONObject forecast = list.getJSONObject((i + 1) * 8); // Every 24 hours
-                double forecastTemp = forecast.getJSONObject("main").getDouble("temp");
-                forecastTexts[i].setText(String.format("%.1f°C", forecastTemp));
-                updateWeatherIcon(forecast, forecastImages[i]);
+                String dateTimeString = forecast.getString("dt_txt");
+                try {
+                    Date date = inputFormat.parse(dateTimeString);
+                    String formattedDate = outputFormat.format(date);
+                    String forecastText = String.format(formattedDate);
+                    forecastTexts[i].setText(forecastText);
+                    updateWeatherIcon(forecast, forecastImages[i]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             // Set icons for humidity, temperature, and wind speed
