@@ -1,15 +1,22 @@
 package com.example.filoangler.fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -26,8 +33,6 @@ import com.example.filoangler.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
@@ -45,6 +50,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -113,6 +121,8 @@ public class WeatherFragment extends Fragment {
 
     private String location;
 
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -123,6 +133,23 @@ public class WeatherFragment extends Fragment {
         loadElements(view);
         loadAutoComplete();
         getWeatherForCurrentLocation();
+
+        txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || event != null
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                    location = txtSearch.getText().toString();
+                    fetchWeather(location);
+
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return view;
     }
@@ -216,13 +243,9 @@ public class WeatherFragment extends Fragment {
 
     }
 
-    private void loadImageFromStorage(String path, ImageView imageView) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(path);
-        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            Picasso.get().load(uri.toString()).into(imageView);
-        }).addOnFailureListener(e -> {
-            // Handle any errors
-            e.printStackTrace();
+    public void loadImageFromStorage(int drawableId, ImageView imageView) {
+        handler.post(() ->{
+            Picasso.get().load(drawableId).resize(imageView.getWidth(), imageView.getHeight()).into(imageView);
         });
     }
 
@@ -264,9 +287,9 @@ public class WeatherFragment extends Fragment {
             }
 
             // Set icons for humidity, temperature, and wind speed
-            loadImageFromStorage("Weather/humidity.png", imgHumidity);
-            loadImageFromStorage("Weather/thermometer.png", imgTemperature);
-            loadImageFromStorage("Weather/wind.png", imgWind);
+            loadImageFromStorage(R.drawable.weather_humidity, imgHumidity);
+            loadImageFromStorage(R.drawable.weather_thermometer, imgTemperature);
+            loadImageFromStorage(R.drawable.weather_wind, imgWind);
 
             // Update moon phase information
             updateMoonPhase(days);
@@ -323,35 +346,34 @@ public class WeatherFragment extends Fragment {
     }
 
     private void updateWeatherIcon(String weatherDescription, ImageView imageView) {
-        String iconName;
+        int iconName;
 
         weatherDescription = weatherDescription.toLowerCase();
 
         if (weatherDescription.contains("rain") || weatherDescription.contains("drizzle")) {
-            iconName = "weather_rain";
+            iconName = R.drawable.weather_rain;
         } else if (weatherDescription.contains("cloud")) {
-            iconName = "weather_cloudy";
+            iconName = R.drawable.weather_cloudy;
         } else if (weatherDescription.contains("clear") || weatherDescription.contains("sun")) {
-            iconName = "weather_sunny";
+            iconName = R.drawable.weather_sunny;
         } else if (weatherDescription.contains("thunder") || weatherDescription.contains("storm")) {
-            iconName = "weather_thunder";
+            iconName = R.drawable.weather_thunder;
         } else {
             // Default to cloudy if we can't determine the weather
-            iconName = "weather_cloudy";
+            iconName = R.drawable.weather_cloudy;
         }
 
-        String iconPath = "Weather/" + iconName + ".png";
-        loadImageFromStorage(iconPath, imageView);
+        loadImageFromStorage(iconName, imageView);
     }
 
     private void updateMoonPhase(JSONArray days) throws JSONException {
-        TextView[] moonTexts = {txtMoonOne, txtMoonTwo, txtMoonThree, txtMoonFour, txtMoonFive, txtMoonSix};
-        ImageView[] moonImages = {imgMoonOne, imgMoonTwo, imgMoonThree, imgMoonFour, imgMoonFive, imgMoonSix};
+        TextView[] moonTexts = {txtMoonDescription, txtMoonOne, txtMoonTwo, txtMoonThree, txtMoonFour, txtMoonFive, txtMoonSix};
+        ImageView[] moonImages = {imgMoonToday ,imgMoonOne, imgMoonTwo, imgMoonThree, imgMoonFour, imgMoonFive, imgMoonSix};
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             JSONObject day = days.getJSONObject(i);
             String dateString = day.getString("datetime");
             try {
@@ -368,24 +390,24 @@ public class WeatherFragment extends Fragment {
         }
 
         // Update moon description (you might want to customize this based on the current moon phase)
+
         txtMoonDescription.setText("Moon Phases for the Next 6 Days");
     }
 
     private void updateMoonIcon(double moonPhase, ImageView imageView) {
-        String iconName;
+        int iconName;
 
-        if (moonPhase < 0.0625) iconName = "moon_phase_1";        // New Moon
-        else if (moonPhase < 0.1875) iconName = "moon_phase_2";   // Waxing Crescent
-        else if (moonPhase < 0.3125) iconName = "moon_phase_3";   // First Quarter
-        else if (moonPhase < 0.4375) iconName = "moon_phase_4";   // Waxing Gibbous
-        else if (moonPhase < 0.5625) iconName = "moon_phase_5";   // Full Moon
-        else if (moonPhase < 0.6875) iconName = "moon_phase_6";   // Waning Gibbous
-        else if (moonPhase < 0.8125) iconName = "moon_phase_7";   // Last Quarter
-        else if (moonPhase < 0.9375) iconName = "moon_phase_8";   // Waning Crescent
-        else iconName = "moon_phase_1";                           // Back to New Moon
+        if (moonPhase < 0.0625) iconName = R.drawable.moon_phase_1;        // New Moon
+        else if (moonPhase < 0.1875) iconName = R.drawable.moon_phase_2;   // Waxing Crescent
+        else if (moonPhase < 0.3125) iconName = R.drawable.moon_phase_3;   // First Quarter
+        else if (moonPhase < 0.4375) iconName = R.drawable.moon_phase_4;   // Waxing Gibbous
+        else if (moonPhase < 0.5625) iconName = R.drawable.moon_phase_5;   // Full Moon
+        else if (moonPhase < 0.6875) iconName = R.drawable.moon_phase_6;   // Waning Gibbous
+        else if (moonPhase < 0.8125) iconName = R.drawable.moon_phase_7;   // Last Quarter
+        else if (moonPhase < 0.9375) iconName = R.drawable.moon_phase_8;   // Waning Crescent
+        else iconName = R.drawable.moon_phase_1;                           // Back to New Moon
 
-        String iconPath = "Weather/" + iconName + ".png";
-        loadImageFromStorage(iconPath, imageView);
+        loadImageFromStorage(iconName, imageView);
     }
 
 }
