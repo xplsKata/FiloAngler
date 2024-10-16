@@ -102,11 +102,9 @@ public class WeatherFragment extends Fragment {
 
     private TextView btnMoonMore;
 
-    //OpenWeatherApi
-    private String openWeather_API = BuildConfig.openWeatherApiKey;
-    private String weatherBit_API = BuildConfig.weatherBitApiKey;
-
-    private static final String GEOCODING_API_URL = "http://api.openweathermap.org/geo/1.0/direct";
+    //VisualCrossing
+    private String visualCrossing_API = BuildConfig.visualCrossingApiKey;
+    private static final String VISUAL_CROSSING_API_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/";
 
     private AuthManager authManager;
     private LoginManager loginManager;
@@ -228,46 +226,50 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-    private void updateUI(String currentWeatherData, String forecastData) {
+    private void updateUI(String weatherData) {
         try {
-            JSONObject currentJson = new JSONObject(currentWeatherData);
-            JSONObject forecastJson = new JSONObject(forecastData);
+            JSONObject json = new JSONObject(weatherData);
+            JSONArray days = json.getJSONArray("days");
+            JSONObject currentConditions = json.getJSONObject("currentConditions");
 
             // Update current weather
-            String description = currentJson.getJSONArray("weather").getJSONObject(0).getString("description");
-            double temp = currentJson.getJSONObject("main").getDouble("temp");
-            int humidity = currentJson.getJSONObject("main").getInt("humidity");
-            double windSpeed = currentJson.getJSONObject("wind").getDouble("speed");
+            String description = currentConditions.getString("conditions");
+            double temp = currentConditions.getDouble("temp");
+            int humidity = currentConditions.getInt("humidity");
+            double windSpeed = currentConditions.getDouble("windspeed");
 
             txtWeatherDescription.setText(description + " in " + location);
             txtTemperature.setText(String.format("%.1f°C", temp));
             txtHumidity.setText(humidity + "%");
-            txtWindSpeed.setText(String.format("%.1f m/s", windSpeed));
+            txtWindSpeed.setText(String.format("%.1f km/h", windSpeed));
 
-            updateWeatherIcon(currentJson.getJSONArray("weather").getJSONObject(0).getString("main"), imgWeatherToday);
+            updateWeatherIcon(description, imgWeatherToday);
 
             // Update 6-day forecast
             TextView[] forecastTexts = {txtWeatherOne, txtWeatherTwo, txtWeatherThree, txtWeatherFour, txtWeatherFive, txtWeatherSix};
             ImageView[] forecastImages = {imgWeatherOne, imgWeatherTwo, imgWeatherThree, imgWeatherFour, imgWeatherFive, imgWeatherSix};
 
-            JSONArray forecastDays = forecastJson.getJSONArray("data");
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
 
             for (int i = 1; i < 7; i++) {
-                JSONObject day = forecastDays.getJSONObject(i);
+                JSONObject day = days.getJSONObject(i);
                 String dateString = day.getString("datetime");
                 Date date = inputFormat.parse(dateString);
                 String formattedDate = outputFormat.format(date);
 
                 forecastTexts[i-1].setText(formattedDate);
-                updateWeatherIcon(day.getJSONObject("weather").getString("description"), forecastImages[i-1]);
+                updateWeatherIcon(day.getString("conditions"), forecastImages[i-1]);
+                Log.e("Weather", "Weather count: " + i);
             }
 
             // Set icons for humidity, temperature, and wind speed
             loadImageFromStorage("Weather/humidity.png", imgHumidity);
             loadImageFromStorage("Weather/thermometer.png", imgTemperature);
             loadImageFromStorage("Weather/wind.png", imgWind);
+
+            // Update moon phase information
+            updateMoonPhase(days);
 
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
@@ -285,56 +287,36 @@ public class WeatherFragment extends Fragment {
                         String city = snapshot.child("CityAddress").getValue(String.class);
 
                         location = city + ", " + province + ", Philippines";
-                        Log.e("Location", location);//LOG
-                        getCoordinatesAndFetchWeather(location);
+                        Log.e("Location", location);
+                        fetchWeather(location);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        // Handle error
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get user location", Toast.LENGTH_SHORT).show());
                     }
                 });
     }
 
-    private void getWeatherData(double lat, double lon) {
-        // OpenWeatherMap API call for current weather
-        String openWeatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&units=metric&appid=" + openWeather_API;
+    private void fetchWeather(String location) {
+        String encodedLocation = Uri.encode(location);
+        String url = VISUAL_CROSSING_API_URL + encodedLocation + "?unitGroup=metric&key=" + visualCrossing_API + "&contentType=json";
 
-        // WeatherBit API call for 7-day forecast
-        String weatherBitUrl = "https://api.weatherbit.io/v2.0/forecast/daily?lat=" + lat + "&lon=" + lon + "&days=7&units=M&key=" + weatherBit_API;
-
-        // Make OpenWeatherMap API call
-        makeApiCall(openWeatherUrl, new Callback() {
+        makeApiCall(url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get current weather data", Toast.LENGTH_SHORT).show());
+                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get weather data", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String currentWeatherData = response.body().string();
-                    // Make WeatherBit API call after successful OpenWeatherMap call
-                    makeApiCall(weatherBitUrl, new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            e.printStackTrace();
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get forecast data", Toast.LENGTH_SHORT).show());
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            if (response.isSuccessful()) {
-                                String forecastData = response.body().string();
-                                getActivity().runOnUiThread(() -> updateUI(currentWeatherData, forecastData));
-                            } else {
-                                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get forecast data", Toast.LENGTH_SHORT).show());
-                            }
-                        }
-                    });
+                    String weatherData = response.body().string();
+                    getActivity().runOnUiThread(() -> updateUI(weatherData));
                 } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get current weather data", Toast.LENGTH_SHORT).show());
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get weather data", Toast.LENGTH_SHORT).show());
                 }
             }
         });
@@ -362,43 +344,48 @@ public class WeatherFragment extends Fragment {
         loadImageFromStorage(iconPath, imageView);
     }
 
-    private void getCoordinatesAndFetchWeather(String location) {
-        // Encode the location string to handle spaces and special characters
-        String encodedLocation = Uri.encode(location);
-        String url = GEOCODING_API_URL + "?q=" + encodedLocation + "&limit=1&appid=" + openWeather_API;
-        Log.e("Location", url);//LOG
+    private void updateMoonPhase(JSONArray days) throws JSONException {
+        TextView[] moonTexts = {txtMoonOne, txtMoonTwo, txtMoonThree, txtMoonFour, txtMoonFive, txtMoonSix};
+        ImageView[] moonImages = {imgMoonOne, imgMoonTwo, imgMoonThree, imgMoonFour, imgMoonFive, imgMoonSix};
 
-        Request request = new Request.Builder().url(url).build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
+
+        for (int i = 0; i < 6; i++) {
+            JSONObject day = days.getJSONObject(i);
+            String dateString = day.getString("datetime");
+            try {
+                Date date = inputFormat.parse(dateString);
+                String formattedDate = outputFormat.format(date);
+                moonTexts[i].setText(formattedDate);
+
+                double moonPhase = day.getDouble("moonphase");
+                updateMoonIcon(moonPhase, moonImages[i]);
+                Log.e("Weather", "Moon count: " + i);
+            } catch (ParseException e) {
                 e.printStackTrace();
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
             }
+        }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonData = response.body().string();
-                    try {
-                        JSONArray jsonArray = new JSONArray(jsonData);
-                        if (jsonArray.length() > 0) {
-                            JSONObject locationData = jsonArray.getJSONObject(0);
-                            double lat = locationData.getDouble("lat");
-                            double lon = locationData.getDouble("lon");
-                            getWeatherData(lat, lon);
-                        } else {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show());
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
-                    }
-                } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
+        // Update moon description (you might want to customize this based on the current moon phase)
+        txtMoonDescription.setText("Moon Phases for the Next 6 Days");
+    }
+
+    private void updateMoonIcon(double moonPhase, ImageView imageView) {
+        String iconName;
+
+        if (moonPhase < 0.0625) iconName = "moon_phase_1";        // New Moon
+        else if (moonPhase < 0.1875) iconName = "moon_phase_2";   // Waxing Crescent
+        else if (moonPhase < 0.3125) iconName = "moon_phase_3";   // First Quarter
+        else if (moonPhase < 0.4375) iconName = "moon_phase_4";   // Waxing Gibbous
+        else if (moonPhase < 0.5625) iconName = "moon_phase_5";   // Full Moon
+        else if (moonPhase < 0.6875) iconName = "moon_phase_6";   // Waning Gibbous
+        else if (moonPhase < 0.8125) iconName = "moon_phase_7";   // Last Quarter
+        else if (moonPhase < 0.9375) iconName = "moon_phase_8";   // Waning Crescent
+        else iconName = "moon_phase_1";                           // Back to New Moon
+
+        String iconPath = "Weather/" + iconName + ".png";
+        loadImageFromStorage(iconPath, imageView);
     }
 
 }
