@@ -30,6 +30,8 @@ android {
         buildConfigField ("String","firebaseDatabaseApiKey","\"${properties.getProperty("firebaseDatabaseApiKey")}\"")
         buildConfigField ("String","googleMapsApiKey","\"${properties.getProperty("googleMapsApiKey")}\"")
         buildConfigField("String","openWeatherApiKey","\"${properties.getProperty("openWeatherApiKey")}\"")
+        buildConfigField("String","weatherBitApiKey","\"${properties.getProperty("weatherBitApiKey")}\"")
+        buildConfigField("String","visualCrossingApiKey","\"${properties.getProperty("visualCrossingApiKey")}\"")
 
         manifestPlaceholders += mapOf("googleMapsApiKey" to "\"${properties.getProperty("googleMapsApiKey")}\"")
 

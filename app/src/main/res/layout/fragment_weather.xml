@@ -354,11 +354,15 @@
 
             <TextView
                 android:id="@+id/txtMoonDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="TextView"
                 android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout20"
+                app:layout_constraintEnd_toStartOf="@+id/imgMoonToday"
                 app:layout_constraintStart_toStartOf="@+id/txtMoonToday"
                 app:layout_constraintTop_toBottomOf="@+id/txtMoonToday" />
 
@@ -374,8 +378,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonOne"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -399,8 +403,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonTwo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -424,8 +428,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonThree"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -449,8 +453,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonFour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -474,8 +478,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonFive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -499,8 +503,8 @@
 
                 <ImageView
                     android:id="@+id/imgMoonSix"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/baseline_circle_24" />
 
                 <TextView
@@ -530,7 +534,7 @@
 
             <ImageView
                 android:id="@+id/imgMoonToday"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="0dp"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout25"
