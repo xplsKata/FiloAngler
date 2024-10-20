@@ -71,4 +71,8 @@
     <string name="txtMore">See More</string>
     <string name="txtToday">Today</string>
     <string name="txtTonight">Tonight</string>
+    <string name="txtHighest">Highest</string>
+    <string name="txtLowest">Lowest</string>
+    <string name="txtLowtide">Low Tide</string>
+    <string name="txtHightide">High Tide</string>
 </resources>
