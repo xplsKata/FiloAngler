@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,9 +19,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.filoangler.Adapter.TidesAdapter;
 import com.example.filoangler.BuildConfig;
 import com.example.filoangler.Model.CitiesModel;
 import com.example.filoangler.Model.ProvinceModel;
+import com.example.filoangler.Model.TidesModel;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
 import com.example.filoangler.WaveView;
@@ -62,16 +66,10 @@ public class TideFragment extends Fragment {
     private TextView txtLowestTideTime;
     private TextView txtCurrentTide;
     private TextView txtLocation;
-    private TextView txtAmLtDate;
-    private TextView txtAmHtDate;
-    private TextView txtPmLtDate;
-    private TextView txtPmHtDate;
-    private TextView txtAmLtHeight;
-    private TextView txtPmLtHeight;
-    private TextView txtAmHtHeight;
-    private TextView txtPmHtHeight;
 
     private Button btnMore;
+
+    private RecyclerView recyclerView;
 
     private int minHeight;
     private int maxHeight;
@@ -85,7 +83,11 @@ public class TideFragment extends Fragment {
     private static final String GEOCODING_API_URL = "http://api.openweathermap.org/geo/1.0/direct";
 
     private List<JSONObject> sevenDayForecast;
+    private List<String> cityProvinceNames;
     private Gson gson;
+
+    private TidesAdapter tidesAdapter;
+    private List<TidesModel> tidesList;
 
     private String location;
 
@@ -108,12 +110,13 @@ public class TideFragment extends Fragment {
 
                     location = txtSearch.getText().toString();
                     if(location.isEmpty()){
-                        Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_SHORT).show();
-                        return true;
+                        Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_LONG).show();
+                    }else if(!cityProvinceNames.contains(location)){
+                        Toast.makeText(getContext(), "Invalid location", Toast.LENGTH_LONG).show();
                     }else{
                         getCoordinatesAndFetchTide(location);
-                        return true;
                     }
+                    return true;
                 }
                 return false;
             }
@@ -128,13 +131,13 @@ public class TideFragment extends Fragment {
 
         // Convert dp to pixels
         float density = getResources().getDisplayMetrics().density;
-        minHeight = (int) (10 * density);
+        minHeight = (int) (50 * density);
 
         // Wait for the parent container to be laid out
         water_container.post(new Runnable() {
             @Override
             public void run() {
-                maxHeight = water_container.getHeight() - (int) (10 * density);
+                maxHeight = water_container.getHeight() - (int) (30 * density);
                 updateWaveViewHeight(getCurrentWaterLevel());
             }
         });
@@ -158,14 +161,13 @@ public class TideFragment extends Fragment {
         txtLowestTideTime = view.findViewById(R.id.txtLowestTideTime);
         txtCurrentTide = view.findViewById(R.id.txtCurrentTide);
         txtLocation = view.findViewById(R.id.txtLocation);
-        txtAmLtDate = view.findViewById(R.id.txtAmLtDate);
-        txtAmHtDate = view.findViewById(R.id.txtAmHtDate);
-        txtPmLtDate = view.findViewById(R.id.txtPmLtDate);
-        txtPmHtDate = view.findViewById(R.id.txtPmHtDate);
-        txtAmLtHeight = view.findViewById(R.id.txtAmLtHeight);
-        txtPmLtHeight = view.findViewById(R.id.txtPmLtHeight);
-        txtAmHtHeight = view.findViewById(R.id.txtAmHtHeight);
-        txtPmHtHeight = view.findViewById(R.id.txtPmHtHeight);
+
+        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        tidesList = new ArrayList<>();
+        tidesAdapter = new TidesAdapter(getContext(), tidesList);
+        recyclerView.setAdapter(tidesAdapter);
 
         btnMore = view.findViewById(R.id.btnMore);
     }
@@ -174,7 +176,7 @@ public class TideFragment extends Fragment {
         String citiesJson = Utils.loadJSONFromAsset(getContext(), "coastal_cities.json");
         String provincesJson = Utils.loadJSONFromAsset(getContext(), "provinces.json");
 
-        Gson gson = new Gson();
+        gson = new Gson();
         Type cityListType = new TypeToken<List<CitiesModel>>(){}.getType();
         Type provinceListType = new TypeToken<List<ProvinceModel>>(){}.getType();
 
@@ -186,7 +188,7 @@ public class TideFragment extends Fragment {
             provinceMap.put(province.getKey(), province.getName());
         }
 
-        List<String> cityProvinceNames = new ArrayList<>();
+        cityProvinceNames = new ArrayList<>();
         for (CitiesModel city : cityList) {
             String provinceName = provinceMap.get(city.getProvince());
             String fullName = city.getName() + ", " + provinceName + ", Philippines";
@@ -227,6 +229,7 @@ public class TideFragment extends Fragment {
 
     private void getTideData(double lat, double lon) {
         String url = worldWeatherOnline_URL + "key=" + worldWeatherOnline_API + "&q=" + lat + "," + lon + "&format=json&tide=yes";
+        Log.e("TideData", "Tide Url: " + url);
 
         makeApiCall(url, new Callback() {
             @Override
@@ -278,8 +281,6 @@ public class TideFragment extends Fragment {
             }
         }
 
-        JSONObject todayTides = tideArray.getJSONObject(0);
-
         final double finalHighestTide = highestTide;
         final double finalLowestTide = lowestTide;
         final String finalHighestTideTime = highestTideTime;
@@ -291,50 +292,10 @@ public class TideFragment extends Fragment {
             txtLowestTide.setText(String.format(Locale.US, "%.2f m", finalLowestTide));
             txtLowestTideTime.setText(finalLowestTideTime);
             txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideArray)));
-            try {
-                txtLocation.setText(data.getJSONArray("request").getJSONObject(0).getString("query"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            updateTideTimesAndHeights(todayTides);
+            txtLocation.setText(location);
 
             updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideArray)));
         });
-    }
-
-    private void updateTideTimesAndHeights(JSONObject todayTides) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-        SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.US);
-
-        String[] tideTypes = {"AM_LOW_TIDE", "AM_HIGH_TIDE", "PM_LOW_TIDE", "PM_HIGH_TIDE"};
-        TextView[] timeViews = {txtAmLtDate, txtAmHtDate, txtPmLtDate, txtPmHtDate};
-        TextView[] heightViews = {txtAmLtHeight, txtAmHtHeight, txtPmLtHeight, txtPmHtHeight};
-
-        for (int i = 0; i < tideTypes.length; i++) {
-            String tideType = tideTypes[i];
-            try {
-                if (todayTides.has(tideType)) {
-                    JSONObject tideData = todayTides.getJSONObject(tideType);
-                    String tideTime = tideData.getString("tideTime");
-                    double tideHeight = tideData.getDouble("tideHeight_mt");
-
-                    try {
-                        Date date = inputFormat.parse(tideTime);
-                        String formattedTime = outputFormat.format(date);
-                        timeViews[i].setText(formattedTime);
-                        heightViews[i].setText(String.format(Locale.US, "%.2f m", tideHeight));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    timeViews[i].setText("N/A");
-                    heightViews[i].setText("N/A");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private double getCurrentTideHeight(JSONArray tideArray) {
@@ -356,6 +317,7 @@ public class TideFragment extends Fragment {
 
         for (int i = 0; i < weatherArray.length(); i++) {
             sevenDayForecast.add(weatherArray.getJSONObject(i));
+            Log.e("TideData", "Tide Day: " + weatherArray.getJSONObject(i));
         }
     }
 
