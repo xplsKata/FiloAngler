@@ -61,4 +61,4 @@ public class TidesAdapter extends RecyclerView.Adapter<TidesAdapter.ViewHolder> 
             txtHeight = itemView.findViewById(R.id.txtHeight);
         }
     }
-}}
+}
