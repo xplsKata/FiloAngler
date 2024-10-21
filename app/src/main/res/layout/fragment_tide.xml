@@ -147,7 +147,7 @@
             android:scaleType="centerInside"
             android:scaleX="5"
             android:src="@drawable/baseline_horizontal_rule_24"
-            android:tint="#CF1717"
+            app:tint="#CF1717"
             app:layout_constraintBottom_toBottomOf="@+id/txtCurrentTide"
             app:layout_constraintStart_toEndOf="@+id/txtCurrentTide"
             app:layout_constraintTop_toTopOf="@+id/txtCurrentTide" />
