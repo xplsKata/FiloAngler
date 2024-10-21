@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -90,15 +89,11 @@ public class TideFragment extends Fragment {
 
     private String location;
 
-    private SimpleDateFormat dateFormat;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tide, container, false);
         gson = new Gson();
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         loadElements(view);
         loadAutoComplete();
@@ -252,7 +247,6 @@ public class TideFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing tide data", Toast.LENGTH_SHORT).show());
-                        Log.e("TideData", "Error: " + e.toString());
                     }
                 } else {
                     getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get tide data", Toast.LENGTH_SHORT).show());
@@ -264,40 +258,48 @@ public class TideFragment extends Fragment {
     private void updateUIWithTideData(JSONObject data) throws JSONException {
         JSONArray tideArray = data.getJSONArray("weather").getJSONObject(0).getJSONArray("tides").getJSONObject(0).getJSONArray("tide_data");
 
-        JSONObject currentTideInfo = getCurrentTideInfo(tideArray);
-        double currentTideHeight = currentTideInfo.getDouble("height");
-        String currentTideStatus = currentTideInfo.getString("status");
+        double highestTide = Double.MIN_VALUE;
+        double lowestTide = Double.MAX_VALUE;
+        String highestTideTime = "";
+        String lowestTideTime = "";
 
-        JSONObject nextExtremeTide = getNextExtremeTide(tideArray);
-        String nextExtremeTideType = nextExtremeTide.getString("type");
-        double nextExtremeTideHeight = nextExtremeTide.getDouble("height");
-        String nextExtremeTideTime = nextExtremeTide.getString("time");
+        for (int i = 0; i < tideArray.length(); i++) {
+            JSONObject tideData = tideArray.getJSONObject(i);
+            double tideHeight = tideData.getDouble("tideHeight_mt");
+            String tideTime = tideData.getString("tideTime");
+
+            if (tideHeight > highestTide) {
+                highestTide = tideHeight;
+                highestTideTime = tideTime;
+            }
+            if (tideHeight < lowestTide) {
+                lowestTide = tideHeight;
+                lowestTideTime = tideTime;
+            }
+        }
+
+        JSONObject todayTides = tideArray.getJSONObject(0);
+
+        final double finalHighestTide = highestTide;
+        final double finalLowestTide = lowestTide;
+        final String finalHighestTideTime = highestTideTime;
+        final String finalLowestTideTime = lowestTideTime;
 
         getActivity().runOnUiThread(() -> {
-            txtCurrentTide.setText(String.format(Locale.US, "%.2f m", currentTideHeight));
-            //txtTideStatus.setText(currentTideStatus); // Add this TextView to your layout
-
-            if (nextExtremeTideType.equals("high")) {
-                txtHighestTide.setText(String.format(Locale.US, "%.2f m", nextExtremeTideHeight));
-                txtHighestTideTime.setText(nextExtremeTideTime);
-            } else {
-                txtLowestTide.setText(String.format(Locale.US, "%.2f m", nextExtremeTideHeight));
-                txtLowestTideTime.setText(nextExtremeTideTime);
+            txtHighestTide.setText(String.format(Locale.US, "%.2f m", finalHighestTide));
+            txtHighestTideTime.setText(finalHighestTideTime);
+            txtLowestTide.setText(String.format(Locale.US, "%.2f m", finalLowestTide));
+            txtLowestTideTime.setText(finalLowestTideTime);
+            txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideArray)));
+            try {
+                txtLocation.setText(data.getJSONArray("request").getJSONObject(0).getString("query"));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            if(!location.isEmpty()){
-                txtLocation.setText(location);
-            }else{
-                txtLocation.setText("Search for a location to start");
-            }
+            updateTideTimesAndHeights(todayTides);
 
-            try{
-                updateTideTimesAndHeights(tideArray.getJSONObject(0));
-            }catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-
-            updateWaveViewHeight(calculateWaterLevel(nextExtremeTideHeight, currentTideHeight, nextExtremeTideType.equals("high")));
+            updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideArray)));
         });
     }
 
@@ -344,70 +346,8 @@ public class TideFragment extends Fragment {
         }
     }
 
-    private JSONObject getCurrentTideInfo(JSONArray tideArray) throws JSONException {
-        Date currentTime = new Date();
-        JSONObject prevTide = null;
-        JSONObject nextTide = null;
-
-        for (int i = 0; i < tideArray.length(); i++) {
-            JSONObject tide = tideArray.getJSONObject(i);
-            Date tideTime = parseDate(tide.getString("tideDateTime"));
-
-            if (tideTime.before(currentTime)) {
-                prevTide = tide;
-            } else {
-                nextTide = tide;
-                break;
-            }
-        }
-
-        if (prevTide == null || nextTide == null) {
-            throw new JSONException("Unable to determine current tide");
-        }
-
-        double prevHeight = prevTide.getDouble("tideHeight_mt");
-        double nextHeight = nextTide.getDouble("tideHeight_mt");
-        String status = prevHeight < nextHeight ? "Rising" : "Falling";
-
-        // Linear interpolation to estimate current tide height
-        Date prevTideTime = parseDate(prevTide.getString("tideDateTime"));
-        Date nextTideTime = parseDate(nextTide.getString("tideDateTime"));
-        long timeDiff = nextTideTime.getTime() - prevTideTime.getTime();
-        long currentTimeDiff = currentTime.getTime() - prevTideTime.getTime();
-        double heightDiff = nextHeight - prevHeight;
-        double currentHeight = prevHeight + (heightDiff * currentTimeDiff / timeDiff);
-
-        JSONObject result = new JSONObject();
-        result.put("height", currentHeight);
-        result.put("status", status);
-        return result;
-    }
-
-    private JSONObject getNextExtremeTide(JSONArray tideArray) throws JSONException {
-        Date currentTime = new Date();
-        for (int i = 0; i < tideArray.length(); i++) {
-            JSONObject tide = tideArray.getJSONObject(i);
-            Date tideTime = parseDate(tide.getString("tideDateTime"));
-            if (tideTime.after(currentTime)) {
-                String tideType = tide.getString("tide_type").toLowerCase();
-                if (tideType.contains("high") || tideType.contains("low")) {
-                    JSONObject result = new JSONObject();
-                    result.put("type", tideType.contains("high") ? "high" : "low");
-                    result.put("height", tide.getDouble("tideHeight_mt"));
-                    result.put("time", formatTime(tideTime));
-                    return result;
-                }
-            }
-        }
-        throw new JSONException("No future extreme tide found");
-    }
-
-    private float calculateWaterLevel(double extremeTideHeight, double currentTideHeight, boolean isRising) {
-        if (isRising) {
-            return (float) ((currentTideHeight - extremeTideHeight + 2) / 4);
-        } else {
-            return (float) ((extremeTideHeight - currentTideHeight + 2) / 4);
-        }
+    private float calculateWaterLevel(double highest, double lowest, double current) {
+        return (float) ((current - lowest) / (highest - lowest));
     }
 
     private void storeSevenDayForecast(JSONObject data) throws JSONException {
@@ -455,20 +395,6 @@ public class TideFragment extends Fragment {
                 }
             }
         });
-    }
-
-    private Date parseDate(String dateString) {
-        try {
-            return dateFormat.parse(dateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return new Date(); // Return current date as fallback
-        }
-    }
-
-    private String formatTime(Date date) {
-        SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.US);
-        return outputFormat.format(date);
     }
 
     public List<JSONObject> getSevenDayForecast() {
