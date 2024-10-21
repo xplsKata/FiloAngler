@@ -259,52 +259,79 @@ public class TideFragment extends Fragment {
     }
 
     private void updateUIWithTideData(JSONObject data) throws JSONException {
-        JSONArray tideArray = data.getJSONArray("weather").getJSONObject(0).getJSONArray("tides").getJSONObject(0).getJSONArray("tide_data");
+        JSONArray weatherArray = data.getJSONArray("weather");
+        if (weatherArray.length() > 0) {
+            JSONObject todayWeather = weatherArray.getJSONObject(0);
+            JSONArray tidesArray = todayWeather.getJSONArray("tides");
+            if (tidesArray.length() > 0) {
+                JSONArray tideDataArray = tidesArray.getJSONObject(0).getJSONArray("tide_data");
 
-        double highestTide = Double.MIN_VALUE;
-        double lowestTide = Double.MAX_VALUE;
-        String highestTideTime = "";
-        String lowestTideTime = "";
+                double highestTide = Double.MIN_VALUE;
+                double lowestTide = Double.MAX_VALUE;
+                String highestTideTime = "";
+                String lowestTideTime = "";
 
-        for (int i = 0; i < tideArray.length(); i++) {
-            JSONObject tideData = tideArray.getJSONObject(i);
-            double tideHeight = tideData.getDouble("tideHeight_mt");
-            String tideTime = tideData.getString("tideTime");
+                tidesList.clear(); // Clear existing tide data
 
-            if (tideHeight > highestTide) {
-                highestTide = tideHeight;
-                highestTideTime = tideTime;
-            }
-            if (tideHeight < lowestTide) {
-                lowestTide = tideHeight;
-                lowestTideTime = tideTime;
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+
+                for (int i = 0; i < tideDataArray.length(); i++) {
+                    JSONObject tideData = tideDataArray.getJSONObject(i);
+                    double tideHeight = tideData.getDouble("tideHeight_mt");
+                    String tideTime = tideData.getString("tideTime");
+                    String tideDateTime = tideData.getString("tideDateTime");
+                    String tideType = tideData.getString("tide_type");
+
+                    if (tideHeight > highestTide) {
+                        highestTide = tideHeight;
+                        highestTideTime = tideTime;
+                    }
+                    if (tideHeight < lowestTide) {
+                        lowestTide = tideHeight;
+                        lowestTideTime = tideTime;
+                    }
+
+                    // Create TidesModel object and add to list
+                    try {
+                        Date tideDate = inputFormat.parse(tideDateTime);
+                        TidesModel tideModel = new TidesModel(tideTime, tideHeight, tideDate, tideType);
+                        tidesList.add(tideModel);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                final double finalHighestTide = highestTide;
+                final double finalLowestTide = lowestTide;
+                final String finalHighestTideTime = highestTideTime;
+                final String finalLowestTideTime = lowestTideTime;
+
+                getActivity().runOnUiThread(() -> {
+                    txtHighestTide.setText(String.format(Locale.US, "%.2f m", finalHighestTide));
+                    txtHighestTideTime.setText(finalHighestTideTime);
+                    txtLowestTide.setText(String.format(Locale.US, "%.2f m", finalLowestTide));
+                    txtLowestTideTime.setText(finalLowestTideTime);
+                    txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideDataArray)));
+                    txtLocation.setText(location);
+
+                    updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideDataArray)));
+
+                    // Update RecyclerView
+                    tidesAdapter.notifyDataSetChanged();
+                });
             }
         }
-
-        final double finalHighestTide = highestTide;
-        final double finalLowestTide = lowestTide;
-        final String finalHighestTideTime = highestTideTime;
-        final String finalLowestTideTime = lowestTideTime;
-
-        getActivity().runOnUiThread(() -> {
-            txtHighestTide.setText(String.format(Locale.US, "%.2f m", finalHighestTide));
-            txtHighestTideTime.setText(finalHighestTideTime);
-            txtLowestTide.setText(String.format(Locale.US, "%.2f m", finalLowestTide));
-            txtLowestTideTime.setText(finalLowestTideTime);
-            txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideArray)));
-            txtLocation.setText(location);
-
-            updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideArray)));
-        });
     }
 
-    private double getCurrentTideHeight(JSONArray tideArray) {
+    private double getCurrentTideHeight(JSONArray tideDataArray) {
         try {
-            return tideArray.getJSONObject(0).getDouble("tideHeight_mt");
+            if (tideDataArray.length() > 0) {
+                return tideDataArray.getJSONObject(0).getDouble("tideHeight_mt");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
-            return 0;
         }
+        return 0;
     }
 
     private float calculateWaterLevel(double highest, double lowest, double current) {
