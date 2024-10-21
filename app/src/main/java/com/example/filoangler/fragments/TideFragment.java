@@ -1,18 +1,54 @@
 package com.example.filoangler.fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.filoangler.BuildConfig;
+import com.example.filoangler.Model.CitiesModel;
+import com.example.filoangler.Model.ProvinceModel;
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 import com.example.filoangler.WaveView;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class TideFragment extends Fragment {
 
@@ -41,12 +77,52 @@ public class TideFragment extends Fragment {
     private int minHeight;
     private int maxHeight;
 
+    private OkHttpClient client = new OkHttpClient();
+
+    private String worldWeatherOnline_API = BuildConfig.worldWeatherOnlineApiKey;
+    private String worldWeatherOnline_URL = "https://api.worldweatheronline.com/premium/v1/marine.ashx?";
+
+    private String openWeather_API = BuildConfig.openWeatherApiKey;
+    private static final String GEOCODING_API_URL = "http://api.openweathermap.org/geo/1.0/direct";
+
+    private List<JSONObject> sevenDayForecast;
+    private Gson gson;
+
+    private String location;
+
+    private SimpleDateFormat dateFormat;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tide, container, false);
+        gson = new Gson();
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         loadElements(view);
+        loadAutoComplete();
+
+        txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE
+                        || event != null
+                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                    location = txtSearch.getText().toString();
+                    if(location.isEmpty()){
+                        Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }else{
+                        getCoordinatesAndFetchTide(location);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         return view;
     }
@@ -68,6 +144,11 @@ public class TideFragment extends Fragment {
             }
         });
 
+    }
+
+    private void makeApiCall(String url, Callback callback) {
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(callback);
     }
 
     private void loadElements(View view){
@@ -94,6 +175,42 @@ public class TideFragment extends Fragment {
         btnMore = view.findViewById(R.id.btnMore);
     }
 
+    public void loadAutoComplete(){
+        String citiesJson = Utils.loadJSONFromAsset(getContext(), "coastal_cities.json");
+        String provincesJson = Utils.loadJSONFromAsset(getContext(), "provinces.json");
+
+        Gson gson = new Gson();
+        Type cityListType = new TypeToken<List<CitiesModel>>(){}.getType();
+        Type provinceListType = new TypeToken<List<ProvinceModel>>(){}.getType();
+
+        List<CitiesModel> cityList = gson.fromJson(citiesJson, cityListType);
+        List<ProvinceModel> provinceList = gson.fromJson(provincesJson, provinceListType);
+
+        Map<String, String> provinceMap = new HashMap<>();
+        for (ProvinceModel province : provinceList) {
+            provinceMap.put(province.getKey(), province.getName());
+        }
+
+        List<String> cityProvinceNames = new ArrayList<>();
+        for (CitiesModel city : cityList) {
+            String provinceName = provinceMap.get(city.getProvince());
+            String fullName = city.getName() + ", " + provinceName + ", Philippines";
+            cityProvinceNames.add(fullName);
+        }
+
+        setAutoComplete(cityProvinceNames);
+    }
+
+    public void setAutoComplete(List<String> cityNames){
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, cityNames);
+
+        txtSearch.setAdapter(adapter);
+
+        txtSearch.setThreshold(1);
+
+    }
+
     private void updateWaveViewHeight(float waterLevel) {
         waterLevel = Math.max(0, Math.min(1, waterLevel));
 
@@ -111,6 +228,251 @@ public class TideFragment extends Fragment {
         float waterLevel = 0.5f;
 
         return waterLevel;
+    }
+
+    private void getTideData(double lat, double lon) {
+        String url = worldWeatherOnline_URL + "key=" + worldWeatherOnline_API + "&q=" + lat + "," + lon + "&format=json&tide=yes";
+
+        makeApiCall(url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get tide data", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String jsonData = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(jsonData);
+                        JSONObject data = jsonObject.getJSONObject("data");
+                        updateUIWithTideData(data);
+                        storeSevenDayForecast(data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing tide data", Toast.LENGTH_SHORT).show());
+                        Log.e("TideData", "Error: " + e.toString());
+                    }
+                } else {
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get tide data", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void updateUIWithTideData(JSONObject data) throws JSONException {
+        JSONArray tideArray = data.getJSONArray("weather").getJSONObject(0).getJSONArray("tides").getJSONObject(0).getJSONArray("tide_data");
+
+        JSONObject currentTideInfo = getCurrentTideInfo(tideArray);
+        double currentTideHeight = currentTideInfo.getDouble("height");
+        String currentTideStatus = currentTideInfo.getString("status");
+
+        JSONObject nextExtremeTide = getNextExtremeTide(tideArray);
+        String nextExtremeTideType = nextExtremeTide.getString("type");
+        double nextExtremeTideHeight = nextExtremeTide.getDouble("height");
+        String nextExtremeTideTime = nextExtremeTide.getString("time");
+
+        getActivity().runOnUiThread(() -> {
+            txtCurrentTide.setText(String.format(Locale.US, "%.2f m", currentTideHeight));
+            //txtTideStatus.setText(currentTideStatus); // Add this TextView to your layout
+
+            if (nextExtremeTideType.equals("high")) {
+                txtHighestTide.setText(String.format(Locale.US, "%.2f m", nextExtremeTideHeight));
+                txtHighestTideTime.setText(nextExtremeTideTime);
+            } else {
+                txtLowestTide.setText(String.format(Locale.US, "%.2f m", nextExtremeTideHeight));
+                txtLowestTideTime.setText(nextExtremeTideTime);
+            }
+
+            if(!location.isEmpty()){
+                txtLocation.setText(location);
+            }else{
+                txtLocation.setText("Search for a location to start");
+            }
+
+            try{
+                updateTideTimesAndHeights(tideArray.getJSONObject(0));
+            }catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+            updateWaveViewHeight(calculateWaterLevel(nextExtremeTideHeight, currentTideHeight, nextExtremeTideType.equals("high")));
+        });
+    }
+
+    private void updateTideTimesAndHeights(JSONObject todayTides) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+
+        String[] tideTypes = {"AM_LOW_TIDE", "AM_HIGH_TIDE", "PM_LOW_TIDE", "PM_HIGH_TIDE"};
+        TextView[] timeViews = {txtAmLtDate, txtAmHtDate, txtPmLtDate, txtPmHtDate};
+        TextView[] heightViews = {txtAmLtHeight, txtAmHtHeight, txtPmLtHeight, txtPmHtHeight};
+
+        for (int i = 0; i < tideTypes.length; i++) {
+            String tideType = tideTypes[i];
+            try {
+                if (todayTides.has(tideType)) {
+                    JSONObject tideData = todayTides.getJSONObject(tideType);
+                    String tideTime = tideData.getString("tideTime");
+                    double tideHeight = tideData.getDouble("tideHeight_mt");
+
+                    try {
+                        Date date = inputFormat.parse(tideTime);
+                        String formattedTime = outputFormat.format(date);
+                        timeViews[i].setText(formattedTime);
+                        heightViews[i].setText(String.format(Locale.US, "%.2f m", tideHeight));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    timeViews[i].setText("N/A");
+                    heightViews[i].setText("N/A");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private double getCurrentTideHeight(JSONArray tideArray) {
+        try {
+            return tideArray.getJSONObject(0).getDouble("tideHeight_mt");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private JSONObject getCurrentTideInfo(JSONArray tideArray) throws JSONException {
+        Date currentTime = new Date();
+        JSONObject prevTide = null;
+        JSONObject nextTide = null;
+
+        for (int i = 0; i < tideArray.length(); i++) {
+            JSONObject tide = tideArray.getJSONObject(i);
+            Date tideTime = parseDate(tide.getString("tideDateTime"));
+
+            if (tideTime.before(currentTime)) {
+                prevTide = tide;
+            } else {
+                nextTide = tide;
+                break;
+            }
+        }
+
+        if (prevTide == null || nextTide == null) {
+            throw new JSONException("Unable to determine current tide");
+        }
+
+        double prevHeight = prevTide.getDouble("tideHeight_mt");
+        double nextHeight = nextTide.getDouble("tideHeight_mt");
+        String status = prevHeight < nextHeight ? "Rising" : "Falling";
+
+        // Linear interpolation to estimate current tide height
+        Date prevTideTime = parseDate(prevTide.getString("tideDateTime"));
+        Date nextTideTime = parseDate(nextTide.getString("tideDateTime"));
+        long timeDiff = nextTideTime.getTime() - prevTideTime.getTime();
+        long currentTimeDiff = currentTime.getTime() - prevTideTime.getTime();
+        double heightDiff = nextHeight - prevHeight;
+        double currentHeight = prevHeight + (heightDiff * currentTimeDiff / timeDiff);
+
+        JSONObject result = new JSONObject();
+        result.put("height", currentHeight);
+        result.put("status", status);
+        return result;
+    }
+
+    private JSONObject getNextExtremeTide(JSONArray tideArray) throws JSONException {
+        Date currentTime = new Date();
+        for (int i = 0; i < tideArray.length(); i++) {
+            JSONObject tide = tideArray.getJSONObject(i);
+            Date tideTime = parseDate(tide.getString("tideDateTime"));
+            if (tideTime.after(currentTime)) {
+                String tideType = tide.getString("tide_type").toLowerCase();
+                if (tideType.contains("high") || tideType.contains("low")) {
+                    JSONObject result = new JSONObject();
+                    result.put("type", tideType.contains("high") ? "high" : "low");
+                    result.put("height", tide.getDouble("tideHeight_mt"));
+                    result.put("time", formatTime(tideTime));
+                    return result;
+                }
+            }
+        }
+        throw new JSONException("No future extreme tide found");
+    }
+
+    private float calculateWaterLevel(double extremeTideHeight, double currentTideHeight, boolean isRising) {
+        if (isRising) {
+            return (float) ((currentTideHeight - extremeTideHeight + 2) / 4);
+        } else {
+            return (float) ((extremeTideHeight - currentTideHeight + 2) / 4);
+        }
+    }
+
+    private void storeSevenDayForecast(JSONObject data) throws JSONException {
+        JSONArray weatherArray = data.getJSONArray("weather");
+        sevenDayForecast = new ArrayList<>();
+
+        for (int i = 0; i < weatherArray.length(); i++) {
+            sevenDayForecast.add(weatherArray.getJSONObject(i));
+        }
+    }
+
+    private void getCoordinatesAndFetchTide(String location) {
+        // Encode the location string to handle spaces and special characters
+        String encodedLocation = Uri.encode(location);
+        String url = GEOCODING_API_URL + "?q=" + encodedLocation + "&limit=1&appid=" + openWeather_API;
+        Log.e("Location", url);//LOG
+
+        makeApiCall(url,new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String jsonData = response.body().string();
+                    try {
+                        JSONArray jsonArray = new JSONArray(jsonData);
+                        if (jsonArray.length() > 0) {
+                            JSONObject locationData = jsonArray.getJSONObject(0);
+                            double lat = locationData.getDouble("lat");
+                            double lon = locationData.getDouble("lon");
+                            getTideData(lat, lon);
+                        } else {
+                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private Date parseDate(String dateString) {
+        try {
+            return dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Date(); // Return current date as fallback
+        }
+    }
+
+    private String formatTime(Date date) {
+        SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+        return outputFormat.format(date);
+    }
+
+    public List<JSONObject> getSevenDayForecast() {
+        return sevenDayForecast;
     }
 
 }
