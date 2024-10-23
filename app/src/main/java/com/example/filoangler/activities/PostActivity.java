@@ -14,17 +14,22 @@ import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,8 +38,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.camera.view.PreviewView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.canhub.cropper.CropImageContractOptions;
+import com.example.filoangler.Adapter.GalleryAdapter;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.StorageManager;
@@ -54,16 +62,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 public class PostActivity extends AppCompatActivity {
 
+    private static final int STORAGE_PERMISSION_CODE = 101;
+
     private Button btnPost;
     private ImageButton btnClose,btnFlash, btnFlipCamera, btnCapture;
     private SocialAutoCompleteTextView txtImageDescription;
     private StorageManager storageManager;
+    private RecyclerView recyclerViewGallery;
 
     //CropImage
     private ImageView imgAdd;
@@ -87,21 +99,27 @@ public class PostActivity extends AppCompatActivity {
     private Uri imageUri;
     private String imageURL;
 
+    private ArrayList<String> imagePaths;
+
+    private GalleryAdapter galleryAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        previewView = findViewById(R.id.cameraPreview);
-        btnPost = findViewById(R.id.btnPost);
-        btnClose = findViewById(R.id.btnClose);
-        btnFlash = findViewById(R.id.btnFlash);
-        btnCapture = findViewById(R.id.btnCapture);
-        btnFlipCamera = findViewById(R.id.btnFlipCamera);
-        imgAdd = findViewById(R.id.imgAdd);
-        txtImageDescription = findViewById(R.id.txtImageDescription);
-
         storageManager = new StorageManager();
+
+        loadElements();
+        loadCamera();
+
+        // Request permissions if needed
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestStoragePermission();
+        } else {
+            loadImages(0, 20);
+        }
 
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,17 +128,6 @@ public class PostActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        //Starts the camera
-        try{
-            if(ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-                activityResultLauncher.launch(Manifest.permission.CAMERA);
-            }else{
-                startCamera(cameraFacing);
-            }
-        }catch (Exception e){
-            Log.e("CameraError", "Error in StartCamera: " + e);
-        }
 
         btnFlipCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,6 +148,83 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+        recyclerViewGallery.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                int totalItemCount = layoutManager.getItemCount();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+
+                if (lastVisibleItem + 5 >= totalItemCount) {  // Load more when 5 items are left to reach bottom
+                    // Load the next set of 20 images
+                    loadImages(totalItemCount, 20);
+                }
+            }
+        });
+
+    }
+
+    private void requestStoragePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Explain why permission is needed
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed to load your gallery images")
+                    .setPositiveButton("OK", (dialog, which) -> ActivityCompat.requestPermissions(PostActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .create().show();
+        } else {
+            // No explanation needed, request the permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, load images
+                loadImages(0, 20);
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void loadElements() {
+
+        previewView = findViewById(R.id.cameraPreview);
+        btnPost = findViewById(R.id.btnPost);
+        btnClose = findViewById(R.id.btnClose);
+        btnFlash = findViewById(R.id.btnFlash);
+        btnCapture = findViewById(R.id.btnCapture);
+        btnFlipCamera = findViewById(R.id.btnFlipCamera);
+        imgAdd = findViewById(R.id.imgAdd);
+        txtImageDescription = findViewById(R.id.txtImageDescription);
+
+        recyclerViewGallery = findViewById(R.id.recyclerViewGallery);
+        imagePaths = new ArrayList<>();
+        galleryAdapter = new GalleryAdapter(imagePaths);
+        recyclerViewGallery.setLayoutManager(new GridLayoutManager(this, 3));
+        recyclerViewGallery.setAdapter(galleryAdapter);
+
+    }
+
+    private void loadCamera(){
+        try{
+            if(ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                activityResultLauncher.launch(Manifest.permission.CAMERA);
+            }else{
+                startCamera(cameraFacing);
+            }
+        }catch (Exception e){
+            Log.e("CameraError", "Error in StartCamera: " + e);
+        }
     }
 
     @Override
@@ -314,7 +398,6 @@ public class PostActivity extends AppCompatActivity {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
-    // Method to crop bitmap to square
     private Bitmap cropToSquare(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -396,6 +479,50 @@ public class PostActivity extends AppCompatActivity {
             return path;
         }
         return null;
+    }
+
+    public ArrayList<String> getImagesPath(Context context, int offset, int limit) {
+        ArrayList<String> listOfImages = new ArrayList<>();
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC LIMIT " + limit + " OFFSET " + offset;
+
+        try {
+            Cursor cursor = context.getContentResolver().query(
+                    uri,
+                    projection,
+                    null,
+                    null,
+                    sortOrder
+            );
+
+            if (cursor != null) {
+                int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                while (cursor.moveToNext()) {
+                    String imagePath = cursor.getString(columnIndexData);
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        File file = new File(imagePath);
+                        if (file.exists()) {
+                            listOfImages.add("file://" + imagePath);
+                        }
+                    }
+                }
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e("GalleryError", "Error loading images: " + e.getMessage());
+        }
+        return listOfImages;
+    }
+
+    private void loadImages(int offset, int limit) {
+        ArrayList<String> newImages = getImagesPath(this, offset, limit);
+        if (!newImages.isEmpty()) {
+            int positionStart = imagePaths.size();
+            imagePaths.addAll(newImages);
+            galleryAdapter.notifyItemRangeInserted(positionStart, newImages.size());
+        }
     }
 
     //NOTE THIS FEATURE STILL NEEDS A HANDLER FOR IMAGES, A BUTTON FOR CAMERA OPTION, TEXT ONLY OPTION AND CROP OPTION.
