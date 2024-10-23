@@ -87,8 +87,8 @@
 
                         <ImageView
                             android:id="@+id/imgAdd"
-                            android:layout_width="300dp"
-                            android:layout_height="300dp"
+                            android:layout_width="350dp"
+                            android:layout_height="350dp"
                             android:scaleType="fitCenter"
                             android:src="@drawable/socialview_ic_mention_placeholder"
                             android:visibility="gone"
