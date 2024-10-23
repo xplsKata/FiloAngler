@@ -80,30 +80,6 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    /*private void checkFollowingUsers() {
-
-        authManager.GetDb().getReference().child("Users")
-                .child(loginManager.GetCurrentUser().getUid())
-                .child("Following")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        followingList.clear();
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                            followingList.add(dataSnapshot.getKey());
-                        }
-                        
-                        readPosts();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
-    } THIS WILL GET IMPLEMENTED ON THE FOLLOWINGS TAB*/
-
     private void readPosts() {
 
         authManager.GetDb().getReference().child("Posts").addValueEventListener(new ValueEventListener() {
@@ -117,11 +93,6 @@ public class HomeFragment extends Fragment {
                         postList.add(postModel);
                     }
 
-                    /*for(String id : followingList){
-                        if(postModel.getAuthor().equals(id)){
-                            postList.add(postModel);
-                        }
-                    } THIS IS FOR WHEN I IMPLEMENT THE FOLLOWING TAB*/
                 }
                 postAdapter.notifyDataSetChanged();
             }

@@ -36,7 +36,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import androidx.camera.view.PreviewView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -50,10 +49,6 @@ import com.example.filoangler.OnSwipeTouchListener;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.Utils;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -150,7 +145,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Upload();
+               uploadPost();
             }
         });
 
@@ -474,15 +469,6 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         return Bitmap.createBitmap(bitmap, cropW, cropH, newDimension, newDimension);
     }
 
-    private String UriFileExtension(){
-        String path = imageUri.getPath();
-        if(path != null){
-            return path;
-        }
-        return null;
-    }
-
-
 
 
     public ArrayList<String> getImagesPath(Context context, int offset, int limit) {
@@ -533,7 +519,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
 
-    private void Upload(){
+    private void uploadPost(){
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Posting");
         progressDialog.show();
