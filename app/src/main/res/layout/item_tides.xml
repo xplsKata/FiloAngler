@@ -23,8 +23,8 @@
         android:text="TextView"
         android:textColor="@color/bgBlue"
         app:layout_constraintBottom_toBottomOf="@+id/txtTide"
-        app:layout_constraintEnd_toStartOf="@+id/txtHeight"
-        app:layout_constraintStart_toEndOf="@+id/txtTide"
+        app:layout_constraintEnd_toEndOf="@+id/txtHeight"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/txtTide" />
 
     <TextView

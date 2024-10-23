@@ -99,6 +99,7 @@ public class TideFragment extends Fragment {
 
         loadElements(view);
         loadAutoComplete();
+        hideText();
 
         txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -314,6 +315,13 @@ public class TideFragment extends Fragment {
                     txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideDataArray)));
                     txtLocation.setText(location);
 
+                    txtHighestTide.setVisibility(View.VISIBLE);
+                    txtHighestTideTime.setVisibility(View.VISIBLE);
+                    txtLowestTide.setVisibility(View.VISIBLE);
+                    txtLowestTideTime.setVisibility(View.VISIBLE);
+                    txtLocation.setVisibility(View.VISIBLE);
+
+
                     updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideDataArray)));
 
                     // Update RecyclerView
@@ -384,6 +392,14 @@ public class TideFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void hideText(){
+        txtHighestTide.setVisibility(View.GONE);
+        txtHighestTideTime.setVisibility(View.GONE);
+        txtLowestTide.setVisibility(View.GONE);
+        txtLowestTideTime.setVisibility(View.GONE);
+        txtLocation.setVisibility(View.GONE);
     }
 
     public List<JSONObject> getSevenDayForecast() {
