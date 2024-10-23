@@ -36,6 +36,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import androidx.camera.view.PreviewView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -43,7 +44,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.canhub.cropper.CropImageContractOptions;
 import com.example.filoangler.Adapter.GalleryAdapter;
+import com.example.filoangler.Adapter.GalleryAdapterCallback;
 import com.example.filoangler.Manager.LoginManager;
+import com.example.filoangler.OnSwipeTouchListener;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.Utils;
@@ -66,8 +69,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class PostActivity extends AppCompatActivity {
+public class PostActivity extends AppCompatActivity implements GalleryAdapterCallback {
 
     private static final int STORAGE_PERMISSION_CODE = 101;
 
@@ -100,6 +104,8 @@ public class PostActivity extends AppCompatActivity {
     private String imageURL;
 
     private ArrayList<String> imagePaths;
+    private ArrayList<String> selectedImagePaths;
+    public int currentImageDisplayed = -1; // -1 means camera is showing
 
     private GalleryAdapter galleryAdapter;
 
@@ -164,6 +170,19 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+        // Add swipe gestures for selected images
+        findViewById(R.id.imgAdd).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                showNextSelectedImage();
+            }
+
+            @Override
+            public void onSwipeRight() {
+                showPreviousSelectedImage();
+            }
+        });
+
     }
 
     private void requestStoragePermission() {
@@ -209,7 +228,9 @@ public class PostActivity extends AppCompatActivity {
 
         recyclerViewGallery = findViewById(R.id.recyclerViewGallery);
         imagePaths = new ArrayList<>();
-        galleryAdapter = new GalleryAdapter(imagePaths);
+        selectedImagePaths = new ArrayList<>();
+
+        galleryAdapter = new GalleryAdapter(this, imagePaths, selectedImagePaths);
         recyclerViewGallery.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewGallery.setAdapter(galleryAdapter);
 
@@ -227,11 +248,9 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart(){
-        super.onStart();
 
-    }
+
+
 
     public void startCamera(int cameraFacing){
         try{
@@ -367,6 +386,52 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
+
+
+    // Add these methods to handle image navigation
+    private void showNextSelectedImage() {
+        if (selectedImagePaths.size() > 0) {
+            currentImageDisplayed = (currentImageDisplayed + 1) % selectedImagePaths.size();
+            updateDisplayedImage();
+        }
+    }
+
+    private void showPreviousSelectedImage() {
+        if (selectedImagePaths.size() > 0) {
+            currentImageDisplayed = (currentImageDisplayed - 1 + selectedImagePaths.size()) % selectedImagePaths.size();
+            updateDisplayedImage();
+        }
+    }
+
+
+
+    public void updateDisplayedImage() {
+        if (currentImageDisplayed >= 0 && currentImageDisplayed < selectedImagePaths.size()) {
+            imgAdd = findViewById(R.id.imgAdd);  // Make sure this ID exists in your layout
+            Uri imageUri = Uri.parse(selectedImagePaths.get(currentImageDisplayed));
+            imgAdd.setImageURI(imageUri);
+        }
+    }
+
+    public void updateImageDisplayControls() {
+        if (selectedImagePaths.isEmpty()) {
+            previewView.setVisibility(View.VISIBLE);
+            imgAdd.setVisibility(View.GONE);
+            btnCapture.setVisibility(View.VISIBLE);
+            btnFlash.setVisibility(View.VISIBLE);
+            btnFlipCamera.setVisibility(View.VISIBLE);
+        } else {
+            previewView.setVisibility(View.GONE);
+            imgAdd.setVisibility(View.VISIBLE);
+            btnCapture.setVisibility(View.GONE);
+            btnFlash.setVisibility(View.GONE);
+            btnFlipCamera.setVisibility(View.GONE);
+        }
+    }
+
+
+
+
     private int aspectRatio(int width, int height){
         try{
             double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
@@ -409,70 +474,6 @@ public class PostActivity extends AppCompatActivity {
         return Bitmap.createBitmap(bitmap, cropW, cropH, newDimension, newDimension);
     }
 
-    private void Upload(){
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Posting");
-        progressDialog.show();
-
-        if(imageUri != null){
-            StorageReference storageReference = storageManager.setStorageReference("Posts")
-                    .child(System.currentTimeMillis() + "." + getFileExtension(UriFileExtension()));
-
-            try{
-                StorageTask uploadTask = storageReference.putFile(imageUri);
-                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<? extends Object>>() {
-                    @Override
-                    public Task<? extends Object> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if(!task.isSuccessful()){
-                            throw task.getException();
-                        }
-                        return storageReference.getDownloadUrl();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        try{
-                            Uri downloadUri = task.getResult();
-                            imageURL = downloadUri.toString();
-
-                            LoginManager loginManager = new LoginManager(PostActivity.this);
-
-                            DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
-                            String postId = databaseReference.push().getKey();
-
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("PostId", postId);
-                            map.put("ImageURL", imageURL);
-                            map.put("Description", txtImageDescription.getText().toString());
-                            map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
-
-                            databaseReference.child(postId).setValue(map);
-
-                            progressDialog.dismiss();
-                            Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
-                            finish();
-                        }catch (Exception e){
-                            Log.e("Post", "Error in posting" + e);
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(PostActivity.this, "Something went wrong, please try again.", Toast.LENGTH_LONG).show();
-                        Log.e("Post", "Error in posting");
-                        Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
-                        finish();
-                    }
-                });
-            }catch (Exception e){
-                Log.e("Upload", "Error in uploading post" + e);
-            }
-        }else{
-            Toast.makeText(PostActivity.this, "No image was selected", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
     private String UriFileExtension(){
         String path = imageUri.getPath();
         if(path != null){
@@ -480,6 +481,9 @@ public class PostActivity extends AppCompatActivity {
         }
         return null;
     }
+
+
+
 
     public ArrayList<String> getImagesPath(Context context, int offset, int limit) {
         ArrayList<String> listOfImages = new ArrayList<>();
@@ -524,6 +528,94 @@ public class PostActivity extends AppCompatActivity {
             galleryAdapter.notifyItemRangeInserted(positionStart, newImages.size());
         }
     }
+
+
+
+
+
+    private void Upload(){
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Posting");
+        progressDialog.show();
+
+        if (selectedImagePaths.size() > 0) {
+            ArrayList<String> imageUrls = new ArrayList<>();
+            AtomicInteger uploadedCount = new AtomicInteger(0);
+
+            for (int i = 0; i < selectedImagePaths.size(); i++) {
+                Uri imageUri = Uri.parse(selectedImagePaths.get(i));
+                StorageReference storageReference = storageManager.setStorageReference("Posts")
+                        .child(System.currentTimeMillis() + "_" + i + "." + getFileExtension(imageUri.getPath()));
+
+                try {
+                    StorageTask<UploadTask.TaskSnapshot> uploadTask = storageReference.putFile(imageUri);
+                    int finalI = i;
+                    uploadTask.continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return storageReference.getDownloadUrl();
+                    }).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            imageUrls.add(finalI, downloadUri.toString());
+
+                            if (uploadedCount.incrementAndGet() == selectedImagePaths.size()) {
+                                // All images uploaded, create post
+                                LoginManager loginManager = new LoginManager(PostActivity.this);
+                                DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
+                                String postId = databaseReference.push().getKey();
+
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("PostId", postId);
+                                map.put("ImageURLs", imageUrls);
+                                map.put("Description", txtImageDescription.getText().toString());
+                                map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
+
+                                databaseReference.child(postId).setValue(map)
+                                        .addOnSuccessListener(aVoid -> {
+                                            progressDialog.dismiss();
+                                            Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(PostActivity.this, "Failed to create post", Toast.LENGTH_LONG).show();
+                                        });
+                            }
+                        }
+                    }).addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Upload failed", Toast.LENGTH_LONG).show();
+                    });
+                } catch (Exception e) {
+                    progressDialog.dismiss();
+                    Log.e("Upload", "Error in uploading post: " + e);
+                }
+            }
+        } else {
+            progressDialog.dismiss();
+            Toast.makeText(PostActivity.this, "No images selected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+
+    @Override
+    public void onImageSelectionChanged(String imagePath, boolean isSelected) {
+        updateDisplayedImage();
+        updateImageDisplayControls();
+    }
+
+    @Override
+    public void updateDisplayState(int newImageDisplayed) {
+        currentImageDisplayed = newImageDisplayed;
+        updateDisplayedImage();
+        updateImageDisplayControls();
+    }
+
+
 
     //NOTE THIS FEATURE STILL NEEDS A HANDLER FOR IMAGES, A BUTTON FOR CAMERA OPTION, TEXT ONLY OPTION AND CROP OPTION.
 }
