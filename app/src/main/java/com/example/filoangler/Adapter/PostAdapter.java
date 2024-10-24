@@ -20,8 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -51,6 +53,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
     private RecyclerView recyclerView;
     private CommentsAdapter commentsAdapter;
     private List<CommentModel> commentModelList;
+    private ImagePagerAdapter imagePagerAdapter;
 
     public PostAdapter(){
         authManager = new AuthManager();
@@ -80,8 +83,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
         PostModel postModel = mPost.get(position);
 
+        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getImageURLs());
+        holder.viewPagerImages.setAdapter(imagePagerAdapter);
+
+        if (postModel.getImageURLs().size() > 1) {
+            holder.layoutDots.setVisibility(View.VISIBLE);
+            setupImageIndicator(holder, postModel.getImageURLs().size());
+        } else {
+            holder.layoutDots.setVisibility(View.GONE);
+        }
+
         getPost(postModel,
-                holder.imgPostImage,
+                holder.viewPagerImages,
                 holder.txtCaption,
                 holder.imgProfile,
                 holder.txtName,
@@ -91,40 +104,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         interactionCounter(postModel.getPostId(), holder.txtLikesAmount, "Likes");
         interactionCounter(postModel.getPostId(), holder.txtCommentsAmount, "Comments");
 
-        holder.btnLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                likeButton(postModel.getPostId(), postModel.getAuthor(), holder.btnLike);
-            }
-        });
-
-        holder.txtName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.goToProfile(postModel.getAuthor(), mContext);
-            }
-        });
-
-        holder.imgProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.goToProfile(postModel.getAuthor(), mContext);
-            }
-        });
-
-        holder.btnComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showComments(postModel.getPostId(), postModel.getAuthor());
-            }
-        });
-
-        holder.btnMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moreDialog(postModel);
-            }
-        });
+        setupClickListeners(holder, postModel);
     }
 
 
@@ -136,7 +116,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView imgProfile;
-        public ImageView imgPostImage;
 
         public ImageButton btnLike;
         public ImageButton btnComment;
@@ -149,12 +128,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         public TextView txtUsernameCpt;
         public TextView txtCaption;
 
+        public ViewPager2 viewPagerImages;
+        public LinearLayout layoutDots;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imgProfile = itemView.findViewById(R.id.imgProfileIcon);
-            imgPostImage = itemView.findViewById(R.id.imgPostImage);
 
             btnComment = itemView.findViewById(R.id.btnComment);
             btnLike = itemView.findViewById(R.id.btnLike);
@@ -166,18 +147,66 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             txtCommentsAmount = itemView.findViewById(R.id.txtCommentsAmount);
             txtUsernameCpt = itemView.findViewById(R.id.txtUsernameCpt);
             txtCaption = itemView.findViewById(R.id.txtCaption);
+
+            viewPagerImages = itemView.findViewById(R.id.viewPagerImages);
+            layoutDots = itemView.findViewById(R.id.layoutDots);
         }
     }
 
+    private void setupImageIndicator(ViewHolder holder, int imageCount) {
+        holder.layoutDots.removeAllViews();
+        ImageView[] dots = new ImageView[imageCount];
+
+        for (int i = 0; i < imageCount; i++) {
+            dots[i] = new ImageView(mContext);
+            dots[i].setImageDrawable(ContextCompat.getDrawable(mContext,
+                    i == 0 ? R.drawable.dot_selected : R.drawable.dot_unselected));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(8, 0, 8, 0);
+            holder.layoutDots.addView(dots[i], params);
+        }
+
+        holder.viewPagerImages.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < imageCount; i++) {
+                    dots[i].setImageDrawable(ContextCompat.getDrawable(mContext,
+                            i == position ? R.drawable.dot_selected : R.drawable.dot_unselected));
+                }
+            }
+        });
+    }
+
+    private void setupClickListeners(ViewHolder holder, PostModel postModel) {
+        holder.btnLike.setOnClickListener(v ->
+                likeButton(postModel.getPostId(), postModel.getAuthor(), holder.btnLike));
+
+        holder.txtName.setOnClickListener(v ->
+                Utils.goToProfile(postModel.getAuthor(), mContext));
+
+        holder.imgProfile.setOnClickListener(v ->
+                Utils.goToProfile(postModel.getAuthor(), mContext));
+
+        holder.btnComment.setOnClickListener(v ->
+                showComments(postModel.getPostId(), postModel.getAuthor()));
+
+        holder.btnMore.setOnClickListener(v ->
+                moreDialog(postModel));
+    }
+
     public void getPost(PostModel postModel,
-                        ImageView imgPostImage,
+                        ViewPager2 viewPagerImages,
                         TextView txtCaption,
                         ImageView imgProfile,
                         TextView txtName,
                         TextView txtUsername,
-                        TextView txtUsernameCpt){
-        Picasso.get().load(postModel.getImageURL()).into(imgPostImage); //ISSUE HERE, RETURNING NULL
+                        TextView txtUsernameCpt) {
 
+        // Image handling is now done by ViewPager adapter
         txtCaption.setText(postModel.getDescription());
 
         authManager.GetDb().getReference().child("Users")
@@ -185,7 +214,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                         try {
                             String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                             String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
@@ -204,7 +232,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                         } catch (Exception e) {
                             Log.e("PostError", "Error processing user data: " + e.getMessage());
                         }
-
                     }
 
                     @Override
