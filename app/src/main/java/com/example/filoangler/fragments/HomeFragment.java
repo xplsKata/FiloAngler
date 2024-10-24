@@ -36,8 +36,8 @@ public class HomeFragment extends Fragment {
     private List<PostModel> postList;
 
     private List<String> followingList;
-
     private LoginManager loginManager;
+
     private AuthManager authManager;
 
     @Override
