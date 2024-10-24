@@ -2,13 +2,18 @@ package com.example.filoangler.Dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.media.Image;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.filoangler.Adapter.ImagePagerAdapter;
 import com.example.filoangler.Adapter.PostAdapter;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -32,6 +37,10 @@ public class PostDetailsDialog {
     private PostModel postModel;
     private PostAdapter postAdapter;
     private Context mContext;
+    private ImagePagerAdapter imagePagerAdapter;
+    private LinearLayout layoutDots;
+    ViewPager2 viewPagerImages;
+
 
     public PostDetailsDialog(Context context, AuthManager authManager, String postId) {
         this.mContext = context;
@@ -40,10 +49,10 @@ public class PostDetailsDialog {
         this.loginManager = new LoginManager(context);
         List<PostModel> dummyList = new ArrayList<>();
         this.postAdapter = new PostAdapter(context, dummyList);
+
     }
 
     public void getPost(Dialog dialog) {
-        ImageView imgPostImage = dialog.findViewById(R.id.imgPostImage);
         ImageView imgProfile = dialog.findViewById(R.id.imgProfileIcon);
 
         TextView txtCaption = dialog.findViewById(R.id.txtCaption);
@@ -53,18 +62,31 @@ public class PostDetailsDialog {
         TextView txtLikesAmount = dialog.findViewById(R.id.txtLikesAmount);
         TextView txtCommentsAmount = dialog.findViewById(R.id.txtCommentsAmount);
 
+        viewPagerImages = dialog.findViewById(R.id.viewPagerImages);
+
         ImageButton btnComment = dialog.findViewById(R.id.btnComment);
         ImageButton btnLike = dialog.findViewById(R.id.btnLike);
         ImageButton btnMore = dialog.findViewById(R.id.btnMore);
+        layoutDots = dialog.findViewById(R.id.layoutDots);
 
         authManager.GetDb().getReference().child("Posts").child(postId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         postModel = snapshot.getValue(PostModel.class);
+
+
+                        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getImageURLs());
+                        if (postModel.getImageURLs().size() > 1) {
+                            layoutDots.setVisibility(View.VISIBLE);
+                            setupImageIndicator(postModel.getImageURLs().size());
+                        } else {
+                            layoutDots.setVisibility(View.GONE);
+                        }
+
                         if (postModel != null) {
                             userId = postModel.getAuthor();
-                            Picasso.get().load(postModel.getImageURL()).into(imgPostImage);
+                            viewPagerImages.setAdapter(imagePagerAdapter);
                             txtCaption.setText(postModel.getDescription());
 
                             // Fetch user details
@@ -106,6 +128,34 @@ public class PostDetailsDialog {
                         // Handle error
                     }
                 });
+    }
+
+    private void setupImageIndicator(int imageCount) {
+        layoutDots.removeAllViews();
+        ImageView[] dots = new ImageView[imageCount];
+
+        for (int i = 0; i < imageCount; i++) {
+            dots[i] = new ImageView(mContext);
+            dots[i].setImageDrawable(ContextCompat.getDrawable(mContext,
+                    i == 0 ? R.drawable.dot_selected : R.drawable.dot_unselected));
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(8, 0, 8, 0);
+            layoutDots.addView(dots[i], params);
+        }
+
+        viewPagerImages.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < imageCount; i++) {
+                    dots[i].setImageDrawable(ContextCompat.getDrawable(mContext,
+                            i == position ? R.drawable.dot_selected : R.drawable.dot_unselected));
+                }
+            }
+        });
     }
 
     private void setupClickListeners(ImageButton btnLike, ImageButton btnComment, ImageButton btnMore, TextView txtName, ImageView imgProfile) {
