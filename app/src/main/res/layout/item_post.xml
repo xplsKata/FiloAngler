@@ -75,46 +75,77 @@
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"
             app:layout_constraintEnd_toEndOf="@+id/imgPostImage" />
 
-        <ImageView
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/imgPostImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="30dp"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-            app:srcCompat="@drawable/logotemp" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerImages"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout4"
+            android:id="@+id/layoutDots"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="@+id/imgPostImage"
             app:layout_constraintStart_toStartOf="@+id/imgPostImage"
-            app:layout_constraintTop_toBottomOf="@+id/imgPostImage">
+            app:layout_constraintTop_toBottomOf="@+id/imgPostImage" />
 
-            <ImageView
-                android:id="@+id/imgImagesIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/baseline_circle_24" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/txtUsernameCpt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/imgPostImage"
+            app:layout_constraintTop_toBottomOf="@+id/txtLikesAmount"
+            tools:ignore="DuplicateIds" />
+
+        <TextView
+            android:id="@+id/txtCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/txtUsernameCpt"
+            app:layout_constraintStart_toEndOf="@+id/txtUsernameCpt" />
 
         <ImageButton
             android:id="@+id/btnLike"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:backgroundTint="#00FFFFFF"
             android:scaleX="1.5"
             android:scaleY="1.5"
             android:src="@drawable/baseline_favorite_border_24"
-            app:layout_constraintStart_toStartOf="@+id/linearLayout4"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+            app:layout_constraintStart_toStartOf="@+id/imgPostImage"
+            app:layout_constraintTop_toBottomOf="@+id/layoutDots" />
 
         <TextView
             android:id="@+id/txtLikesAmount"
@@ -142,36 +173,13 @@
             android:id="@+id/btnComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:backgroundTint="#00FFFFFF"
             android:scaleX="1.5"
             android:scaleY="1.5"
             android:src="@drawable/baseline_chat_bubble_outline_24"
             app:layout_constraintStart_toEndOf="@+id/btnLike"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
-
-        <TextView
-            android:id="@+id/txtUsernameCpt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="30dp"
-            android:text="TextView"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/btnLike"
-            app:layout_constraintTop_toBottomOf="@+id/txtLikesAmount"
-            tools:ignore="DuplicateIds" />
-
-        <TextView
-            android:id="@+id/txtCaption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:text="TextView"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="@+id/txtUsernameCpt"
-            app:layout_constraintStart_toEndOf="@+id/txtUsernameCpt" />
+            app:layout_constraintTop_toBottomOf="@+id/layoutDots" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
