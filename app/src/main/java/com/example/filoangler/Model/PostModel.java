@@ -1,9 +1,11 @@
 package com.example.filoangler.Model;
 
+import java.util.List;
+
 public class PostModel {
 
     private String PostId;
-    private String ImageURL;
+    private List<String> ImageURLs;
     private String Description;
     private String Author;
 
@@ -11,9 +13,9 @@ public class PostModel {
 
     }
 
-    public PostModel(String postId, String imageURL, String description, String author) {
+    public PostModel(String postId, List<String> ImageURLs, String description, String author) {
         PostId = postId;
-        ImageURL = imageURL;
+        ImageURLs = ImageURLs;
         Description = description;
         Author = author;
     }
@@ -26,12 +28,12 @@ public class PostModel {
         PostId = postId;
     }
 
-    public String getImageURL() {
-        return ImageURL;
+    public List<String> getImageURLs() {
+        return ImageURLs;
     }
 
-    public void setImageURL(String imageURL) {
-        ImageURL = imageURL;
+    public void setImageURL(List<String> ImageURLs) {
+        ImageURLs = ImageURLs;
     }
 
     public String getDescription() {
