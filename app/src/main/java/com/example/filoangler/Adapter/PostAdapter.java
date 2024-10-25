@@ -217,7 +217,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                         try {
                             String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                             String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
-                            String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                            String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
                             String username = snapshot.child("Account Details").child("Username").getValue(String.class);
 
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
@@ -278,7 +278,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         try {
-                            String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                            String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
 
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(imgProfileIcon);

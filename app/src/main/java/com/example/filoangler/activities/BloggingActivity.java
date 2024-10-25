@@ -75,7 +75,7 @@ public class BloggingActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                        String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
 
                         if (profileIconURL != null && !profileIconURL.equals("null")) {
                             Picasso.get().load(profileIconURL).into(btnIcon);

@@ -81,7 +81,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                         try {
                             String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                             String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
-                            String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                            String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
 
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(holder.imgProfileIcon);

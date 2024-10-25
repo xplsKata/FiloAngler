@@ -96,7 +96,7 @@ public class PostDetailsDialog {
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                                             String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
-                                            String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                                            String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
                                             String username = snapshot.child("Account Details").child("Username").getValue(String.class);
 
                                             txtName.setText(firstName + " " + lastName);

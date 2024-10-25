@@ -141,7 +141,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                        String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
                         String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                         String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
 

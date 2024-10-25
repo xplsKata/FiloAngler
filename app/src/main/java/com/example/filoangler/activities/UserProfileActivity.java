@@ -183,7 +183,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 try {
                     String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                     String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
-                    String profileIconURL = snapshot.child("Personal Information").child("ProfileIconURL").getValue(String.class);
+                    String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
                     String username = snapshot.child("Account Details").child("Username").getValue(String.class);
                     String bio = snapshot.child("Personal Information").child("Bio").getValue(String.class);
 

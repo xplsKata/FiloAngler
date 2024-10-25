@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bgBlue"
     tools:context=".activities.EditProfileActivity">
 
     <ScrollView
@@ -27,9 +28,9 @@
                 android:layout_weight="1"
                 android:backgroundTint="#00FFFFFF"
                 android:src="@drawable/baseline_close_24"
-                app:tint="@color/bgBlue"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white" />
 
             <Button
                 android:id="@+id/btnSave"
@@ -38,10 +39,9 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
-                android:backgroundTint="#00FFFFFF"
                 android:text="@string/txtSave"
                 android:textAlignment="textEnd"
-                android:textColor="@color/bgBlue"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -78,7 +78,9 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:gravity="center"
-                        android:padding="15dp"
+                        android:paddingHorizontal="15dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="15dp"
                         android:text="@string/txtChangePhoto"
                         android:textColor="@color/iconBlue"
                         android:textSize="20sp" />
@@ -89,9 +91,10 @@
                     android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     android:gravity="center"
                     android:text="@string/txtFirstName"
-                    android:textColor="@color/bgBlue"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -101,19 +104,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginBottom="15dp"
-                    android:backgroundTint="@color/bgBlue"
+                    android:backgroundTint="@color/white"
                     android:ems="10"
                     android:inputType="text"
                     android:text="Name"
-                    android:textColor="@color/bgBlue" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/textView13"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     android:gravity="center"
                     android:text="@string/txtLastName"
-                    android:textColor="@color/bgBlue"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -123,19 +127,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginBottom="15dp"
-                    android:backgroundTint="@color/bgBlue"
+                    android:backgroundTint="@color/white"
                     android:ems="10"
                     android:inputType="text"
                     android:text="Name"
-                    android:textColor="@color/bgBlue" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/textView14"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     android:gravity="center"
                     android:text="@string/username"
-                    android:textColor="@color/bgBlue"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -145,19 +150,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginBottom="15dp"
-                    android:backgroundTint="@color/bgBlue"
+                    android:backgroundTint="@color/white"
                     android:ems="10"
                     android:inputType="text"
                     android:text="Name"
-                    android:textColor="@color/bgBlue" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/textView15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     android:gravity="center"
                     android:text="@string/txtBio"
-                    android:textColor="@color/bgBlue"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -167,11 +173,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginBottom="15dp"
-                    android:backgroundTint="@color/bgBlue"
+                    android:backgroundTint="@color/white"
                     android:ems="10"
                     android:inputType="text"
                     android:text="Name"
-                    android:textColor="@color/bgBlue" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
