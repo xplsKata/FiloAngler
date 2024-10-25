@@ -6,11 +6,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -59,6 +64,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private StorageReference storageRef;
 
     private Uri croppedImageUri;
+    private static final int PERMISSION_REQUEST_CODE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +106,7 @@ public class EditProfileActivity extends AppCompatActivity {
         btnChangePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGallery();
+                checkAndRequestPermissions();
             }
         });
 
@@ -131,6 +137,42 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                Toast.makeText(this, "Permission denied. Cannot access gallery.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void checkAndRequestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13 and above
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                openGallery();
+            }
+        } else {
+            // For Android 12 and below
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                openGallery();
+            }
+        }
+    }
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
@@ -141,9 +183,18 @@ public class EditProfileActivity extends AppCompatActivity {
         options.imageSourceIncludeGallery = true;
         options.imageSourceIncludeCamera = false;
         options.guidelines = CropImageView.Guidelines.ON;
+
+        // Lock aspect ratio to 1:1
         options.aspectRatioX = 1;
         options.aspectRatioY = 1;
+        options.fixAspectRatio = true; // This forces the 1:1 ratio
+
+        // Set initial crop window to be as large as possible while maintaining the aspect ratio
+        options.initialCropWindowPaddingRatio = 0;
+
+        // Set output settings
         options.outputCompressFormat = Bitmap.CompressFormat.JPEG;
+        options.outputCompressQuality = 90; // Good quality while keeping file size reasonable
 
         CropImageContractOptions cropImageContractOptions = new CropImageContractOptions(imageUri, options);
         cropImage.launch(cropImageContractOptions);
