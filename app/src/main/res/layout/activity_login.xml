@@ -7,149 +7,158 @@
     android:background="@color/bgBlue"
     tools:context=".activities.LoginActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="350dp"
-        android:layout_height="680dp"
-        android:layout_marginTop="75dp"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="400px"
-            android:layout_height="400px"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/logotemp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="1dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView">
-
-            <EditText
-                android:id="@+id/txtEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:backgroundTint="@color/white"
-                android:hint="@string/email"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="@null"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textColorHint="#FFFFFF"
-                android:textSize="24sp" />
-
-            <EditText
-                android:id="@+id/txtPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
-                android:backgroundTint="@color/white"
-                android:hint="@string/password"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:password="true"
-                android:text="@null"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textColorHint="#FFFFFF"
-                android:textSize="24sp" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="400px"
+                android:layout_height="400px"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/logotemp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linearLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView">
 
-                <Button
-                    android:id="@+id/btnForgotPw"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/txtEmail"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/forgotPw"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="@string/email"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="@null"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    app:cornerRadius="0px" />
+                    android:textColorHint="#FFFFFF"
+                    android:textSize="24sp" />
 
-                <Button
-                    android:id="@+id/btnRegister"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/txtPassword"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/register"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="5dp"
+                    android:backgroundTint="@color/white"
+                    android:hint="@string/password"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:password="true"
+                    android:text="@null"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    app:cornerRadius="0px" />
+                    android:textColorHint="#FFFFFF"
+                    android:textSize="24sp" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnForgotPw"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/forgotPw"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        app:cornerRadius="0px" />
+
+                    <Button
+                        android:id="@+id/btnRegister"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/register"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        app:cornerRadius="0px" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnLogin"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/login"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    app:background="@color/iconBlue"
+                    app:backgroundTint="@color/iconBlue"
+                    app:cornerRadius="50px" />
+
+                <Button
+                    android:id="@+id/btnGoogle"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="Google"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:visibility="gone"
+                    app:background="@color/iconBlue"
+                    app:backgroundTint="@color/iconBlue"
+                    app:cornerRadius="50px" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="or"
+                    android:textAlignment="center"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btnOfflineMode"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/offlineMode"
+                    android:textSize="24sp"
+                    app:background="@color/iconBlue"
+                    app:backgroundTint="@color/iconBlue"
+                    app:cornerRadius="50px" />
             </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-            <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="@string/login"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                app:background="@color/iconBlue"
-                app:backgroundTint="@color/iconBlue"
-                app:cornerRadius="50px" />
-
-            <Button
-                android:id="@+id/btnGoogle"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Google"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                app:background="@color/iconBlue"
-                app:backgroundTint="@color/iconBlue"
-                app:cornerRadius="50px" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="or"
-                android:textAlignment="center"
-                android:textColor="@color/white" />
-
-            <Button
-                android:id="@+id/btnOfflineMode"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="@string/offlineMode"
-                android:textSize="24sp"
-                app:background="@color/iconBlue"
-                app:backgroundTint="@color/iconBlue"
-                app:cornerRadius="50px" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

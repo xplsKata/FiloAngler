@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.example.filoangler.Manager.LoginManager;
 import com.google.firebase.database.annotations.Nullable;
 
+@Deprecated
 public class GoogleLoginActivity extends AppCompatActivity {
     private com.example.filoangler.Manager.LoginManager LoginManager;
 
