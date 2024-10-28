@@ -190,7 +190,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         if (profileIconURL != null && !profileIconURL.isEmpty()) {
                             Picasso.get().load(profileIconURL).into(imgProfileIcon);
                         } else {
-                            imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+                            imgProfileIcon.setImageResource(R.drawable.default_icon);
                         }
 
                         txtBio.setText((bio == null || bio.isEmpty()) ? "None" : bio);

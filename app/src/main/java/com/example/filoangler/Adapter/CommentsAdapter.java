@@ -86,7 +86,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(holder.imgProfileIcon);
                             } else {
-                                holder.imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+                                holder.imgProfileIcon.setImageResource(R.drawable.default_icon);
                             }
 
                             holder.txtName.setText(firstName + " " + lastName);

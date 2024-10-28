@@ -8,8 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.BloggingActivity"
-    tools:openDrawer="left">
+    tools:context=".activities.BloggingActivity">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/sideNavBar"
@@ -80,7 +79,7 @@
                         android:layout_marginStart="15dp"
                         android:backgroundTint="#00FFFFFF"
                         android:clickable="true"
-                        android:src="@drawable/socialview_ic_mention_placeholder"
+                        android:src="@drawable/default_icon"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

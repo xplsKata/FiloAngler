@@ -133,7 +133,7 @@ public class BloggingActivity extends AppCompatActivity {
                                 if (profileIconURL != null && !profileIconURL.equals("null")) {
                                     Picasso.get().load(profileIconURL).into(btnIcon);
                                 } else {
-                                    btnIcon.setImageResource(R.mipmap.ic_launcher);
+                                    btnIcon.setImageResource(R.drawable.default_icon);
                                 }
                             }
 
@@ -155,7 +155,7 @@ public class BloggingActivity extends AppCompatActivity {
             }
         } else {
             // Set default values for offline mode
-            btnIcon.setImageResource(R.mipmap.ic_launcher);
+            btnIcon.setImageResource(R.drawable.default_icon);
 
             if (navigationView != null) {
                 View headerView = navigationView.getHeaderView(0);
@@ -166,7 +166,7 @@ public class BloggingActivity extends AppCompatActivity {
                 // Set offline mode text
                 if (txtName != null) txtName.setText("Offline Mode");
                 if (txtUsername != null) txtUsername.setText("Guest User");
-                if (imgProfileIcon != null) imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+                if (imgProfileIcon != null) imgProfileIcon.setImageResource(R.drawable.default_icon);
             }
         }
 

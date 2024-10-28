@@ -223,7 +223,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(imgProfile);
                             } else {
-                                imgProfile.setImageResource(R.mipmap.ic_launcher);
+                                imgProfile.setImageResource(R.drawable.default_icon);
                             }
 
                             txtName.setText(firstName + " " + lastName);
@@ -283,7 +283,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(imgProfileIcon);
                             } else {
-                                imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+                                imgProfileIcon.setImageResource(R.drawable.default_icon);
                             }
                         } catch (Exception e) {
                             Log.e("PostAdapterError", "Error processing user data: " + e.getMessage());

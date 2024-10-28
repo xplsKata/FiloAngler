@@ -45,7 +45,7 @@ public class SideNavAdapter {
                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                 Picasso.get().load(profileIconURL).into(imgProfileIcon);
                             } else {
-                                imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+                                imgProfileIcon.setImageResource(R.drawable.default_icon);
                             }
 
                             Name.setText(firstName + " " + lastName);

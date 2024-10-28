@@ -105,7 +105,7 @@ public class PostDetailsDialog {
                                             if (profileIconURL != null && !profileIconURL.equals("null")) {
                                                 Picasso.get().load(profileIconURL).into(imgProfile);
                                             } else {
-                                                imgProfile.setImageResource(R.mipmap.ic_launcher);
+                                                imgProfile.setImageResource(R.drawable.default_icon);
                                             }
                                         }
 
