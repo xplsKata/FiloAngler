@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:background="#00FFFFFF">
+    xmlns:tool="http://schemas.android.com/tools"
+    android:background="#00FFFFFF"
+    tool:background="@color/bgBlue">
 
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgProfileIcon"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -14,7 +16,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logotemp" />
+        app:srcCompat="@drawable/logotemp"
+        app:shapeAppearanceOverlay="@style/circle"/>
 
     <TextView
         android:id="@+id/txtUsername"

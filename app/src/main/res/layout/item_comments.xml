@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#00000000">
+    android:background="#00000000"
+    tools:background="@color/bgBlue">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgProfileIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -16,7 +17,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logotemp" />
+        app:srcCompat="@drawable/logotemp"
+        app:shapeAppearanceOverlay="@style/circle"/>
 
     <LinearLayout
         android:id="@+id/linearLayout5"

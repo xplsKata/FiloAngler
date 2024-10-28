@@ -66,11 +66,12 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <ImageView
+                    <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgProfile"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
-                        app:srcCompat="@drawable/logotemp" />
+                        app:srcCompat="@drawable/logotemp"
+                        app:shapeAppearanceOverlay="@style/circle"/>
 
                     <TextView
                         android:id="@+id/btnChangePhoto"
