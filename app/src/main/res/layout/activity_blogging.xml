@@ -8,7 +8,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.BloggingActivity">
+    tools:context=".activities.BloggingActivity"
+    tools:openDrawer="left">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/sideNavBar"

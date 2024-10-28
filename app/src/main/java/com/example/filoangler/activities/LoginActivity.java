@@ -2,6 +2,7 @@ package com.example.filoangler.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,7 +19,7 @@ import com.example.filoangler.Utils;
 public class LoginActivity extends AppCompatActivity {
 
     //Auth
-    private com.example.filoangler.Manager.LoginManager LoginManager;
+    private LoginManager LoginManager;
 
     //Elements
     private EditText txtEmail;
@@ -93,11 +94,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //Offline mode Button
         btnOfflineMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(LoginActivity.this, BloggingActivity.class);
+                intent.putExtra("offline_mode", true);
+                startActivity(intent);
+                finish();
             }
         });
 

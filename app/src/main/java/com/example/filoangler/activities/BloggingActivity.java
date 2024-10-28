@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ActionMenuView;
@@ -30,6 +31,7 @@ import com.example.filoangler.Utils;
 import com.example.filoangler.fragments.FishDatabankFragment;
 import com.example.filoangler.fragments.HomeFragment;
 import com.example.filoangler.fragments.MapFragment;
+import com.example.filoangler.fragments.NoInternetFragment;
 import com.example.filoangler.fragments.NotificationsFragment;
 import com.example.filoangler.fragments.TideFragment;
 import com.example.filoangler.fragments.WeatherFragment;
@@ -41,8 +43,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class BloggingActivity extends AppCompatActivity {
-    private BottomNavigationView BottomNavigationView;
-    private Fragment SelectedFragment;
+    private boolean isOfflineMode = false;
+
+    private BottomNavigationView bottomNavigationView;
+    private Fragment selectedFragment;
     private ImageButton btnSearch;
     private Button btnLogout;
     private TextView txtName, txtUsername;
@@ -58,10 +62,26 @@ public class BloggingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blogging);
 
+        isOfflineMode = getIntent().getBooleanExtra("offline_mode", false);
+
+        initializeViews();
+        setupUserProfile();
+        setupNavigationListeners();
+
+        if (isOfflineMode) {
+            setupOfflineMode();
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.bloggingActivityFrameLayout, new HomeFragment())
+                    .commit();
+        }
+    }
+
+    private void initializeViews() {
         loginManager = new LoginManager(this);
         authManager = new AuthManager();
 
-        BottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         btnIcon = findViewById(R.id.btnIcon);
         btnSearch = findViewById(R.id.btnSearch);
 
@@ -69,58 +89,114 @@ public class BloggingActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.sideNavBar);
 
         btnLogout = navigationView.findViewById(R.id.btnLogout);
+    }
 
-        authManager.GetDb().getReference().child("Users")
-                .child(loginManager.GetCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
+    private void setupOfflineMode() {
+        // Show NoInternetFragment fragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
+                .commit();
 
-                        if (profileIconURL != null && !profileIconURL.equals("null")) {
-                            Picasso.get().load(profileIconURL).into(btnIcon);
-                        } else {
-                            btnIcon.setImageResource(R.mipmap.ic_launcher);
-                        }
-                    }
+        // Disable bottom navigation items except Home
+        Menu bottomMenu = bottomNavigationView.getMenu();
+        for (int i = 0; i < bottomMenu.size(); i++) {
+            MenuItem item = bottomMenu.getItem(i);
+            if (item.getItemId() != R.id.Home) {
+                item.setEnabled(false);
+            }
+        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+        // Disable specific side navigation items
+        Menu sideMenu = navigationView.getMenu();
+        MenuItem profileItem = sideMenu.findItem(R.id.navProfile);
+        MenuItem helpItem = sideMenu.findItem(R.id.btnHelp);
+        if (profileItem != null) profileItem.setEnabled(false);
+        if (helpItem != null) helpItem.setEnabled(false);
 
-                    }
-                });
+        // Disable search button
+        btnSearch.setEnabled(false);
+        btnSearch.setAlpha(0.5f);
+    }
 
-        if(navigationView != null){
-            View headerView = navigationView.getHeaderView(0);
-            txtName = headerView.findViewById(R.id.txtName);
-            txtUsername = headerView.findViewById(R.id.txtUsername);
-            imgProfileIcon = headerView.findViewById(R.id.imgProfileIcon);
+    private void setupUserProfile() {
+        if (!isOfflineMode) {
+            // Only try to get Firebase user data if we're online
+            if (loginManager.GetCurrentUser() != null) {
+                authManager.GetDb().getReference().child("Users")
+                        .child(loginManager.GetCurrentUser().getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String profileIconURL = snapshot.child("Account Details")
+                                        .child("ProfileIconURL").getValue(String.class);
 
-            SideNavAdapter sideNavAdapter = new SideNavAdapter();
-            sideNavAdapter.setSideNavUser(txtName,txtUsername,imgProfileIcon, loginManager, authManager);
+                                if (profileIconURL != null && !profileIconURL.equals("null")) {
+                                    Picasso.get().load(profileIconURL).into(btnIcon);
+                                } else {
+                                    btnIcon.setImageResource(R.mipmap.ic_launcher);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+            }
+
+            if (navigationView != null) {
+                View headerView = navigationView.getHeaderView(0);
+                txtName = headerView.findViewById(R.id.txtName);
+                txtUsername = headerView.findViewById(R.id.txtUsername);
+                imgProfileIcon = headerView.findViewById(R.id.imgProfileIcon);
+
+                SideNavAdapter sideNavAdapter = new SideNavAdapter();
+                sideNavAdapter.setSideNavUser(txtName, txtUsername, imgProfileIcon,
+                        loginManager, authManager);
+            }
+        } else {
+            // Set default values for offline mode
+            btnIcon.setImageResource(R.mipmap.ic_launcher);
+
+            if (navigationView != null) {
+                View headerView = navigationView.getHeaderView(0);
+                txtName = headerView.findViewById(R.id.txtName);
+                txtUsername = headerView.findViewById(R.id.txtUsername);
+                imgProfileIcon = headerView.findViewById(R.id.imgProfileIcon);
+
+                // Set offline mode text
+                if (txtName != null) txtName.setText("Offline Mode");
+                if (txtUsername != null) txtUsername.setText("Guest User");
+                if (imgProfileIcon != null) imgProfileIcon.setImageResource(R.mipmap.ic_launcher);
+            }
         }
 
         navigationView.bringToFront();
+    }
 
-        BottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId() == R.id.Home){
-                    SelectedFragment = new HomeFragment();
-                }else if(item.getItemId() == R.id.Map){
-                    SelectedFragment = new MapFragment();
-                }else if(item.getItemId() == R.id.Weather){
-                    SelectedFragment = new WeatherFragment();
-                }else if(item.getItemId() == R.id.Tide){
-                    SelectedFragment = new TideFragment();
-                }else if(item.getItemId() == R.id.Notifications){
-                    SelectedFragment = new NotificationsFragment();
-                }
-                if(SelectedFragment != null){
-                    getSupportFragmentManager().beginTransaction().replace(R.id.bloggingActivityFrameLayout, SelectedFragment).commit();
-                }
-                return true;
+    private void setupNavigationListeners() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (isOfflineMode) {
+                return false;
             }
+
+            if (item.getItemId() == R.id.Home) {
+                selectedFragment = new HomeFragment();
+            } else if (item.getItemId() == R.id.Map) {
+                selectedFragment = new MapFragment();
+            } else if (item.getItemId() == R.id.Weather) {
+                selectedFragment = new WeatherFragment();
+            } else if (item.getItemId() == R.id.Tide) {
+                selectedFragment = new TideFragment();
+            } else if (item.getItemId() == R.id.Notifications) {
+                selectedFragment = new NotificationsFragment();
+            }
+
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
+                        .commit();
+            }
+            return true;
         });
 
         btnIcon.setOnClickListener(new View.OnClickListener() {
@@ -137,21 +213,31 @@ public class BloggingActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.ChangeIntent(BloggingActivity.this, SearchActivity.class);
+                if (!isOfflineMode) {  // Only allow search in online mode
+                    Utils.ChangeIntent(BloggingActivity.this, SearchActivity.class);
+                }
             }
         });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (isOfflineMode) {
+                    // In offline mode, only allow certain menu items
+                    int id = item.getItemId();
+                    if (id == R.id.navProfile || id == R.id.btnHelp) {
+                        return false;
+                    }
+                }
+
                 Log.d("SideNav", "Menu item clicked: " + item.getTitle());
                 int id = item.getItemId();
 
                 if (id == R.id.navFishDatabank) {
                     Log.d("SideNav", "Fish Databank clicked");
-                    SelectedFragment = new FishDatabankFragment();
+                    selectedFragment = new FishDatabankFragment();
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.bloggingActivityFrameLayout, SelectedFragment)
+                            .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
                             .commit();
                 } else if (id == R.id.navEquipments) {
                     Log.d("SideNav", "Equipments clicked");
@@ -159,7 +245,7 @@ public class BloggingActivity extends AppCompatActivity {
                 } else if (id == R.id.navMustKnow) {
                     Log.d("SideNav", "Must Know clicked");
                     // Handle Must Know action
-                } else if (id == R.id.navProfile) {
+                } else if (id == R.id.navProfile && !isOfflineMode) {
                     Log.d("SideNav", "Profile clicked");
                     Intent intent = new Intent(BloggingActivity.this, UserProfileActivity.class);
                     intent.putExtra("UserId", loginManager.GetCurrentUser().getUid());
@@ -180,17 +266,16 @@ public class BloggingActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Log.d("SideNav", "Logout button clicked");
-                    loginManager.LogOut();
+                    if (!isOfflineMode) {
+                        loginManager.LogOut();
+                    }
                     Utils.ChangeIntent(BloggingActivity.this, LoginActivity.class);
                     finish();
                 }
             });
-
         } else {
             Log.e("SideNav", "Logout button not found in NavigationView");
         }
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.bloggingActivityFrameLayout, new HomeFragment()).commit();
     }
 
     @Override
