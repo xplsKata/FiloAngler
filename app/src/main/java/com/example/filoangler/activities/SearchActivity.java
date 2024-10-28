@@ -52,7 +52,7 @@ import java.util.List;
              mUsers = new ArrayList<>();
 
              // Initialize UserAdapter
-             userAdapter = new UserAdapter(getBaseContext(), mUsers, false);
+             userAdapter = new UserAdapter(SearchActivity.this, mUsers, false, "search");
              recyclerView.setAdapter(userAdapter);
 
              search_bar = findViewById(R.id.txtSearch);

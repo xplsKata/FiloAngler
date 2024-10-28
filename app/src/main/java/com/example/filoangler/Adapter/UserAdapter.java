@@ -32,13 +32,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     private boolean isFragment;
     private LoginManager loginManager;
     private FirebaseDatabase mDb;
+    private String adapterStyle;
     AuthManager authManager = new AuthManager();
 
-    public UserAdapter(Context mContext, List<UserModel> mUsers, boolean isFragment) {
+
+    public UserAdapter(Context mContext, List<UserModel> mUsers, boolean isFragment, String adapterStyle) {
         this.mContext = mContext;
         this.mUsers = mUsers;
         this.isFragment = isFragment;
         this.mDb = authManager.GetDb();
+        this.adapterStyle = adapterStyle;
+    }
+
+    public UserAdapter(Context mContext, List<UserModel> mUsers, boolean isFragment) {
+        this(mContext, mUsers, isFragment, "default");  // Use default style
     }
 
     @NonNull
@@ -61,7 +68,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
         Picasso.get().load(userModel.getProfileIconURL()).placeholder(R.mipmap.ic_launcher).into(holder.imgProfile);
 
-        isFollowed(userModel.getUserID(), holder.btnFollow);
+        isFollowed(holder, userModel.getUserID(), holder.btnFollow);
 
         if(userModel.getUserID().equals(loginManager.GetCurrentUser().getUid())){
             holder.btnFollow.setVisibility(View.GONE);
@@ -90,23 +97,46 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
     }
 
-    private void isFollowed(final String id, Button btnFollow){
-        DatabaseReference reference = mDb.getReference().child("Users")
+    private void isFollowed(ViewHolder view, final String id, Button btnFollow) {
+        DatabaseReference reference = authManager.GetDb().getReference().child("Users")
                 .child(loginManager.GetCurrentUser().getUid())
                 .child("Following");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.child(id).exists()){
+                if(snapshot.child(id).exists()) {
                     btnFollow.setText(R.string.txtFollowing);
-                }else{
+
+                    if (adapterStyle.equals("search")) {
+                        // Special styling for search activity
+                        btnFollow.setBackgroundColor(mContext.getResources().getColor(R.color.bgBlue));
+                        btnFollow.setTextColor(mContext.getResources().getColor(R.color.white));
+                    } else {
+                        // Default styling for other fragments
+                        btnFollow.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+                        btnFollow.setTextColor(mContext.getResources().getColor(R.color.bgBlue));
+                        view.Username.setTextColor(mContext.getResources().getColor(R.color.white));
+                        view.Name.setTextColor(mContext.getResources().getColor(R.color.white));
+                    }
+                } else {
                     btnFollow.setText(R.string.txtFollow);
+
+                    if (adapterStyle.equals("search")) {
+                        // Special styling for search activity
+                        btnFollow.setBackgroundColor(mContext.getResources().getColor(R.color.iconBlue));
+                        btnFollow.setTextColor(mContext.getResources().getColor(R.color.white));
+                    } else {
+                        // Default styling for other fragments
+                        btnFollow.setBackgroundColor(mContext.getResources().getColor(R.color.iconBlue));
+                        btnFollow.setTextColor(mContext.getResources().getColor(R.color.white));
+                        view.Username.setTextColor(mContext.getResources().getColor(R.color.white));
+                        view.Name.setTextColor(mContext.getResources().getColor(R.color.white));
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
