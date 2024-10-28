@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.filoangler.BuildConfig;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.RegisterManager;
 import com.example.filoangler.Model.UserModel;
@@ -46,7 +47,7 @@ public class RegisterP3Activity extends AppCompatActivity {
                 String CityAddress = getIntent().getStringExtra("CityAddress");
                 String AnglerStatus = getIntent().getStringExtra("AnglerStatus");
                 String Bio = "null";
-                String ProfileIconURL = "null";
+                String ProfileIconURL = BuildConfig.defaultProfileIconURL;
 
                 UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus, Bio, ProfileIconURL);
                 try{

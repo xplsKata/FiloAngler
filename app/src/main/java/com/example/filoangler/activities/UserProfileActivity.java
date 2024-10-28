@@ -38,10 +38,10 @@ import java.util.List;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private ImageView imgProfileIcon;
+    private ImageView imgProfileIcon, imgVerified;
     private ImageButton btnBack, btnMore;
     private Button btnEditProfile, btnFollow;
-    private TextView txtName, txtUsername, txtBio, txtFollowers, txtFollowing, txtPosts;
+    private TextView txtName, txtUsername, txtAnglerStatus, txtBio, txtFollowers, txtFollowing, txtPosts;
     private LinearLayout btnFollowers, btnFollowing;
     private LoginManager loginManager;
     private AuthManager authManager;
@@ -78,6 +78,7 @@ public class UserProfileActivity extends AppCompatActivity {
         btnMore = findViewById(R.id.btnMore);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         txtName = findViewById(R.id.txtName);
+        txtAnglerStatus = findViewById(R.id.txtAnglerStatus);
         txtUsername = findViewById(R.id.txtUsername);
         txtBio = findViewById(R.id.txtBio);
         txtFollowers = findViewById(R.id.txtFollowersCount);
@@ -86,22 +87,13 @@ public class UserProfileActivity extends AppCompatActivity {
         btnFollow = findViewById(R.id.btnFollow);
         btnFollowers = findViewById(R.id.btnFollowers);
         btnFollowing = findViewById(R.id.btnFollowing);
+        imgVerified = findViewById(R.id.imgVerified);
 
         UserId = getIntent().getStringExtra("UserId");
         Log.e("UserProfileActivity", "Intent Received: " + UserId);
 
         populateProfile();
         readPosts();
-
-        if(UserId.equals(loginManager.GetCurrentUser().getUid())){
-            btnFollow.setVisibility(View.GONE);
-            btnEditProfile.setVisibility(View.VISIBLE);
-        }else{
-            btnEditProfile.setVisibility(View.GONE);
-            btnFollow.setVisibility(View.VISIBLE);
-
-            isFollowed(UserId, btnFollow);
-        }
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,7 +161,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         DatabaseReference userRef = authManager.GetDb().getReference().child("Users").child(UserId);
 
-        userRef.addValueEventListener(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.e("UserProfileActivity", "Trying to find user");
@@ -183,12 +175,16 @@ public class UserProfileActivity extends AppCompatActivity {
                 try {
                     String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
                     String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
+                    String anglerStatus = snapshot.child("Account Details").child("AnglerStatus").getValue(String.class);
+                    Boolean anglerStatusVerified = snapshot.child("Account Details").child("AnglerStatusVerified").getValue(Boolean.class);
                     String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
                     String username = snapshot.child("Account Details").child("Username").getValue(String.class);
                     String bio = snapshot.child("Personal Information").child("Bio").getValue(String.class);
 
                     long followingCount = snapshot.child("Following").getChildrenCount();
                     long followerCount = snapshot.child("Followers").getChildrenCount();
+
+                    boolean isVerified = (anglerStatusVerified != null) ? anglerStatusVerified : false;
 
                     runOnUiThread(() -> {
                         if (profileIconURL != null && !profileIconURL.isEmpty()) {
@@ -199,9 +195,27 @@ public class UserProfileActivity extends AppCompatActivity {
 
                         txtBio.setText((bio == null || bio.isEmpty()) ? "None" : bio);
                         txtName.setText(String.format("%s %s", firstName, lastName));
+                        txtAnglerStatus.setText(anglerStatus);
+                        if(isVerified){
+                            imgVerified.setVisibility(View.VISIBLE);
+                        }else{
+                            imgVerified.setVisibility(View.GONE);
+                        }
                         txtUsername.setText(username);
                         txtFollowers.setText(String.valueOf(followerCount));
                         txtFollowing.setText(String.valueOf(followingCount));
+
+                        if(UserId.equals(loginManager.GetCurrentUser().getUid())){
+                            btnFollow.setVisibility(View.GONE);
+                            btnMore.setVisibility(View.GONE);
+                            btnEditProfile.setVisibility(View.VISIBLE);
+                        }else{
+                            btnEditProfile.setVisibility(View.GONE);
+                            btnMore.setVisibility(View.VISIBLE);
+                            btnFollow.setVisibility(View.VISIBLE);
+
+                            isFollowed(UserId, btnFollow);
+                        }
                     });
 
                 } catch (Exception e) {

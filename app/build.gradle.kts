@@ -26,6 +26,7 @@ android {
         //FOR API KEY
         val properties=Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField ("String","defaultProfileIconURL","\"${properties.getProperty("defaultProfileIconURL")}\"")
         buildConfigField ("String","googleLoginApiKey","\"${properties.getProperty("googleLoginApiKey")}\"")
         buildConfigField ("String","firebaseDatabaseApiKey","\"${properties.getProperty("firebaseDatabaseApiKey")}\"")
         buildConfigField ("String","googleMapsApiKey","\"${properties.getProperty("googleMapsApiKey")}\"")
