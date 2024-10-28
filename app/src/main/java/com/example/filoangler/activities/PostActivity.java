@@ -318,27 +318,44 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                             // Crop the rotated bitmap to square
                             squareBitmap = cropToSquare(rotatedBitmap);
 
-                            // Set the cropped, rotated bitmap to imgAdd
-                            //imgAdd.setImageBitmap(squareBitmap);
-
-                            //Converts bitmap into File(uri)
+                            // Converts bitmap into File(uri)
                             File squareBitmapFile = new File(getExternalFilesDir(null), "square_" + System.currentTimeMillis() + ".jpg");
                             try (FileOutputStream fileOutputStream = new FileOutputStream(squareBitmapFile)) {
                                 squareBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                                 fileOutputStream.close();
                                 Log.e("FileStream", "Success in creating image file");
-                            }catch(FileNotFoundException e){
+                            } catch(FileNotFoundException e){
                                 Log.e("FileStream", "Error in saving bitmap" + e);
                             }
 
                             imageUri = Uri.fromFile(squareBitmapFile);
                             imgAdd.setImageURI(imageUri);
 
+                            // Add the captured image to selectedImagePaths
+                            selectedImagePaths.add(imageUri.toString());
+                            currentImageDisplayed = selectedImagePaths.size() - 1;
+
+                            // Update UI state
+                            updateImageDisplayControls();
+                            if (galleryAdapter != null) {
+                                galleryAdapter.notifyDataSetChanged();
+                            }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                             // Fallback in case of error
                             imageUri = Uri.fromFile(file);
                             imgAdd.setImageURI(imageUri);
+
+                            // Still add to selectedImagePaths even in fallback case
+                            selectedImagePaths.add(imageUri.toString());
+                            currentImageDisplayed = selectedImagePaths.size() - 1;
+
+                            // Update UI state
+                            updateImageDisplayControls();
+                            if (galleryAdapter != null) {
+                                galleryAdapter.notifyDataSetChanged();
+                            }
                         }
 
                         btnCapture.setVisibility(View.GONE);
@@ -351,10 +368,12 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                 @Override
                 public void onError(@NonNull ImageCaptureException exception) {
                     Log.e("CameraError", "Error in Saving");
+                    Toast.makeText(PostActivity.this, "Failed to capture image", Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {
             Log.e("CameraError", "Error in Capture: " + e);
+            Toast.makeText(PostActivity.this, "Failed to capture image", Toast.LENGTH_SHORT).show();
         }
     }
 
