@@ -1,5 +1,6 @@
 package com.example.filoangler.Dialog;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,8 @@ import android.view.ViewGroup;
 import com.example.filoangler.R;
 
 public class WeatherDialogFragment extends Fragment {
+
+    private Context mContext;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
