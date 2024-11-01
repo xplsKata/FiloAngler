@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.filoangler.BuildConfig;
+import com.example.filoangler.Dialog.MoonDialogFragment;
 import com.example.filoangler.Dialog.WeatherDialogFragment;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -62,8 +63,6 @@ import okhttp3.Response;
 
 public class WeatherFragment extends Fragment {
 
-    private int currentWeatherIcon;
-
     private AutoCompleteTextView txtSearch;
 
     //Weather
@@ -87,6 +86,7 @@ public class WeatherFragment extends Fragment {
     private TextView btnWeatherMore;
 
     //Additional
+    private TextView btnMiscLearnMore;
     private TextView txtWindSpeed;
     private TextView txtTemperature;
     private TextView txtHumidity;
@@ -124,7 +124,10 @@ public class WeatherFragment extends Fragment {
     private OkHttpClient client = new OkHttpClient();
 
     private String location;
-    private String description;
+    private String weatherDescription;
+    private int currentWeatherIcon;
+    private String moonDescription;
+    private int currentMoonIcon;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -163,6 +166,21 @@ public class WeatherFragment extends Fragment {
             }
         });
 
+        btnMoonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMoonMoreDialog();
+            }
+        });
+
+        btnMiscLearnMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMiscInfoMoreDialog();
+            }
+        });
+
+
         return view;
     }
 
@@ -193,6 +211,7 @@ public class WeatherFragment extends Fragment {
 
         btnWeatherMore = view.findViewById(R.id.btnWeatherMore);
 
+        btnMiscLearnMore = view.findViewById(R.id.btnMiscLearnMore);
         txtWindSpeed = view.findViewById(R.id.txtWindSpeed);
         txtTemperature = view.findViewById(R.id.txtTemperature);
         txtHumidity = view.findViewById(R.id.txtHumidity);
@@ -271,19 +290,19 @@ public class WeatherFragment extends Fragment {
             JSONObject currentConditions = json.getJSONObject("currentConditions");
 
             // Update current weather
-            description = currentConditions.getString("conditions");
+            weatherDescription = currentConditions.getString("conditions");
             double temp = currentConditions.getDouble("temp");
             int humidity = currentConditions.getInt("humidity");
             double windSpeed = currentConditions.getDouble("windspeed");
 
-            txtWeatherDescription.setText(description + " in " + location);
+            txtWeatherDescription.setText(weatherDescription + " in " + location);
             txtTemperature.setText(String.format("%.1f°C", temp));
             txtHumidity.setText(humidity + "%");
             txtWindSpeed.setText(String.format("%.1f km/h", windSpeed));
 
-            currentWeatherIcon = getWeatherIconResource(description);
-            updateWeatherIcon(description, imgWeatherToday);
-            Picasso.get().load(getWeatherBackgroundResource(description)).into(imgWeatherBackground);
+            currentWeatherIcon = getWeatherIconResource(weatherDescription);
+            updateWeatherIcon(weatherDescription, imgWeatherToday);
+            Picasso.get().load(getWeatherBackgroundResource(weatherDescription)).into(imgWeatherBackground);
 
             // Update 6-day forecast
             TextView[] forecastTexts = {txtWeatherOne, txtWeatherTwo, txtWeatherThree, txtWeatherFour, txtWeatherFive, txtWeatherSix};
@@ -400,14 +419,23 @@ public class WeatherFragment extends Fragment {
     }
 
     private void updateMoonPhase(JSONArray days) throws JSONException {
-        TextView[] moonTexts = {txtMoonDescription, txtMoonOne, txtMoonTwo, txtMoonThree, txtMoonFour, txtMoonFive, txtMoonSix};
-        ImageView[] moonImages = {imgMoonToday ,imgMoonOne, imgMoonTwo, imgMoonThree, imgMoonFour, imgMoonFive, imgMoonSix};
+        TextView[] moonTexts = {txtMoonOne, txtMoonTwo, txtMoonThree, txtMoonFour, txtMoonFive, txtMoonSix};
+        ImageView[] moonImages = {imgMoonToday, imgMoonOne, imgMoonTwo, imgMoonThree, imgMoonFour, imgMoonFive, imgMoonSix};
 
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
 
-        for (int i = 0; i < 7; i++) {
-            JSONObject day = days.getJSONObject(i);
+        double currentMoonPhase = days.getJSONObject(0).getDouble("moonphase");
+        String moonPhaseDescription = getMoonPhaseDescription(currentMoonPhase);
+        txtMoonDescription.setText(moonPhaseDescription + " will be seen tonight in the Philippines");
+        updateMoonIcon(currentMoonPhase, imgMoonToday);
+
+        moonDescription = txtMoonDescription.getText().toString();
+        currentMoonIcon = getMoonIconResource(currentMoonPhase);
+
+
+        for (int i = 0; i < moonTexts.length; i++) {
+            JSONObject day = days.getJSONObject(i + 1);
             String dateString = day.getString("datetime");
             try {
                 Date date = inputFormat.parse(dateString);
@@ -415,32 +443,41 @@ public class WeatherFragment extends Fragment {
                 moonTexts[i].setText(formattedDate);
 
                 double moonPhase = day.getDouble("moonphase");
-                updateMoonIcon(moonPhase, moonImages[i]);
-                Log.e("Weather", "Moon count: " + i);
+                updateMoonIcon(moonPhase, moonImages[i + 1]);
+                Log.e("Weather", "Moon count: " + (i + 1));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
+    }
 
-        // Update moon description (you might want to customize this based on the current moon phase)
+    private String getMoonPhaseDescription(double moonPhase) {
+        if (moonPhase < 0.0625) return "New Moon";
+        else if (moonPhase < 0.1875) return "Waxing Crescent Moon";
+        else if (moonPhase < 0.3125) return "First Quarter Moon";
+        else if (moonPhase < 0.4375) return "Waxing Gibbous Moon";
+        else if (moonPhase < 0.5625) return "Full Moon";
+        else if (moonPhase < 0.6875) return "Waning Gibbous Moon";
+        else if (moonPhase < 0.8125) return "Last Quarter Moon";
+        else if (moonPhase < 0.9375) return "Waning Crescent Moon";
+        else return "New Moon";
+    }
 
-        txtMoonDescription.setText("Moon Phases for the Next 6 Days");
+    private int getMoonIconResource(double moonPhase) {
+        if (moonPhase < 0.0625) return R.drawable.moon_phase_1;        // New Moon
+        else if (moonPhase < 0.1875) return R.drawable.moon_phase_2;   // Waxing Crescent
+        else if (moonPhase < 0.3125) return R.drawable.moon_phase_3;   // First Quarter
+        else if (moonPhase < 0.4375) return R.drawable.moon_phase_4;   // Waxing Gibbous
+        else if (moonPhase < 0.5625) return R.drawable.moon_phase_5;   // Full Moon
+        else if (moonPhase < 0.6875) return R.drawable.moon_phase_6;   // Waning Gibbous
+        else if (moonPhase < 0.8125) return R.drawable.moon_phase_7;   // Last Quarter
+        else if (moonPhase < 0.9375) return R.drawable.moon_phase_8;   // Waning Crescent
+        else return R.drawable.moon_phase_1;                           // Back to New Moon
     }
 
     private void updateMoonIcon(double moonPhase, ImageView imageView) {
-        int iconName;
-
-        if (moonPhase < 0.0625) iconName = R.drawable.moon_phase_1;        // New Moon
-        else if (moonPhase < 0.1875) iconName = R.drawable.moon_phase_2;   // Waxing Crescent
-        else if (moonPhase < 0.3125) iconName = R.drawable.moon_phase_3;   // First Quarter
-        else if (moonPhase < 0.4375) iconName = R.drawable.moon_phase_4;   // Waxing Gibbous
-        else if (moonPhase < 0.5625) iconName = R.drawable.moon_phase_5;   // Full Moon
-        else if (moonPhase < 0.6875) iconName = R.drawable.moon_phase_6;   // Waning Gibbous
-        else if (moonPhase < 0.8125) iconName = R.drawable.moon_phase_7;   // Last Quarter
-        else if (moonPhase < 0.9375) iconName = R.drawable.moon_phase_8;   // Waning Crescent
-        else iconName = R.drawable.moon_phase_1;                           // Back to New Moon
-
-        loadImageFromStorage(iconName, imageView);
+        int iconResource = getMoonIconResource(moonPhase);
+        loadImageFromStorage(iconResource, imageView);
     }
 
     private void showWeatherMoreDialog() {
@@ -454,7 +491,7 @@ public class WeatherFragment extends Fragment {
                     getContext(),
                     txtWeatherDescription.getText().toString(),
                     currentWeatherIcon,
-                    getWeatherBackgroundResource(description)
+                    getWeatherBackgroundResource(weatherDescription)
             );
             weatherDialogFragment.getDialog(dialog);
         } else {
@@ -466,6 +503,33 @@ public class WeatherFragment extends Fragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+
+    }
+
+    private void showMoonMoreDialog() {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_weather_dialog);
+
+        if(txtMoonDescription != null) {
+            MoonDialogFragment moonDialogFragment = new MoonDialogFragment(
+                    getContext(),
+                    moonDescription,
+                    currentMoonIcon
+            );
+            moonDialogFragment.getDialog(dialog);
+        } else {
+            return;
+        }
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void showMiscInfoMoreDialog(){
 
     }
 
