@@ -77,4 +77,6 @@
     <string name="txtHightide">High Tide</string>
     <string name="txtOfflineMode">Offline mode. Limited access to the application, log in with stable wifi connection to gain more access to the application!</string>
     <string name="txtLearnMore">Learn More</string>
+    <string name="txtBehavior">Fish Behavior</string>
+    <string name="txtTips">Tips</string>
 </resources>

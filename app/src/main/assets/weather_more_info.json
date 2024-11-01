@@ -1,0 +1,30 @@
+{
+  "Rain": {
+    "Behavior": "During rain, fish are more active, as raindrops increase oxygen in the water and stir up food, making it easier for them to feed.",
+    "Tip": "Fish closer to the surface, especially near areas where rain hits the water as fish may gather there. However, be cautious on slippery surfaces and avoid fishing during heavy downpours."
+  },
+  "Drizzle": {
+    "Behavior": "Light drizzle creates a calmer effect, which attracts fish near the surface without causing heavy water disruptions.",
+    "Tip": "Use small lures or bait and stay close to shallow areas. The light rain can make fish less wary, so you might get bites more easily."
+  },
+  "Cloudy": {
+    "Behavior": "On cloudy days, fish are more likely to roam and feed throughout the water column due to reduced light penetration, making them feel safer from predators.",
+    "Tip": "Try using mid-water lures and check areas you might usually skip, as fish may explore more in lower light."
+  },
+  "Clear": {
+    "Behavior": "Fish tend to stay deeper on clear days to avoid direct sunlight, which can make them feel exposed.",
+    "Tip": "Go for deep-water spots or shaded areas with cover. Use natural-colored baits to avoid startling fish with bright lures."
+  },
+  "Sunny": {
+    "Behavior": "Like on clear days, fish tend to seek shade, staying closer to deeper waters or hiding under objects.",
+    "Tip": "Early morning or late afternoon are ideal times. Fish near structures, docks, or vegetation where shadows provide cover."
+  },
+  "Thunder": {
+    "Behavior": "Fish may become inactive during thunder due to the vibrations and disturbances from lightning.",
+    "Tip": "For safety, avoid fishing during thunderstorms, as it can be dangerous. Wait for the storm to clear before resuming."
+  },
+  "Storm": {
+    "Behavior": "Stormy weather can cause significant water movement, which may make fish more cautious and less active.",
+    "Tip": "Avoid fishing during severe storms due to safety concerns. After a storm, fish may become active again as they adjust to new water conditions."
+  }
+}

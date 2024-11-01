@@ -1,11 +1,8 @@
 package com.example.filoangler.fragments;
 
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -29,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.filoangler.BuildConfig;
-import com.example.filoangler.Dialog.PostDetailsDialog;
+import com.example.filoangler.Dialog.WeatherDialogFragment;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.CitiesModel;
@@ -56,8 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,6 +61,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class WeatherFragment extends Fragment {
+
+    private int currentWeatherIcon;
 
     private AutoCompleteTextView txtSearch;
 
@@ -160,7 +157,7 @@ public class WeatherFragment extends Fragment {
         btnWeatherMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPostDetailsDialog();
+                showWeatherMoreDialog();
             }
         });
 
@@ -279,6 +276,7 @@ public class WeatherFragment extends Fragment {
             txtHumidity.setText(humidity + "%");
             txtWindSpeed.setText(String.format("%.1f km/h", windSpeed));
 
+            currentWeatherIcon = getWeatherIconResource(description);
             updateWeatherIcon(description, imgWeatherToday);
 
             // Update 6-day forecast
@@ -358,24 +356,24 @@ public class WeatherFragment extends Fragment {
         });
     }
 
-    private void updateWeatherIcon(String weatherDescription, ImageView imageView) {
-        int iconName;
-
+    private int getWeatherIconResource(String weatherDescription) {
         weatherDescription = weatherDescription.toLowerCase();
 
         if (weatherDescription.contains("rain") || weatherDescription.contains("drizzle")) {
-            iconName = R.drawable.weather_rain;
+            return R.drawable.weather_rain;
         } else if (weatherDescription.contains("cloud")) {
-            iconName = R.drawable.weather_cloudy;
+            return R.drawable.weather_cloudy;
         } else if (weatherDescription.contains("clear") || weatherDescription.contains("sun")) {
-            iconName = R.drawable.weather_sunny;
+            return R.drawable.weather_sunny;
         } else if (weatherDescription.contains("thunder") || weatherDescription.contains("storm")) {
-            iconName = R.drawable.weather_thunder;
+            return R.drawable.weather_thunder;
         } else {
-            // Default to cloudy if we can't determine the weather
-            iconName = R.drawable.weather_cloudy;
+            return R.drawable.weather_cloudy;
         }
+    }
 
+    private void updateWeatherIcon(String weatherDescription, ImageView imageView) {
+        int iconName = getWeatherIconResource(weatherDescription);
         loadImageFromStorage(iconName, imageView);
     }
 
@@ -423,11 +421,22 @@ public class WeatherFragment extends Fragment {
         loadImageFromStorage(iconName, imageView);
     }
 
-    private void showPostDetailsDialog() {
+    private void showWeatherMoreDialog() {
 
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_weather_dialog);
+
+        if(txtWeatherDescription != null) {
+            WeatherDialogFragment weatherDialogFragment = new WeatherDialogFragment(
+                    getContext(),
+                    txtWeatherDescription.getText().toString(),
+                    currentWeatherIcon
+            );
+            weatherDialogFragment.getDialog(dialog);
+        } else {
+            return;
+        }
 
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
