@@ -1,0 +1,34 @@
+{
+  "New Moon": {
+    "Behavior": "Fish activity often increases during the new moon phase due to the darker nights, allowing fish to feel safer and more actively seek food in shallower waters.",
+    "Tip": "Try fishing in shallow spots as fish may be more present and feeding actively; use natural-colored baits."
+  },
+  "Waxing Crescent": {
+    "Behavior": "Fish continue to be moderately active with the increasing light, venturing near the shorelines and shallows.",
+    "Tip": "Use smaller lures near shorelines, and plan early or late fishing when fish are likely feeding."
+  },
+  "First Quarter": {
+    "Behavior": "With the half-lit moon, fish may start moving between shallow and deeper areas, adjusting to the increasing light.",
+    "Tip": "Experiment with different depths using varied lure sizes to locate active fish."
+  },
+  "Waxing Gibbous": {
+    "Behavior": "Fish may reduce activity as moonlight increases, staying deeper or in cover during brighter nights.",
+    "Tip": "Fish earlier in the evening or just before dawn, focusing on structures or vegetation cover."
+  },
+  "Full Moon": {
+    "Behavior": "Fish are highly active, particularly at night, as the bright moonlight increases their visibility and feeding potential.",
+    "Tip": "Night fishing can be very productive during the full moon. Use bright lures to take advantage of the well-lit conditions."
+  },
+  "Waning Gibbous": {
+    "Behavior": "Fish may still be feeding actively but will gradually reduce shallow movement as moonlight begins to decrease.",
+    "Tip": "Stick to early morning fishing near cover, as fish might still linger near feeding areas."
+  },
+  "Last Quarter": {
+    "Behavior": "Fish activity typically lowers, with fish moving deeper or staying in cover to avoid diminishing moonlight.",
+    "Tip": "Focus on deeper areas where fish may be regrouping; slower lures may yield better results."
+  },
+  "Waning Crescent": {
+    "Behavior": "Fish tend to conserve energy, waiting out this low-light phase and minimizing shallow water movement.",
+    "Tip": "Fish near structures in mid-depths, and consider larger bait to attract less active fish."
+  }
+}
