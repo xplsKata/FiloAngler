@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.example.filoangler.Dialog.MapDetailsDialog;
-import com.example.filoangler.Dialog.PostDetailsDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Model.MapLocationsModel;
 import com.example.filoangler.R;
