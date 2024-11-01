@@ -336,198 +336,220 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@drawable/shape_posts_container"
-            android:padding="15dp">
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_dialog_container">
 
-            <TextView
-                android:id="@+id/txtMoonToday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="@string/txtTonight"
-                android:textColor="@color/white"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/txtMoonDescription"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgMoonBackground"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout20"
-                app:layout_constraintEnd_toStartOf="@+id/imgMoonToday"
-                app:layout_constraintStart_toStartOf="@+id/txtMoonToday"
-                app:layout_constraintTop_toBottomOf="@+id/txtMoonToday" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout20"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
+                android:scaleType="center"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <ImageView
-                    android:id="@+id/imgMoonOne"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonOne"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout21"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout20">
-
-                <ImageView
-                    android:id="@+id/imgMoonTwo"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonTwo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout22"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout21">
-
-                <ImageView
-                    android:id="@+id/imgMoonThree"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonThree"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout23"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout22">
-
-                <ImageView
-                    android:id="@+id/imgMoonFour"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonFour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout24"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout23">
-
-                <ImageView
-                    android:id="@+id/imgMoonFive"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonFive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout25"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout24">
-
-                <ImageView
-                    android:id="@+id/imgMoonSix"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-
-                <TextView
-                    android:id="@+id/txtMoonSix"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="8sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/btnMoonMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/shape_circle_dblue"
-                android:clickable="true"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:text="@string/txtLearnMore"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/linearLayout25"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/linearLayout25"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout25" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/constraintLayout6"
+                app:shapeAppearanceOverlay="@style/rounded20dp" />
 
-            <ImageView
-                android:id="@+id/imgMoonToday"
-                android:layout_width="150dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout25"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:padding="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    android:id="@+id/txtMoonToday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="@string/txtTonight"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtMoonDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toTopOf="@+id/linearLayout20"
+                    app:layout_constraintEnd_toStartOf="@+id/imgMoonToday"
+                    app:layout_constraintStart_toStartOf="@+id/txtMoonToday"
+                    app:layout_constraintTop_toBottomOf="@+id/txtMoonToday" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <ImageView
+                        android:id="@+id/imgMoonOne"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonOne"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout20">
+
+                    <ImageView
+                        android:id="@+id/imgMoonTwo"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonTwo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout21">
+
+                    <ImageView
+                        android:id="@+id/imgMoonThree"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonThree"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout22">
+
+                    <ImageView
+                        android:id="@+id/imgMoonFour"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonFour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout23">
+
+                    <ImageView
+                        android:id="@+id/imgMoonFive"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonFive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout24">
+
+                    <ImageView
+                        android:id="@+id/imgMoonSix"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+
+                    <TextView
+                        android:id="@+id/txtMoonSix"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btnMoonMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_circle_dblue"
+                    android:clickable="true"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="@string/txtLearnMore"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout25"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/linearLayout25"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout25" />
+
+                <ImageView
+                    android:id="@+id/imgMoonToday"
+                    android:layout_width="150dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/linearLayout25"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

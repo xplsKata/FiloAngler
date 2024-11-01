@@ -79,7 +79,7 @@ public class MoonDialogFragment extends Fragment {
         loadImage(imgMoonIcon, moonIcon);
         loadImage(imgFish, R.drawable.fish);
         loadImage(imgTips, R.drawable.bulb);
-        //loadBackgroundImage(background, imgBackground);
+        loadBackgroundImage(R.drawable.bg_moon, imgBackground);
 
         txtDescription.setText(moonPhase);
     }

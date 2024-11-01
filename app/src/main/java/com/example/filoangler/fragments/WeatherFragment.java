@@ -104,6 +104,7 @@ public class WeatherFragment extends Fragment {
     private TextView txtMoonFive;
     private TextView txtMoonSix;
 
+    private ImageView imgMoonBackground;
     private ImageView imgMoonToday;
     private ImageView imgMoonOne;
     private ImageView imgMoonTwo;
@@ -228,6 +229,7 @@ public class WeatherFragment extends Fragment {
         txtMoonFive = view.findViewById(R.id.txtMoonFive);
         txtMoonSix = view.findViewById(R.id.txtMoonSix);
 
+        imgMoonBackground = view.findViewById(R.id.imgMoonBackground);
         imgMoonToday = view.findViewById(R.id.imgMoonToday);
         imgMoonOne = view.findViewById(R.id.imgMoonOne);
         imgMoonTwo = view.findViewById(R.id.imgMoonTwo);
@@ -326,6 +328,8 @@ public class WeatherFragment extends Fragment {
             loadImageFromStorage(R.drawable.weather_humidity, imgHumidity);
             loadImageFromStorage(R.drawable.weather_thermometer, imgTemperature);
             loadImageFromStorage(R.drawable.weather_wind, imgWind);
+
+            loadImageFromStorage(R.drawable.bg_moon, imgMoonBackground);
 
             // Update moon phase information
             updateMoonPhase(days);
