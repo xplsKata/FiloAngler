@@ -8,12 +8,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +31,7 @@ public class WeatherDialogFragment extends Fragment {
 
     private String description;
     private int weatherIcon;
+    private int weatherBackground;
 
     private TextView txtDescription;
     private TextView txtBehavior;
@@ -43,16 +39,18 @@ public class WeatherDialogFragment extends Fragment {
     private ImageView imgWeatherIcon;
     private ImageView imgFish;
     private ImageView imgTips;
+    private ImageView imgBackground;
 
     private static class WeatherInfo {
         String Behavior;
         String Tip;
     }
 
-    public WeatherDialogFragment(Context context, String description, int weatherIcon) {
+    public WeatherDialogFragment(Context context, String description, int weatherIcon, int weatherBackground) {
         this.mContext = context;
         this.description = description;
         this.weatherIcon = weatherIcon;
+        this.weatherBackground = weatherBackground;
     }
 
     public WeatherDialogFragment(){
@@ -74,6 +72,7 @@ public class WeatherDialogFragment extends Fragment {
         imgWeatherIcon = dialog.findViewById(R.id.imgWeatherIcon);
         imgFish = dialog.findViewById(R.id.imgFish);
         imgTips = dialog.findViewById(R.id.imgTips);
+        imgBackground = dialog.findViewById(R.id.imgBackground);
 
         if (weatherInfoMap == null && mContext != null) {
             loadJSONFromAsset("weather_more_info.json");
@@ -81,14 +80,15 @@ public class WeatherDialogFragment extends Fragment {
 
         updateWeatherInfo(description);
 
-        loadIcon(imgWeatherIcon, weatherIcon);
-        loadIcon(imgFish, R.drawable.fish);
-        loadIcon(imgTips, R.drawable.bulb);
+        loadImage(imgWeatherIcon, weatherIcon);
+        loadImage(imgFish, R.drawable.fish);
+        loadImage(imgTips, R.drawable.bulb);
+        loadBackgroundImage(weatherBackground, imgBackground);
 
         txtDescription.setText(description);
     }
 
-    private void loadIcon(ImageView imageView, int Icon){
+    private void loadImage(ImageView imageView, int Icon){
         imageView.post(() -> {
             int width = imageView.getWidth();
             int height = imageView.getHeight();
@@ -106,6 +106,14 @@ public class WeatherDialogFragment extends Fragment {
                         .into(imageView);
             }
         });
+    }
+
+    private void loadBackgroundImage(int drawableId, ImageView imageView) {
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP); // Set scale type directly
+        Picasso.get()
+                .load(drawableId)
+                .fit()
+                .into(imageView);
     }
 
     private void updateWeatherInfo(String weatherDescription) {
@@ -143,11 +151,6 @@ public class WeatherDialogFragment extends Fragment {
             return "Thunder Storm";
         }
         return "Cloudy"; // default case
-    }
-
-    private void setDescription(String description) {
-        this.description = description;
-        txtDescription.setText(description);
     }
 
     private void setBehavior(String behavior) {

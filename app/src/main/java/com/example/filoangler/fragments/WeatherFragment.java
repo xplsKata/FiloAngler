@@ -124,6 +124,7 @@ public class WeatherFragment extends Fragment {
     private OkHttpClient client = new OkHttpClient();
 
     private String location;
+    private String description;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -270,7 +271,7 @@ public class WeatherFragment extends Fragment {
             JSONObject currentConditions = json.getJSONObject("currentConditions");
 
             // Update current weather
-            String description = currentConditions.getString("conditions");
+            description = currentConditions.getString("conditions");
             double temp = currentConditions.getDouble("temp");
             int humidity = currentConditions.getInt("humidity");
             double windSpeed = currentConditions.getDouble("windspeed");
@@ -452,7 +453,8 @@ public class WeatherFragment extends Fragment {
             WeatherDialogFragment weatherDialogFragment = new WeatherDialogFragment(
                     getContext(),
                     txtWeatherDescription.getText().toString(),
-                    currentWeatherIcon
+                    currentWeatherIcon,
+                    getWeatherBackgroundResource(description)
             );
             weatherDialogFragment.getDialog(dialog);
         } else {
