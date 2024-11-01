@@ -6,4 +6,4 @@
     android:layout_height="match_parent"
     android:adjustViewBounds="true"
     android:scaleType="centerCrop"
-    app:shapeAppearanceOverlay="@style/roundedShort" />
+    app:shapeAppearanceOverlay="@style/rounded10dp" />

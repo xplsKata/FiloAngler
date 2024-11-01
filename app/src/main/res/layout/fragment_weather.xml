@@ -49,8 +49,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/constraintLayout4"
-                app:shapeAppearanceOverlay="@style/roundedLong"
-                app:srcCompat="@drawable/bg_rain" />
+                app:shapeAppearanceOverlay="@style/rounded20dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout4"
