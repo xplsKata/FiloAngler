@@ -75,6 +75,7 @@ public class WeatherFragment extends Fragment {
     private TextView txtWeatherFive;
     private TextView txtWeatherSix;
 
+    private ImageView imgWeatherBackground;
     private ImageView imgWeatherToday;
     private ImageView imgWeatherOne;
     private ImageView imgWeatherTwo;
@@ -180,6 +181,7 @@ public class WeatherFragment extends Fragment {
         txtWeatherFive = view.findViewById(R.id.txtWeatherFive);
         txtWeatherSix = view.findViewById(R.id.txtWeatherSix);
 
+        imgWeatherBackground = view.findViewById(R.id.imgWeatherBackground);
         imgWeatherToday = view.findViewById(R.id.imgWeatherToday);
         imgWeatherOne = view.findViewById(R.id.imgWeatherOne);
         imgWeatherTwo = view.findViewById(R.id.imgWeatherTwo);
@@ -255,7 +257,9 @@ public class WeatherFragment extends Fragment {
 
     public void loadImageFromStorage(int drawableId, ImageView imageView) {
         handler.post(() ->{
-            Picasso.get().load(drawableId).resize(imageView.getWidth(), imageView.getHeight()).into(imageView);
+            Picasso.get().load(drawableId)
+                    .resize(imageView.getWidth(), imageView.getHeight())
+                    .into(imageView);
         });
     }
 
@@ -278,6 +282,7 @@ public class WeatherFragment extends Fragment {
 
             currentWeatherIcon = getWeatherIconResource(description);
             updateWeatherIcon(description, imgWeatherToday);
+            Picasso.get().load(getWeatherBackgroundResource(description)).into(imgWeatherBackground);
 
             // Update 6-day forecast
             TextView[] forecastTexts = {txtWeatherOne, txtWeatherTwo, txtWeatherThree, txtWeatherFour, txtWeatherFive, txtWeatherSix};
@@ -369,6 +374,22 @@ public class WeatherFragment extends Fragment {
             return R.drawable.weather_thunder;
         } else {
             return R.drawable.weather_cloudy;
+        }
+    }
+
+    private int getWeatherBackgroundResource(String weatherDescription) {
+        weatherDescription = weatherDescription.toLowerCase();
+
+        if (weatherDescription.contains("rain") || weatherDescription.contains("drizzle")) {
+            return R.drawable.bg_rain;
+        } else if (weatherDescription.contains("cloud")) {
+            return R.drawable.bg_cloudy;
+        } else if (weatherDescription.contains("clear") || weatherDescription.contains("sun")) {
+            return R.drawable.bg_sunny;
+        } else if (weatherDescription.contains("thunder") || weatherDescription.contains("storm")) {
+            return R.drawable.bg_thunder;
+        } else {
+            return R.drawable.bg_cloudy; // default background
         }
     }
 
