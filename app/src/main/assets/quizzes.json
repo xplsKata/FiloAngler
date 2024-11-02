@@ -1,0 +1,189 @@
+{
+  "Quiz": {
+    "title": "Quiz on Fishing Knowledge",
+    "Novice": [
+      {
+        "question": "Which fish is known for its grunting sound and reddish-orange coloration with dark vertical bands?",
+        "Options": {
+          "a": "Ladyfish",
+          "b": "Blacktip Grouper",
+          "c": "Matangbaka",
+          "d": "Lizardfish"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "What is a key feature of braided fishing line?",
+        "Options": {
+          "a": "It’s nearly invisible underwater",
+          "b": "It has high stretch for flexibility",
+          "c": "It has high sensitivity with minimal stretch",
+          "d": "It’s only used for freshwater fishing"
+        },
+        "answer": "c"
+      },
+      {
+        "question": "Which fish is known for its leaping ability and fast swimming?",
+        "Options": {
+          "a": "Blacktip Grouper",
+          "b": "Ladyfish",
+          "c": "Crescent Grunter",
+          "d": "Goatfish"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Which type of lure is most effective for attracting predatory fish near the surface?",
+        "Options": {
+          "a": "Metal jig",
+          "b": "Popper lure",
+          "c": "Stick bait",
+          "d": "Soft lizard lure"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Which of the following is a key feature of fluorocarbon fishing line?",
+        "Options": {
+          "a": "It floats on the surface",
+          "b": "It has high visibility underwater",
+          "c": "It’s sensitive with high stretch",
+          "d": "It’s nearly invisible underwater"
+        },
+        "answer": "d"
+      },
+      {
+        "question": "Which knot is recommended for connecting a leader line to braided line?",
+        "Options": {
+          "a": "Improved Clinch Knot",
+          "b": "FG Knot",
+          "c": "Palomar Knot",
+          "d": "Uni Knot"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "What is a common use of a spincast reel?",
+        "Options": {
+          "a": "Deep-sea trolling",
+          "b": "For beginners or children learning to fish",
+          "c": "Heavy-duty saltwater fishing",
+          "d": "Fly fishing"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Which fish is known for hiding in sandy areas and ambushing prey?",
+        "Options": {
+          "a": "Lizardfish",
+          "b": "Talakitok",
+          "c": "Mangrove Jack",
+          "d": "Matangbaka"
+        },
+        "answer": "a"
+      },
+      {
+        "question": "What is the main advantage of a popper lure?",
+        "Options": {
+          "a": "Sinks quickly to attract deep-sea fish",
+          "b": "Creates a popping sound and splash on the surface",
+          "c": "Mimics a struggling lizard in the water",
+          "d": "Has three sharp hooks for increased catch rate"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Which line type is known for its clear, smooth appearance and abrasion resistance?",
+        "Options": {
+          "a": "Braided line",
+          "b": "Fluorocarbon line",
+          "c": "Nylon line",
+          "d": "Monofilament line"
+        },
+        "answer": "b"
+      }
+    ],
+    "Aspiring": [
+      {
+        "question": "The FG Knot is a bulky knot that is difficult to pass through rod guides.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Blacktip Grouper is commonly found in deep open water.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "A treble hook has three points, making it useful for securing fish that strike quickly.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "a"
+      },
+      {
+        "question": "A spinning reel is mounted on top of the rod and often used for trolling.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "A metal jig is primarily used for surface fishing.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "An Improved Clinch Knot is often used for attaching hooks or split rings.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "a"
+      },
+      {
+        "question": "Goatfish use barbels to detect prey in sandy environments.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "a"
+      },
+      {
+        "question": "A popper lure is designed to sink quickly for deep-sea fishing.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Braided fishing line is known for its high stretch and flexibility.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "b"
+      },
+      {
+        "question": "Fluorocarbon line is nearly invisible underwater, making it ideal for clear water.",
+        "Options": {
+          "a": "True",
+          "b": "False"
+        },
+        "answer": "a"
+      }
+    ]
+  }
+}
