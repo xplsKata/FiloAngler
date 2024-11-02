@@ -79,4 +79,10 @@
     <string name="txtLearnMore">Learn More</string>
     <string name="txtBehavior">Fish Behavior</string>
     <string name="txtTips">Tips</string>
+    <string name="txtWelcome">Welcome to FiloAngler\'s Proficiency Test!</string>
+    <string name="txtQuizIntro">This test is a fun way to boost your angling expertise and level up your proficiency status. All quiz content is accessible within the app to help you master each topic and become a more skilled angler. Good luck!</string>
+    <string name="txtProceed">Proceed</string>
+    <string name="btnPrevious">Previous</string>
+    <string name="btnNext">Next</string>
+    <string name="txtExit">Exit</string>
 </resources>
