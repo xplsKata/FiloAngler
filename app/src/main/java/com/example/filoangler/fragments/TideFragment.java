@@ -41,6 +41,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -333,17 +334,95 @@ public class TideFragment extends Fragment {
 
     private double getCurrentTideHeight(JSONArray tideDataArray) {
         try {
-            if (tideDataArray.length() > 0) {
-                return tideDataArray.getJSONObject(0).getDouble("tideHeight_mt");
+            // Parse the tide times and heights
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+            Date currentTime = new Date();
+            Date highTideTime = null;
+            Date lowTideTime = null;
+            double highTideHeight = 0;
+            double lowTideHeight = 0;
+
+            // Find high and low tide points
+            for (int i = 0; i < tideDataArray.length(); i++) {
+                JSONObject tideData = tideDataArray.getJSONObject(i);
+                String tideType = tideData.getString("tide_type");
+                double height = tideData.getDouble("tideHeight_mt");
+                Date tideTime = timeFormat.parse(tideData.getString("tideTime"));
+
+                if (tideType.equalsIgnoreCase("HIGH")) {
+                    highTideTime = tideTime;
+                    highTideHeight = height;
+                } else if (tideType.equalsIgnoreCase("LOW")) {
+                    lowTideTime = tideTime;
+                    lowTideHeight = height;
+                }
             }
-        } catch (JSONException e) {
+
+            if (highTideTime == null || lowTideTime == null) {
+                Log.e("TideCalculation", "Missing high or low tide data");
+                return 0;
+            }
+
+            // Convert all times to minutes since midnight for easier calculation
+            int currentMinutes = timeToMinutes(currentTime);
+            int highTideMinutes = timeToMinutes(highTideTime);
+            int lowTideMinutes = timeToMinutes(lowTideTime);
+
+            // Calculate the period (in minutes) between high and low tide
+            int period;
+            if (highTideMinutes > lowTideMinutes) {
+                period = 2 * Math.abs(highTideMinutes - lowTideMinutes);
+            } else {
+                period = 2 * Math.abs(lowTideMinutes - highTideMinutes);
+            }
+
+            // Calculate phase shift based on whether high or low tide comes first
+            double phaseShift = (highTideMinutes < lowTideMinutes) ? Math.PI : 0;
+
+            // Calculate where we are in the cycle
+            double angle = (2 * Math.PI * (currentMinutes - Math.min(highTideMinutes, lowTideMinutes))) / period;
+            angle += phaseShift;
+
+            // Calculate the current height using sinusoidal interpolation
+            double heightDifference = highTideHeight - lowTideHeight;
+            double middleHeight = (highTideHeight + lowTideHeight) / 2;
+            double currentHeight = middleHeight + (heightDifference / 2) * Math.cos(angle);
+
+            // Log the calculation details
+            Log.d("TideCalculation", String.format(Locale.US,
+                    "Current time: %02d:%02d\n" +
+                            "High tide: %02d:%02d (%.2fm)\n" +
+                            "Low tide: %02d:%02d (%.2fm)\n" +
+                            "Calculated height: %.2fm",
+                    currentMinutes / 60, currentMinutes % 60,
+                    highTideMinutes / 60, highTideMinutes % 60, highTideHeight,
+                    lowTideMinutes / 60, lowTideMinutes % 60, lowTideHeight,
+                    currentHeight
+            ));
+
+            return currentHeight;
+
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
+            return 0;
         }
-        return 0;
     }
 
     private float calculateWaterLevel(double highest, double lowest, double current) {
-        return (float) ((current - lowest) / (highest - lowest));
+        double range = highest - lowest;
+        double position = current - lowest;
+        float level = (float) (position / range);
+
+        Log.d("WaterLevel", String.format(Locale.US,
+                "Water Level Calculation:\n" +
+                        "Highest: %.2fm\n" +
+                        "Lowest: %.2fm\n" +
+                        "Current: %.2fm\n" +
+                        "Calculated Level: %.2f",
+                highest, lowest, current, level
+        ));
+
+        return level;
     }
 
     private void storeSevenDayForecast(JSONObject data) throws JSONException {
@@ -400,6 +479,12 @@ public class TideFragment extends Fragment {
         txtLowestTide.setVisibility(View.GONE);
         txtLowestTideTime.setVisibility(View.GONE);
         txtLocation.setVisibility(View.GONE);
+    }
+
+    private int timeToMinutes(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE);
     }
 
     public List<JSONObject> getSevenDayForecast() {
