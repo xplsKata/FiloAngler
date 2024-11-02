@@ -1,5 +1,8 @@
 package com.example.filoangler.fragments;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -8,10 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -21,6 +26,8 @@ import android.widget.Toast;
 
 import com.example.filoangler.Adapter.TidesAdapter;
 import com.example.filoangler.BuildConfig;
+import com.example.filoangler.Dialog.MiscWeatherDialog;
+import com.example.filoangler.Dialog.TideDetailsDialog;
 import com.example.filoangler.Model.CitiesModel;
 import com.example.filoangler.Model.ProvinceModel;
 import com.example.filoangler.Model.TidesModel;
@@ -67,6 +74,7 @@ public class TideFragment extends Fragment {
     private TextView txtLowestTideTime;
     private TextView txtCurrentTide;
     private TextView txtLocation;
+    private TextView txtDescription;
 
     private Button btnMore;
 
@@ -91,6 +99,9 @@ public class TideFragment extends Fragment {
     private List<TidesModel> tidesList;
 
     private String location;
+    private double highTideHeight;
+    private double lowTideHeight;
+    private double currentHeight;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,6 +132,13 @@ public class TideFragment extends Fragment {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        btnMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog();
             }
         });
 
@@ -163,6 +181,7 @@ public class TideFragment extends Fragment {
         txtLowestTideTime = view.findViewById(R.id.txtLowestTideTime);
         txtCurrentTide = view.findViewById(R.id.txtCurrentTide);
         txtLocation = view.findViewById(R.id.txtLocation);
+        txtDescription = view.findViewById(R.id.txtDescription);
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -315,14 +334,10 @@ public class TideFragment extends Fragment {
                     txtLowestTideTime.setText(finalLowestTideTime);
                     txtCurrentTide.setText(String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideDataArray)));
                     txtLocation.setText(location);
+                    txtDescription.setText("The current tide level in " + location + " is "
+                            + String.format(Locale.US, "%.2f m", getCurrentTideHeight(tideDataArray)));
 
-                    txtHighestTide.setVisibility(View.VISIBLE);
-                    txtHighestTideTime.setVisibility(View.VISIBLE);
-                    txtLowestTide.setVisibility(View.VISIBLE);
-                    txtLowestTideTime.setVisibility(View.VISIBLE);
-                    txtLocation.setVisibility(View.VISIBLE);
-
-
+                    showText();
                     updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideDataArray)));
 
                     // Update RecyclerView
@@ -339,8 +354,8 @@ public class TideFragment extends Fragment {
             Date currentTime = new Date();
             Date highTideTime = null;
             Date lowTideTime = null;
-            double highTideHeight = 0;
-            double lowTideHeight = 0;
+            highTideHeight = 0;
+            lowTideHeight = 0;
 
             // Find high and low tide points
             for (int i = 0; i < tideDataArray.length(); i++) {
@@ -386,7 +401,7 @@ public class TideFragment extends Fragment {
             // Calculate the current height using sinusoidal interpolation
             double heightDifference = highTideHeight - lowTideHeight;
             double middleHeight = (highTideHeight + lowTideHeight) / 2;
-            double currentHeight = middleHeight + (heightDifference / 2) * Math.cos(angle);
+            currentHeight = middleHeight + (heightDifference / 2) * Math.cos(angle);
 
             // Log the calculation details
             Log.d("TideCalculation", String.format(Locale.US,
@@ -478,7 +493,17 @@ public class TideFragment extends Fragment {
         txtHighestTideTime.setVisibility(View.GONE);
         txtLowestTide.setVisibility(View.GONE);
         txtLowestTideTime.setVisibility(View.GONE);
-        txtLocation.setVisibility(View.GONE);
+        txtDescription.setVisibility(View.INVISIBLE);
+    }
+
+    private void showText(){
+        txtHighestTide.setVisibility(View.VISIBLE);
+        txtHighestTideTime.setVisibility(View.VISIBLE);
+        txtLowestTide.setVisibility(View.VISIBLE);
+        txtLowestTideTime.setVisibility(View.VISIBLE);
+        txtLocation.setVisibility(View.VISIBLE);
+        txtDescription.setVisibility(View.VISIBLE);
+
     }
 
     private int timeToMinutes(Date date) {
@@ -487,8 +512,28 @@ public class TideFragment extends Fragment {
         return cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE);
     }
 
-    public List<JSONObject> getSevenDayForecast() {
-        return sevenDayForecast;
+    private void showDialog(){
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_weather_misc_dialog);
+
+        if(txtDescription != null) {
+            TideDetailsDialog tideDetailsDialog = new TideDetailsDialog(
+                    txtDescription.getText().toString(),
+                    highTideHeight,
+                    lowTideHeight,
+                    currentHeight
+                    );
+            tideDetailsDialog.getDialog(dialog);
+        } else {
+            return;
+        }
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
 }

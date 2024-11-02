@@ -129,7 +129,6 @@
             android:layout_height="wrap_content"
             android:background="@drawable/shape_circle_dblue"
             android:backgroundTint="#CF1717"
-            android:drawableTop="@drawable/baseline_arrow_downward_24"
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:paddingVertical="10dp"
@@ -156,11 +155,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_comments_more_dialog"
-            android:text="@string/txtMore"
+            android:text="@string/txtLearnMore"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/txtLowestTide"
             app:layout_constraintStart_toStartOf="@+id/waveView" />
+
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="30dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/txtCurrentTide"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -184,13 +197,11 @@
             android:layout_height="50dp"
             android:background="@drawable/shape_comments_more_dialog"
             android:backgroundTint="@color/bgBlue"
-            android:clickable="true"
-            android:drawableEnd="@drawable/baseline_arrow_drop_down_24"
+            android:clickable="false"
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"
             android:paddingEnd="5dp"
-            android:text="TextView"
             android:textColor="@color/white"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
