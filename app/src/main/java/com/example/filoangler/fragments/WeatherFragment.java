@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.filoangler.BuildConfig;
+import com.example.filoangler.Dialog.MiscWeatherDialog;
 import com.example.filoangler.Dialog.MoonDialogFragment;
 import com.example.filoangler.Dialog.WeatherDialogFragment;
 import com.example.filoangler.Manager.AuthManager;
@@ -129,6 +130,9 @@ public class WeatherFragment extends Fragment {
     private int currentWeatherIcon;
     private String moonDescription;
     private int currentMoonIcon;
+    private double temp;
+    private int humidity;
+    private double windSpeed;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -293,9 +297,9 @@ public class WeatherFragment extends Fragment {
 
             // Update current weather
             weatherDescription = currentConditions.getString("conditions");
-            double temp = currentConditions.getDouble("temp");
-            int humidity = currentConditions.getInt("humidity");
-            double windSpeed = currentConditions.getDouble("windspeed");
+            temp = currentConditions.getDouble("temp");
+            humidity = currentConditions.getInt("humidity");
+            windSpeed = currentConditions.getDouble("windspeed");
 
             txtWeatherDescription.setText(weatherDescription + " in " + location);
             txtTemperature.setText(String.format("%.1f°C", temp));
@@ -534,7 +538,22 @@ public class WeatherFragment extends Fragment {
     }
 
     private void showMiscInfoMoreDialog(){
+        final Dialog dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_weather_misc_dialog);
 
+        if(txtHumidity != null) {
+            MiscWeatherDialog miscWeatherDialog = new MiscWeatherDialog(windSpeed, temp, humidity);
+            miscWeatherDialog.getDialog(dialog);
+        } else {
+            return;
+        }
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
 }
