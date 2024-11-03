@@ -3,6 +3,9 @@ package com.example.filoangler.activities;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -15,24 +18,36 @@ import com.unity3d.player.UnityPlayer;
 
 public class FishDetailsActivity extends AppCompatActivity {
 
-    TextView txtFishName;
-    TextView txtFishDescription;
-    TextView txtFishBehavior;
-    TextView txtFishHabitat;
-    TextView txtFishLaw;
-    TextView txtFishLawLabel;
-    ImageView btnBack;
+    private TextView txtFishName;
+    private TextView txtFishDescription;
+    private TextView txtFishBehavior;
+    private TextView txtFishHabitat;
+    private TextView txtFishLaw;
+    private TextView txtFishLawLabel;
+
+    private ImageView btnBack;
 
     //Unity
-    FrameLayout unityLayout;
-    UnityPlayer mUnityPlayer;
+    private FrameLayout unityLayout;
+    private UnityPlayer mUnityPlayer;
+
+    private ScaleGestureDetector scaleGestureDetector;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fish_details);
 
-        // Initialize views
+        initializeViews();
+        setTexts();
+        setupListeners();
+        bindUnity();
+
+
+    }
+
+    private void initializeViews(){
         txtFishName = findViewById(R.id.txtFishName);
         txtFishDescription = findViewById(R.id.txtFishDescription);
         txtFishBehavior = findViewById(R.id.txtFishBehavior);
@@ -40,23 +55,21 @@ public class FishDetailsActivity extends AppCompatActivity {
         txtFishLaw = findViewById(R.id.txtFishLaw);
         txtFishLawLabel = findViewById(R.id.textView22);
         btnBack = findViewById(R.id.btnBack);
+    }
 
-        // Get data from intent
+    private void setTexts(){
         String FishName = getIntent().getStringExtra("FishName");
-        String Fish3DModel = getIntent().getStringExtra("Fish3DModel");
         String FishDescription = getIntent().getStringExtra("FishDescription");
         String FishBehavior = getIntent().getStringExtra("FishBehavior");
         String FishHabitat = getIntent().getStringExtra("FishHabitat");
         String FishLaw = getIntent().getStringExtra("FishLaw");
 
-        // Set text views
         txtFishName.setText(FishName);
         txtFishDescription.setText(FishDescription);
         txtFishBehavior.setText(FishBehavior);
         txtFishHabitat.setText(FishHabitat);
 
-        // Handle fish law visibility
-        if(FishLaw.equals("none") || FishLaw.equals("None")){
+        if(txtFishLaw.equals("none") || FishLaw.equals("None")){
             txtFishLaw.setVisibility(View.GONE);
             txtFishLawLabel.setVisibility(View.GONE);
         } else {
@@ -64,38 +77,110 @@ public class FishDetailsActivity extends AppCompatActivity {
             txtFishLaw.setVisibility(View.VISIBLE);
             txtFishLawLabel.setVisibility(View.VISIBLE);
         }
+    }
 
-        // Set back button click listener
-        btnBack.setOnClickListener(v -> finish());
-
-        bindUnity();
+    private void setupListeners() {
+        btnBack.setOnClickListener(v -> {
+            // Ensure Unity player is properly cleaned up before finishing
+            if (mUnityPlayer != null) {
+                mUnityPlayer.quit();
+            }
+            finish();
+        });
 
     }
 
-    private void bindUnity(){
-        unityLayout = findViewById(R.id.img_cake_container);
+    //Unity
+    @Override
+    protected void onDestroy() {
+        if (mUnityPlayer != null) {
+            mUnityPlayer.quit();
+        }
+        mUnityPlayer = null; // Set to null to prevent any lingering references
+        super.onDestroy();
+    }
 
-        // Remove Editor Image Placeholder.
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mUnityPlayer != null) {
+            mUnityPlayer.pause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mUnityPlayer != null) {
+            mUnityPlayer.resume();
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (mUnityPlayer != null) {
+            mUnityPlayer.windowFocusChanged(hasFocus);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    private void bindUnity() {
+        unityLayout = findViewById(R.id.imgFishModel);
         unityLayout.removeAllViews();
 
-        getWindow().setFormat(PixelFormat.RGBX_8888);
         mUnityPlayer = new UnityPlayer(this);
+
+        getWindow().setFormat(PixelFormat.RGBX_8888);
+
+        mUnityPlayer.requestFocus();
+        mUnityPlayer.windowFocusChanged(true);
+
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT);
         unityLayout.addView(mUnityPlayer.getView(), 0, lp);
 
-        /*cakeManager = CakeManager.getInstance(); //Custom Code
-        cake = cakeManager.getCurrentCake(); //Custom Code
-        cake.addOnCakeChangeListener((property, newValue) -> { //Custom callback
-            String message = "Property " + property + " changed to " + newValue;
-            Log.d("CakeWatcher", "There's been a change in the cake.");
-            // This is how you send data to Unity
-            // param1 = Game Object Name Where the Script is
-            // param2 = Script Function Name
-            // param3 = String of arguments.
-            UnityPlayer.UnitySendMessage(getString(R.string.unity_cake_object), getString(R.string.unity_cake_function), message);
-        });*/
+        // Get the Fish3DModel from intent
+        String Fish3DModel = getIntent().getStringExtra("Fish3DModel");
+        // Load the specific model
+        UnityPlayer.UnitySendMessage("ModelController", "LoadModel", Fish3DModel);
+
+        // Setup gesture detectors
+        setupGestureDetectors();
     }
 
+    private void setupGestureDetectors() {
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                float scaleFactor = detector.getScaleFactor();
+                Log.d("FishDetails", "Scale factor: " + scaleFactor);
+                UnityPlayer.UnitySendMessage("ModelController", "HandleZoom", String.valueOf(scaleFactor));
+                return true;
+            }
+        });
+
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                String movement = distanceX + "," + distanceY;
+                Log.d("FishDetails", "Sending rotation: " + movement);
+                UnityPlayer.UnitySendMessage("ModelController", "HandleRotation", movement);
+                return true;
+            }
+        });
+
+        unityLayout.setOnTouchListener((v, event) -> {
+            Log.d("FishDetails", "Touch event received: " + event.getAction());
+            boolean scaleHandled = scaleGestureDetector.onTouchEvent(event);
+            boolean gestureHandled = gestureDetector.onTouchEvent(event);
+            return true;
+        });
+    }
 }
