@@ -21,6 +21,11 @@
                 android:title="Must Know"
                 android:icon="@drawable/baseline_lightbulb_outline_24"/>
 
+            <item
+                android:id="@+id/navProficiencyTest"
+                android:title="Proficiency Test"
+                android:icon="@drawable/baseline_quiz_24"/>
+
 
         </menu>
 

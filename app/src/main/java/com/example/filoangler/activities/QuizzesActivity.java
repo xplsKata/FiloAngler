@@ -4,23 +4,30 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.filoangler.Manager.AuthManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,8 +41,11 @@ public class QuizzesActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private TextView txtFinishedMessage, txtScore;
 
-    // Static proficiency level (as requested)
-    private static final String PROFICIENCY_LEVEL = "Novice";
+    private LoginManager loginManager;
+    private AuthManager authManager;
+
+    private String PROFICIENCY_LEVEL;
+    private boolean isProficientUser = false;
 
     private List<QuizQuestion> questions;
     private int currentQuestionIndex = 0;
@@ -47,8 +57,11 @@ public class QuizzesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quizzes);
 
+        loginManager = new LoginManager(this);
+        authManager = new AuthManager();
+
         initializeViews();
-        loadQuizData();
+        getUserProficiency();
         setupListeners();
 
         // Start with intro view
@@ -82,45 +95,52 @@ public class QuizzesActivity extends AppCompatActivity {
 
     private void loadQuizData() {
         try {
-            String jsonString = Utils.loadJSONFromAsset(this,"quiz.json");
-            JSONObject json = new JSONObject(jsonString);
-            JSONObject quiz = json.getJSONObject("Quiz");
-            JSONArray questionsArray = quiz.getJSONArray(PROFICIENCY_LEVEL);
-
-            // Convert JSONArray to List for easier manipulation
-            List<JSONObject> questionList = new ArrayList<>();
-            for (int i = 0; i < questionsArray.length(); i++) {
-                questionList.add(questionsArray.getJSONObject(i));
+            String jsonString = Utils.loadJSONFromAsset(this, "quizzes.json");
+            if (jsonString == null) {
+                throw new IllegalStateException("Could not load quiz.json file");
             }
 
-            // Randomize the questions
-            Collections.shuffle(questionList);
+            Gson gson = new Gson();
+            QuizData quizData = gson.fromJson(jsonString, QuizData.class);
 
-            // Convert randomized questions to QuizQuestion objects
-            questions = new ArrayList<>();
-            for (JSONObject questionObj : questionList) {
-                QuizQuestion question = new QuizQuestion();
-                question.question = questionObj.getString("question");
+            // Get questions based on proficiency level
+            if (PROFICIENCY_LEVEL.equals("Aspiring")) {
+                questions = new ArrayList<>(quizData.Quiz.Aspiring);
+            } else {
+                questions = new ArrayList<>(quizData.Quiz.Novice);
+            }
 
-                JSONObject options = questionObj.getJSONObject("Options");
-                question.options = new String[4];
-                if (PROFICIENCY_LEVEL.equals("Novice")) {
-                    // For Novice level, get all 4 options
-                    question.options[0] = options.getString("a");
-                    question.options[1] = options.getString("b");
-                    question.options[2] = options.getString("c");
-                    question.options[3] = options.getString("d");
-                } else {
-                    // For Aspiring level, just True/False
-                    question.options = new String[]{"True", "False"};
+            userAnswers = new ArrayList<>(Collections.nCopies(questions.size(), ""));
+            Collections.shuffle(questions);
+
+            runOnUiThread(() -> {
+                btnProceed.setEnabled(true);
+
+                // Show warning dialog for Proficient users
+                if (isProficientUser) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Notice")
+                            .setMessage("As a Proficient angler, taking this quiz will not increase your proficiency status.")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            })
+                            .show();
                 }
+            });
 
-                question.answer = questionObj.getString("answer");
-                questions.add(question);
-                userAnswers.add("");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e("Quizzes", "Error loading quiz data", e);
+            runOnUiThread(() -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("Error Loading Quiz")
+                        .setMessage("Could not load quiz questions. Please try again.")
+                        .setPositiveButton("OK", (dialog, id) -> finish())
+                        .show();
+                btnProceed.setEnabled(false);
+            });
         }
     }
 
@@ -168,10 +188,10 @@ public class QuizzesActivity extends AppCompatActivity {
         txtQuestion.setText(question.question);
 
         if (PROFICIENCY_LEVEL.equals("Novice")) {
-            rbtnA.setText(question.options[0]);
-            rbtnB.setText(question.options[1]);
-            rbtnC.setText(question.options[2]);
-            rbtnD.setText(question.options[3]);
+            rbtnA.setText(question.Options.a);
+            rbtnB.setText(question.Options.b);
+            rbtnC.setText(question.Options.c);
+            rbtnD.setText(question.Options.d);
             rbtnC.setVisibility(View.VISIBLE);
             rbtnD.setVisibility(View.VISIBLE);
         } else {
@@ -205,6 +225,12 @@ public class QuizzesActivity extends AppCompatActivity {
             if (userAnswers.get(i).equals(questions.get(i).answer)) {
                 finalScore++;
             }
+        }
+
+        // Check if user passed and update proficiency if needed
+        int percentage = (finalScore * 100) / questions.size();
+        if (percentage >= 70 && !isProficientUser) {
+            updateProficiency();
         }
     }
 
@@ -291,9 +317,86 @@ public class QuizzesActivity extends AppCompatActivity {
         return set;
     }
 
+    //Firebase
+    private void getUserProficiency() {
+        authManager.GetDb().getReference().child("Users")
+                .child(loginManager.GetCurrentUser().getUid())
+                .child("Account Details")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        PROFICIENCY_LEVEL = snapshot.child("AnglerStatus").getValue(String.class);
+                        isProficientUser = "Proficient".equals(PROFICIENCY_LEVEL);
+                        loadQuizData();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+    }
+
+    private void updateProficiency() {
+        String nextLevel;
+
+        // Determine next level based on current PROFICIENCY_LEVEL
+        if (PROFICIENCY_LEVEL.equals("Aspiring")) {
+            nextLevel = "Novice";
+        } else if (PROFICIENCY_LEVEL.equals("Novice")) {
+            nextLevel = "Proficient";
+        } else {
+            return; // No update needed for Proficient users
+        }
+
+        // Update Firebase database
+        authManager.GetDb().getReference().child("Users")
+                .child(loginManager.GetCurrentUser().getUid())
+                .child("Account Details")
+                .child("AnglerStatus")
+                .setValue(nextLevel)
+                .addOnSuccessListener(aVoid -> {
+                    // Show success message to user
+                    new AlertDialog.Builder(QuizzesActivity.this)
+                            .setTitle("Congratulations!")
+                            .setMessage("Your angler status has been upgraded to " + nextLevel)
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    // Update local variable
+                    PROFICIENCY_LEVEL = nextLevel;
+                    isProficientUser = "Proficient".equals(nextLevel);
+                })
+                .addOnFailureListener(e -> {
+                    // Show error message if update fails
+                    new AlertDialog.Builder(QuizzesActivity.this)
+                            .setTitle("Error")
+                            .setMessage("Failed to update angler status. Please try again.")
+                            .setPositiveButton("OK", null)
+                            .show();
+                });
+    }
+
+    //For json
     private static class QuizQuestion {
         String question;
-        String[] options;
+        Options Options;
         String answer;
+    }
+
+    private static class QuizData {
+        Quiz Quiz;
+    }
+
+    private static class Quiz {
+        String title;
+        List<QuizQuestion> Novice;
+        List<QuizQuestion> Aspiring;
+    }
+
+    private static class Options {
+        String a;
+        String b;
+        String c;
+        String d;
     }
 }

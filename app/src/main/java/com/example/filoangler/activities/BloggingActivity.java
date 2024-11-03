@@ -110,8 +110,11 @@ public class BloggingActivity extends AppCompatActivity {
         Menu sideMenu = navigationView.getMenu();
         MenuItem profileItem = sideMenu.findItem(R.id.navProfile);
         MenuItem helpItem = sideMenu.findItem(R.id.btnHelp);
+        MenuItem proficiencyTestItem = sideMenu.findItem(R.id.navProficiencyTest);
+
         if (profileItem != null) profileItem.setEnabled(false);
         if (helpItem != null) helpItem.setEnabled(false);
+        if (proficiencyTestItem != null) proficiencyTestItem.setEnabled(false);
 
         // Disable search button
         btnSearch.setEnabled(false);
@@ -253,6 +256,9 @@ public class BloggingActivity extends AppCompatActivity {
                 } else if (id == R.id.navSettings) {
                     Log.d("SideNav", "Settings clicked");
                     // Handle Settings action
+                } else if (id == R.id.navProficiencyTest && !isOfflineMode) {
+                    Log.d("SideNav", "Proficiency Test clicked");
+                    Utils.ChangeIntent(BloggingActivity.this, QuizzesActivity.class);
                 } else {
                     return false;
                 }
