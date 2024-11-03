@@ -1,13 +1,17 @@
 package com.example.filoangler.activities;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.filoangler.R;
+import com.unity3d.player.UnityPlayer;
 
 public class FishDetailsActivity extends AppCompatActivity {
 
@@ -18,6 +22,10 @@ public class FishDetailsActivity extends AppCompatActivity {
     TextView txtFishLaw;
     TextView txtFishLawLabel;
     ImageView btnBack;
+
+    //Unity
+    FrameLayout unityLayout;
+    UnityPlayer mUnityPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +68,34 @@ public class FishDetailsActivity extends AppCompatActivity {
         // Set back button click listener
         btnBack.setOnClickListener(v -> finish());
 
+        bindUnity();
 
+    }
 
+    private void bindUnity(){
+        unityLayout = findViewById(R.id.img_cake_container);
+
+        // Remove Editor Image Placeholder.
+        unityLayout.removeAllViews();
+
+        getWindow().setFormat(PixelFormat.RGBX_8888);
+        mUnityPlayer = new UnityPlayer(this);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        unityLayout.addView(mUnityPlayer.getView(), 0, lp);
+
+        /*cakeManager = CakeManager.getInstance(); //Custom Code
+        cake = cakeManager.getCurrentCake(); //Custom Code
+        cake.addOnCakeChangeListener((property, newValue) -> { //Custom callback
+            String message = "Property " + property + " changed to " + newValue;
+            Log.d("CakeWatcher", "There's been a change in the cake.");
+            // This is how you send data to Unity
+            // param1 = Game Object Name Where the Script is
+            // param2 = Script Function Name
+            // param3 = String of arguments.
+            UnityPlayer.UnitySendMessage(getString(R.string.unity_cake_object), getString(R.string.unity_cake_function), message);
+        });*/
     }
 
 }

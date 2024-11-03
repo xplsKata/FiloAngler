@@ -23,6 +23,10 @@ android {
             useSupportLibrary = true
         }
 
+        ndk{
+            abiFilters += listOf("armeabi-v7a","arm64-v8a","x86","x86_64")
+        }
+
         //FOR API KEY
         val properties=Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
@@ -129,12 +133,11 @@ dependencies {
     //JSON Files
     implementation ("com.google.code.gson:gson:2.10.1")
 
-    //Sceneform
-    implementation ("com.gorisse.thomas.sceneform:core:1.23.0")
-    implementation ("com.gorisse.thomas.sceneform:ux:1.23.0")
-
     //OkHttp
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+
+    //Unity
+    implementation(files("libs/unityLibrary-debug.aar"))
 
     testImplementation("junit:junit:4.13.2")
 
