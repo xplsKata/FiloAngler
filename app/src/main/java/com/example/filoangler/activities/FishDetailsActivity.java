@@ -136,7 +136,7 @@ public class FishDetailsActivity extends AppCompatActivity {
 
         mUnityPlayer = new UnityPlayer(this);
 
-        getWindow().setFormat(PixelFormat.RGBX_8888);
+        getWindow().setFormat(PixelFormat.RGBA_8888);
 
         mUnityPlayer.requestFocus();
         mUnityPlayer.windowFocusChanged(true);
@@ -148,10 +148,7 @@ public class FishDetailsActivity extends AppCompatActivity {
 
         // Get the Fish3DModel from intent
         String Fish3DModel = getIntent().getStringExtra("Fish3DModel");
-        // Load the specific model
-        UnityPlayer.UnitySendMessage("ModelController", "LoadModel", Fish3DModel);
-
-        // Setup gesture detectors
+        loadModel(Fish3DModel);
         setupGestureDetectors();
     }
 
@@ -160,8 +157,8 @@ public class FishDetailsActivity extends AppCompatActivity {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
                 float scaleFactor = detector.getScaleFactor();
-                Log.d("FishDetails", "Scale factor: " + scaleFactor);
-                UnityPlayer.UnitySendMessage("ModelController", "HandleZoom", String.valueOf(scaleFactor));
+                // Send zoom factor to Unity
+                UnityPlayer.UnitySendMessage("ModelContainer", "OnZoomReceived", String.valueOf(scaleFactor));
                 return true;
             }
         });
@@ -169,18 +166,23 @@ public class FishDetailsActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                // Format: "distanceX,distanceY"
                 String movement = distanceX + "," + distanceY;
-                Log.d("FishDetails", "Sending rotation: " + movement);
-                UnityPlayer.UnitySendMessage("ModelController", "HandleRotation", movement);
+                UnityPlayer.UnitySendMessage("ModelContainer", "OnRotationReceived", movement);
                 return true;
             }
         });
 
         unityLayout.setOnTouchListener((v, event) -> {
-            Log.d("FishDetails", "Touch event received: " + event.getAction());
-            boolean scaleHandled = scaleGestureDetector.onTouchEvent(event);
-            boolean gestureHandled = gestureDetector.onTouchEvent(event);
+            scaleGestureDetector.onTouchEvent(event);
+            gestureDetector.onTouchEvent(event);
             return true;
         });
     }
+
+    private void loadModel(String modelId) {
+        // Send the model ID to Unity
+        UnityPlayer.UnitySendMessage("ModelContainer", "OnModelDataReceived", modelId);
+    }
+
 }

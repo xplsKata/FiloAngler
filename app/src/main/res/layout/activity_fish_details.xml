@@ -23,14 +23,16 @@
 
     <LinearLayout
         android:id="@+id/linearLayout9"
-        android:layout_width="600px"
-        android:layout_height="600px"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/shape_circle_dblue"
+        android:layout_width="750px"
+        android:layout_height="750px"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/shape_posts_container"
+        android:backgroundTint="@color/bgBlue"
         android:orientation="horizontal"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBack">
+        app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
             android:id="@+id/imgFishModel"
@@ -98,6 +100,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:background="@drawable/shape_posts_container"
+                    android:padding="10dp"
                     android:text="TextView"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
@@ -117,6 +121,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:background="@drawable/shape_posts_container"
+                    android:padding="10dp"
                     android:text="TextView"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
@@ -136,6 +142,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:background="@drawable/shape_posts_container"
+                    android:padding="10dp"
                     android:text="TextView"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
@@ -155,6 +163,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
+                    android:background="@drawable/shape_posts_container"
+                    android:padding="10dp"
                     android:text="TextView"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
