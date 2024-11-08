@@ -1,6 +1,7 @@
 package com.example.filoangler.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +45,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         String imagePath = imagePaths.get(position);
 
-        Picasso.get()
-                .load(imagePath)
-                .error(R.mipmap.ic_launcher) // Add an error drawable
-                .fit()
-                .centerCrop()
-                .into(holder.imageView);
+        loadImageWithPicasso(holder.imageView, imagePath);
 
         int selectionIndex = selectedImagePaths.indexOf(imagePath);
         updateSelectionUI(holder, selectionIndex);
@@ -63,6 +59,29 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         holder.btnRemove.setOnClickListener(v -> {
             handleRemoveClick(imagePath, holder);
         });
+    }
+
+    private void loadImageWithPicasso(ImageView imageView, String imagePath) {
+        try {
+            Picasso.get()
+                    .load(imagePath)
+                    .error(R.mipmap.ic_launcher)
+                    .fit()
+                    .centerCrop()
+                    .into(imageView, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
+                            // Image loaded successfully
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("GalleryAdapter", "Error loading image: " + imagePath, e);
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("GalleryAdapter", "Error setting up Picasso load", e);
+        }
     }
 
     private void updateSelectionUI(ViewHolder holder, int selectionIndex) {

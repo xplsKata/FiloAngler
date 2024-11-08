@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -494,34 +495,31 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         ArrayList<String> listOfImages = new ArrayList<>();
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATE_ADDED
+        };
+
         String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC LIMIT " + limit + " OFFSET " + offset;
 
-        try {
-            Cursor cursor = context.getContentResolver().query(
-                    uri,
-                    projection,
-                    null,
-                    null,
-                    sortOrder
-            );
-
-            if (cursor != null) {
-                int columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        try (Cursor cursor = context.getContentResolver().query(
+                uri,
+                projection,
+                null,
+                null,
+                sortOrder)) {
+            if (cursor != null && cursor.getCount() > 0) {
+                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
                 while (cursor.moveToNext()) {
-                    String imagePath = cursor.getString(columnIndexData);
-                    if (imagePath != null && !imagePath.isEmpty()) {
-                        File file = new File(imagePath);
-                        if (file.exists()) {
-                            listOfImages.add("file://" + imagePath);
-                        }
-                    }
+                    long id = cursor.getLong(idColumn);
+                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                    listOfImages.add(imageUri.toString());
                 }
-                cursor.close();
             }
         } catch (Exception e) {
             Log.e("GalleryError", "Error loading images: " + e.getMessage());
         }
+
         return listOfImages;
     }
 
