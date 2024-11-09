@@ -22,6 +22,9 @@
         android:textColor="@color/white"
         android:textColorHighlight="@color/white"
         android:textColorHint="@color/white"
+        android:imeOptions="actionSearch"
+        android:singleLine="true"
+        android:maxLines="1"
         app:layout_constraintStart_toStartOf="@+id/water_container"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -197,7 +200,6 @@
             android:layout_height="50dp"
             android:background="@drawable/shape_comments_more_dialog"
             android:backgroundTint="@color/bgBlue"
-            android:clickable="false"
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:paddingVertical="5dp"

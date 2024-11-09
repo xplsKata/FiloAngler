@@ -116,11 +116,18 @@ public class TideFragment extends Fragment {
         txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE
-                        || event != null
-                        && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_NEXT ||
+                        (event != null &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 
+                    // Prevent default behavior
+                    if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
+                        return true;
+                    }
+
+                    // Process the search
                     location = txtSearch.getText().toString();
                     if(location.isEmpty()){
                         Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_LONG).show();
@@ -128,6 +135,7 @@ public class TideFragment extends Fragment {
                         Toast.makeText(getContext(), "Invalid location", Toast.LENGTH_LONG).show();
                     }else{
                         getCoordinatesAndFetchTide(location);
+                        Utils.hideKeyboard(getActivity()); // Add this utility method
                     }
                     return true;
                 }
