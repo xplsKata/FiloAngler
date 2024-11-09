@@ -1,6 +1,8 @@
 package com.example.filoangler.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -135,6 +137,20 @@ public class WeatherFragment extends Fragment {
     private double windSpeed;
 
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    private boolean isFragmentAttached = false;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        isFragmentAttached = true;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        isFragmentAttached = false;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -374,19 +390,66 @@ public class WeatherFragment extends Fragment {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get weather data", Toast.LENGTH_SHORT).show());
+                updateUIOnError("Failed to get weather data");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String weatherData = response.body().string();
-                    getActivity().runOnUiThread(() -> updateUI(weatherData));
+                    updateUIWithWeatherData(weatherData);
                 } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get weather data", Toast.LENGTH_SHORT).show());
+                    updateUIOnError("Failed to get weather data");
                 }
             }
         });
+    }
+
+    private void updateUIWithWeatherData(final String weatherData) {
+        if (!isFragmentAttached) {
+            return;
+        }
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        activity.runOnUiThread(() -> {
+            if (!isFragmentAttached) {
+                return;
+            }
+            try {
+                updateUI(weatherData);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showToast("Error updating weather information");
+            }
+        });
+    }
+
+    private void updateUIOnError(final String errorMessage) {
+        if (!isFragmentAttached) {
+            return;
+        }
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        activity.runOnUiThread(() -> {
+            if (!isFragmentAttached) {
+                return;
+            }
+            showToast(errorMessage);
+        });
+    }
+
+    private void showToast(String message) {
+        if (isFragmentAttached && getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private int getWeatherIconResource(String weatherDescription) {
@@ -554,6 +617,14 @@ public class WeatherFragment extends Fragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (client != null) {
+            client.dispatcher().cancelAll();
+        }
     }
 
 }
