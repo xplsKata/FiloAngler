@@ -5,35 +5,46 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import com.example.filoangler.Adapter.UserAdapter;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Model.UserModel;
+import com.example.filoangler.fragments.SearchResultFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
  public class SearchActivity extends AppCompatActivity {
 
+     private boolean isSearching = false;
+
      private RecyclerView recyclerView;
-     private SocialAutoCompleteTextView search_bar;
+     private EditText search_bar;
      private List<UserModel> mUsers;
      private UserAdapter userAdapter;
      private FirebaseDatabase mDb;
      private AuthManager authManager = new AuthManager();
+     private ImageButton btnBack;
+     private FrameLayout frameSearchResult;
 
      public SearchActivity(){
          this.mDb = authManager.GetDb();
@@ -44,48 +55,97 @@ import java.util.List;
          setContentView(R.layout.activity_search);
 
          try {
+             // Initialize views
              recyclerView = findViewById(R.id.result_users);
+             frameSearchResult = findViewById(R.id.frameSearchResult);
+             search_bar = findViewById(R.id.txtSearch);
+             btnBack = findViewById(R.id.btnBack);
+
+             // Initial visibility setup
+             recyclerView.setVisibility(View.VISIBLE);
+             frameSearchResult.setVisibility(View.GONE);
+
+             // Setup RecyclerView
              recyclerView.setHasFixedSize(true);
              recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
 
-             // Initialize mUsers
+             // Initialize lists and adapters
              mUsers = new ArrayList<>();
-
-             // Initialize UserAdapter
              userAdapter = new UserAdapter(SearchActivity.this, mUsers, false, "search");
              recyclerView.setAdapter(userAdapter);
 
-             search_bar = findViewById(R.id.txtSearch);
-
-             // Call readUsers to populate the list
+             // Call readUsers to populate initial list
              readUsers();
 
+             // Setup search bar listener
              search_bar.addTextChangedListener(new TextWatcher() {
                  @Override
                  public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                  }
 
                  @Override
                  public void onTextChanged(CharSequence s, int start, int before, int count) {
-                     if(TextUtils.isEmpty(search_bar.getText().toString())){
+                     if (TextUtils.isEmpty(s.toString())) {
+                         // Reset to initial state
+                         recyclerView.setVisibility(View.VISIBLE);
+                         frameSearchResult.setVisibility(View.GONE);
+                         isSearching = false;
                          readUsers();
-                     }else{
+                     } else {
+                         // Show suggestions while typing
                          searchUser(s.toString());
                      }
                  }
 
                  @Override
                  public void afterTextChanged(Editable s) {
-
                  }
              });
 
-         } catch(Exception e) {
+             // Add key listener for search activation
+             search_bar.setOnEditorActionListener((v, actionId, event) -> {
+                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                     performSearch(search_bar.getText().toString());
+                     return true;
+                 }
+                 return false;
+             });
+
+         } catch (Exception e) {
              Log.e("SEARCH_Error", "onCreate: " + e);
          }
 
-         //THIS STILL LACKS THE FEATURE OF POST SEARCHING WHEN ENTERED
+         btnBack.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 finish();
+             }
+         });
+     }
+
+     private void performSearch(String searchQuery) {
+         if (!TextUtils.isEmpty(searchQuery)) {
+             // Hide keyboard
+             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+             imm.hideSoftInputFromWindow(search_bar.getWindowToken(), 0);
+
+             // Update visibility
+             recyclerView.setVisibility(View.GONE);
+             frameSearchResult.setVisibility(View.VISIBLE);
+             isSearching = true;
+
+             // Create and show SearchResultFragment
+             SearchResultFragment searchResultFragment = new SearchResultFragment();
+             Bundle args = new Bundle();
+             args.putString("searchQuery", searchQuery);
+             searchResultFragment.setArguments(args);
+
+             getSupportFragmentManager()
+                     .beginTransaction()
+                     .replace(R.id.frameSearchResult, searchResultFragment)
+                     .addToBackStack(null)
+                     .commit();
+         }
      }
 
      private void readUsers() {
@@ -163,6 +223,22 @@ import java.util.List;
                  mUsers.add(userModel);
                  Log.e("SEARCH_Error", "Added user: " + userModel.getUsername());
              }
+         }
+     }
+
+     public void onBackPressed() {
+         if (isSearching) {
+             // Reset to initial state
+             recyclerView.setVisibility(View.VISIBLE);
+             frameSearchResult.setVisibility(View.GONE);
+             isSearching = false;
+             search_bar.setText("");
+             readUsers();
+
+             // Clear fragment backstack
+             getSupportFragmentManager().popBackStack();
+         } else {
+             super.onBackPressed();
          }
      }
  }

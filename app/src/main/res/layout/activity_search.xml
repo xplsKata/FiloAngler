@@ -32,7 +32,7 @@
           app:layout_constraintTop_toTopOf="@+id/txtSearch"
           app:srcCompat="@drawable/baseline_arrow_back_ios_24" />
 
-      <com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView
+      <EditText
           android:id="@+id/txtSearch"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
@@ -41,10 +41,12 @@
           android:backgroundTint="@color/white"
           android:drawableLeft="@drawable/baseline_search_24"
           android:hint="Search"
-          android:maxLines="1"
+          android:imeOptions="actionSearch"
           android:textColor="@color/white"
           android:textColorHint="#FFFFFF"
           android:textSize="18sp"
+          android:singleLine="true"
+          android:maxLines="1"
           app:hashtagColor="@color/iconBlue"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
