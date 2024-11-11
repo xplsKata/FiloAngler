@@ -56,9 +56,6 @@
             android:name=".activities.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SearchResultActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.SearchActivity"
             android:exported="false" />
         <activity
