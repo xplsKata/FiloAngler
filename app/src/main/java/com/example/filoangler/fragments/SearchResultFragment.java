@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.filoangler.Adapter.PostAdapter;
 import com.example.filoangler.Adapter.UserAdapter;
@@ -33,6 +34,8 @@ public class SearchResultFragment extends Fragment {
     private UserAdapter userAdapter;
     private PostAdapter postAdapter;
     private AuthManager authManager;
+    private TextView tvNoUsers;
+    private TextView tvNoPosts;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +45,8 @@ public class SearchResultFragment extends Fragment {
         // Initialize components
         recyclerPosts = view.findViewById(R.id.recyclerPosts);
         recyclerPeople = view.findViewById(R.id.recyclerPeople);
+        tvNoUsers = view.findViewById(R.id.tvNoUsers);
+        tvNoPosts = view.findViewById(R.id.tvNoPosts);
 
         // Initialize lists and adapters
         mUsers = new ArrayList<>();
@@ -62,13 +67,11 @@ public class SearchResultFragment extends Fragment {
 
     private void setupRecyclerViews() {
         // Setup People RecyclerView
-        recyclerPeople.setHasFixedSize(true);
         recyclerPeople.setLayoutManager(new LinearLayoutManager(getContext()));
         userAdapter = new UserAdapter(getContext(), mUsers, false, "search");
         recyclerPeople.setAdapter(userAdapter);
 
         // Setup Posts RecyclerView
-        recyclerPosts.setHasFixedSize(true);
         recyclerPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         postAdapter = new PostAdapter(getContext(), mPosts);
         recyclerPosts.setAdapter(postAdapter);
@@ -78,6 +81,16 @@ public class SearchResultFragment extends Fragment {
         searchQuery = searchQuery.toLowerCase();
         searchUsers(searchQuery);
         searchPosts(searchQuery);
+    }
+
+    private void updateVisibility() {
+        // Update Users section visibility
+        recyclerPeople.setVisibility(mUsers.isEmpty() ? View.GONE : View.VISIBLE);
+        tvNoUsers.setVisibility(mUsers.isEmpty() ? View.VISIBLE : View.GONE);
+
+        // Update Posts section visibility
+        recyclerPosts.setVisibility(mPosts.isEmpty() ? View.GONE : View.VISIBLE);
+        tvNoPosts.setVisibility(mPosts.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void searchUsers(String searchQuery) {
@@ -125,6 +138,10 @@ public class SearchResultFragment extends Fragment {
                     }
                 }
                 userAdapter.notifyDataSetChanged();
+                updateVisibility();
+
+                // After finding users, search for their posts
+                searchPostsByUsers(searchQuery);
             }
 
             @Override
@@ -158,6 +175,42 @@ public class SearchResultFragment extends Fragment {
                     }
                 }
                 postAdapter.notifyDataSetChanged();
+                updateVisibility();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("SearchError", "Database error: " + error.getMessage());
+            }
+        });
+    }
+
+    private void searchPostsByUsers(String searchQuery) {
+        DatabaseReference postsRef = authManager.GetDb().getReference().child("Posts");
+
+        postsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Don't clear posts here since we want to keep the posts from searchPosts()
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    try {
+                        PostModel post = postSnapshot.getValue(PostModel.class);
+                        if (post != null) {
+                            // Check if post is from any of the matched users
+                            for (UserModel user : mUsers) {
+                                if (post.getAuthor().equals(user.getUserID()) &&
+                                        !mPosts.contains(post)) {  // Avoid duplicates
+                                    mPosts.add(post);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("SearchError", "Error processing post: " + e.getMessage());
+                    }
+                }
+                postAdapter.notifyDataSetChanged();
+                updateVisibility();
             }
 
             @Override
