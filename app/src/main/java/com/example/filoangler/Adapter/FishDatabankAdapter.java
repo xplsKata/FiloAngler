@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.filoangler.Model.FishDatabankModel;
 import com.example.filoangler.R;
 import com.example.filoangler.activities.FishDetailsActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,8 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // Set fish image
             int resourceId = mContext.getResources().getIdentifier(fish.getFishImage(), "drawable", mContext.getPackageName());
             if (resourceId != 0) {
-                fishHolder.fishImage.setImageResource(resourceId);
+                    Picasso.get().load(resourceId)
+                            .into(fishHolder.fishImage);
             }
 
             fishHolder.fishButton.setOnClickListener(v -> {

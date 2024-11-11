@@ -1,32 +1,134 @@
 {
-  "A": [
-    {
-      "FishName": "Arracuda",
-      "FishImage": "fish_barracuda",
-      "Fish3DModel": "fish_barracuda",
-      "Description": "Looks cute",
-      "Behavior": "cutesy",
-      "Habitat": "Saltwater and Freshwater",
-      "Law": "none"
-    },
-    {
-      "FishName": "Arararacuda",
-      "FishImage": "fish_barracuda",
-      "Fish3DModel": "fish_Ad",
-      "Description": "Looks cute",
-      "Behavior": "cutesy",
-      "Habitat": "Saltwater and Freshwater",
-      "Law": "none"
-    }
-  ],
   "B": [
     {
       "FishName": "Barracuda",
       "FishImage": "fish_barracuda",
       "Fish3DModel": "fish_barracuda",
-      "Description": "Looks mean AF",
-      "Behavior": "Aggressive as sh",
-      "Habitat": "Saltwater and Freshwater",
+      "Description": "Barracudas are known for their long, streamlined bodies, sharp, fang-like teeth, and ferocious hunting style. They have silvery, reflective skin that helps them blend into open waters, and they can perform short bursts of speed reaching up to 27 mph to ambush prey effectively. Known as the 'tigers of the sea,' barracudas are feared for their intimidating appearance and agility.",
+      "Behavior": "Barracudas are primarily solitary hunters but may form loose schools when young. They use their speed and stealth to ambush prey, typically smaller fish. Opportunistic and aggressive, they sometimes 'shadow' larger predators to pick off any leftovers. They are most active during dawn and dusk.",
+      "Habitat": "Typically found in tropical and subtropical waters around coral reefs, seagrass beds, and occasionally open waters. Prefers shallow waters near coasts but can also be found at greater depths.",
+      "Law": "none"
+    },
+    {
+      "FishName": "Bigeye Scad",
+      "FishImage": "fish_matangbaka",
+      "Fish3DModel": "fish_matangbaka",
+      "Description": "Locally known as 'Matangbaka,' this fish is distinguished by its large, prominent eyes, which enhance its vision for feeding at night. It has a streamlined body that allows it to move swiftly in schools, providing both protection and efficiency in catching prey.",
+      "Behavior": "Bigeye scads form large schools, especially during spawning periods, and are highly fast swimmers. They are nocturnal feeders, consuming plankton and smaller fish under the cover of night.",
+      "Habitat": "Typically inhabits coastal waters and nearshore reefs. Found in areas with sandy or muddy bottoms and sometimes near piers or jetties.",
+      "Law": "none"
+    },
+    {
+      "FishName": "Blacktip Grouper",
+      "FishImage": "fish_blacktipgrouper",
+      "Fish3DModel": "fish_blacktipgrouper",
+      "Description": "Known locally as 'lapu lapu,' this grouper has a robust, reddish body with distinctive black tips on its dorsal fins. It is a popular reef fish due to its unique coloring and is often seen near the seafloor.",
+      "Behavior": "Blacktip groupers are solitary and territorial. They typically remain near reef structures, where they wait to ambush prey, primarily smaller fish and invertebrates. Known for their patience, they rely on stealth rather than speed to catch prey.",
+      "Habitat": "Coral reefs and rocky areas in shallow coastal waters. They prefer habitats with crevices and caves to use as hiding spots.",
+      "Law": "Protected during specific spawning seasons according to Philippine fisheries regulations."
+    }
+  ],
+  "C": [
+    {
+      "FishName": "Crescent Grunter",
+      "FishImage": "fish_crescentgrunter",
+      "Fish3DModel": "fish_crescentgrunter",
+      "Description": "Locally called 'bugaong,' the crescent grunter has a silver body with distinct black crescent-shaped markings near the tail. It produces a 'grunting' sound using its swim bladder, which it often uses to communicate within schools.",
+      "Behavior": "Crescent grunters are schooling fish, typically found near the seafloor. Their grunting noise is produced by their swim bladder and is often used for communication, especially when disturbed or during mating.",
+      "Habitat": "Found in mangrove estuaries, brackish waters, and nearshore reefs. They prefer areas with plenty of hiding spots to avoid predators.",
+      "Law": "none"
+    }
+  ],
+  "G": [
+    {
+      "FishName": "Goatfish",
+      "FishImage": "fish_goatfish",
+      "Fish3DModel": "fish_goatfish",
+      "Description": "Known for its long barbels beneath the chin, which are used to sift through the sand in search of small invertebrates. Goatfish have the unique ability to change color to blend into their environment.",
+      "Behavior": "Often seen in small groups, goatfish actively feed near the sandy seafloor. They use their barbels to detect and catch hidden prey, such as worms and crustaceans.",
+      "Habitat": "Typically found on sandy or muddy substrates near coral reefs and lagoons. They prefer areas with ample sediment for hunting.",
+      "Law": "none"
+    }
+  ],
+  "L": [
+    {
+      "FishName": "Ladyfish",
+      "FishImage": "fish_ladyfish",
+      "Fish3DModel": "fish_ladyfish",
+      "Description": "Also called 'bidbid,' the ladyfish is a long, slender fish with sharp teeth and a silver sheen. Its streamlined body allows it to leap out of the water to escape predators.",
+      "Behavior": "Highly active and known for jumping out of the water. They are schooling fish and are aggressive feeders, often chasing down smaller fish and crustaceans.",
+      "Habitat": "Found in shallow coastal areas, estuaries, and occasionally freshwater rivers, preferring warm, shallow waters near shore.",
+      "Law": "none"
+    },
+    {
+      "FishName": "Lizardfish",
+      "FishImage": "fish_lizardfish",
+      "Fish3DModel": "fish_lizardfish",
+      "Description": "Locally referred to as 'butiki' or 'tuko,' this fish has a cylindrical body and a lizard-like head with a broad mouth filled with sharp teeth.",
+      "Behavior": "A predatory fish that lies camouflaged on sandy bottoms to ambush prey. Lizardfish are solitary hunters and will dart out from their hiding spots to capture prey.",
+      "Habitat": "Prefers sandy bottoms and seagrass beds in shallow coastal waters. They are often found lying in wait for prey near the ocean floor.",
+      "Law": "none"
+    }
+  ],
+  "M": [
+    {
+      "FishName": "Mangrove Jack",
+      "FishImage": "fish_mangrovejack",
+      "Fish3DModel": "fish_mangrovejack",
+      "Description": "Locally known as 'Managat,' this powerful predatory fish is often found around mangrove roots and is known for its aggressive nature and striking red color.",
+      "Behavior": "Aggressive and territorial, particularly near mangrove roots and rocky areas. Mangrove jacks are ambush predators, feeding on smaller fish, crustaceans, and cephalopods.",
+      "Habitat": "Found in mangrove estuaries and brackish river mouths, but also found offshore around reefs.",
+      "Law": "Protected in specific sizes and seasons; consult local fishing regulations."
+    }
+  ],
+  "N": [
+    {
+      "FishName": "Needlefish",
+      "FishImage": "fish_needlefish",
+      "Fish3DModel": "fish_needlefish",
+      "Description": "Referred to locally as 'Balo,' the needlefish has an elongated, slender body and a sharp, beak-like snout filled with pointed teeth.",
+      "Behavior": "Fast and agile, they often swim near the surface and are known for leaping out of the water. They hunt small fish and invertebrates in shallow waters.",
+      "Habitat": "Coastal waters, especially around coral reefs and estuaries. Prefers areas with clear visibility near the surface.",
+      "Law": "none"
+    }
+  ],
+  "P": [
+    {
+      "FishName": "Pigface Bream",
+      "FishImage": "fish_pigfacebream",
+      "Fish3DModel": "fish_pigfacebream",
+      "Description": "Locally called 'Kanuping,' this fish has a characteristic protruding lower jaw, giving it a unique profile. It is primarily a bottom feeder.",
+      "Behavior": "Feeds on small invertebrates near the bottom, foraging through sand and silt.",
+      "Habitat": "Inhabits nearshore reefs and sandy substrates, usually in shallow coastal waters.",
+      "Law": "none"
+    }
+  ],
+  "T": [
+    {
+      "FishName": "Threadfin Bream",
+      "FishImage": "fish_threadfinbream",
+      "Fish3DModel": "fish_threadfinbream",
+      "Description": "Locally known as 'Bisugo,' this fish has a bright red body with elongated pectoral fins and distinctive stripes running along its body.",
+      "Behavior": "Bottom-dwelling fish that feeds on small crustaceans and invertebrates.",
+      "Habitat": "Found on sandy and muddy bottoms in coastal and offshore waters.",
+      "Law": "none"
+    },
+    {
+      "FishName": "Trevally",
+      "FishImage": "fish_talakitok",
+      "Fish3DModel": "fish_talakitok",
+      "Description": "Commonly called 'Talakitok,' trevally are large, powerful swimmers with a bluish-silver body and are highly prized by anglers for their fighting strength.",
+      "Behavior": "Aggressive hunters that often form schools, preying on smaller fish. Known for their speed and agility.",
+      "Habitat": "Commonly found in open waters near reefs and coastal areas.",
+      "Law": "none"
+    },
+    {
+      "FishName": "Tripletail Wrasse",
+      "FishImage": "fish_tripletailwrasse",
+      "Fish3DModel": "fish_tripletailwrasse",
+      "Description": "Known locally (insert local term), this wrasse has a body shape that gives the appearance of having three tails, aiding its camouflage in reef environments.",
+      "Behavior": "Secretive, often hides within coral crevices to avoid predators and search for small invertebrates.",
+      "Habitat": "Inhabits coral reefs, rocky outcrops, and coastal waters.",
       "Law": "none"
     }
   ]
