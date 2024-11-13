@@ -131,8 +131,6 @@ public class TideFragment extends Fragment {
                     location = txtSearch.getText().toString();
                     if(location.isEmpty()){
                         Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_LONG).show();
-                    }else if(!cityProvinceNames.contains(location)){
-                        Toast.makeText(getContext(), "Invalid location", Toast.LENGTH_LONG).show();
                     }else{
                         getCoordinatesAndFetchTide(location);
                         Utils.hideKeyboard(getActivity()); // Add this utility method
