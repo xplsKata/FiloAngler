@@ -574,6 +574,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                                 map.put("ImageURLs", imageUrls);
                                 map.put("Description", txtImageDescription.getText().toString());
                                 map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
+                                map.put("DatePosted", Utils.getDateAndTime());
 
                                 databaseReference.child(postId).setValue(map)
                                         .addOnSuccessListener(aVoid -> {

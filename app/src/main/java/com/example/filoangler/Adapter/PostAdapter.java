@@ -99,7 +99,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                 holder.imgProfile,
                 holder.txtName,
                 holder.txtUsername,
-                holder.txtUsernameCpt);
+                holder.txtUsernameCpt,
+                holder.txtDateAndTime);
         isLiked(postModel.getPostId(), holder.btnLike);
         interactionCounter(postModel.getPostId(), holder.txtLikesAmount, "Likes");
         interactionCounter(postModel.getPostId(), holder.txtCommentsAmount, "Comments");
@@ -127,6 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         public TextView txtCommentsAmount;
         public TextView txtUsernameCpt;
         public TextView txtCaption;
+        public TextView txtDateAndTime;
 
         public ViewPager2 viewPagerImages;
         public LinearLayout layoutDots;
@@ -147,6 +149,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             txtCommentsAmount = itemView.findViewById(R.id.txtCommentsAmount);
             txtUsernameCpt = itemView.findViewById(R.id.txtUsernameCpt);
             txtCaption = itemView.findViewById(R.id.txtCaption);
+            txtDateAndTime = itemView.findViewById(R.id.txtDate);
+
 
             viewPagerImages = itemView.findViewById(R.id.viewPagerImages);
             layoutDots = itemView.findViewById(R.id.layoutDots);
@@ -204,10 +208,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                         ImageView imgProfile,
                         TextView txtName,
                         TextView txtUsername,
-                        TextView txtUsernameCpt) {
+                        TextView txtUsernameCpt,
+                        TextView txtDateAndTime) {
 
         // Image handling is now done by ViewPager adapter
         txtCaption.setText(postModel.getDescription());
+        if (postModel.getDatePosted() != null) {
+            txtDateAndTime.setText(postModel.getDatePosted());
+        }
 
         authManager.GetDb().getReference().child("Users")
                 .child(postModel.getAuthor())

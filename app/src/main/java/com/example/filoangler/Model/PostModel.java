@@ -8,16 +8,18 @@ public class PostModel {
     private List<String> ImageURLs;
     private String Description;
     private String Author;
+    private String DatePosted;
 
     public PostModel(){
 
     }
 
-    public PostModel(String postId, List<String> ImageURLs, String description, String author) {
+    public PostModel(String postId, List<String> ImageURLs, String description, String author, String datePosted) {
         PostId = postId;
         ImageURLs = ImageURLs;
         Description = description;
         Author = author;
+        DatePosted = datePosted;
     }
 
     public String getPostId() {
@@ -52,4 +54,11 @@ public class PostModel {
         Author = author;
     }
 
+    public String getDatePosted() {
+        return DatePosted;
+    }
+
+    public void setDatePosted(String datePosted) {
+        DatePosted = datePosted;
+    }
 }

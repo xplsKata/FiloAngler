@@ -143,4 +143,9 @@ public class Utils {
         }
     }
 
+    public static String getDateAndTime() {
+        java.util.Date date = new java.util.Date();
+        return new java.text.SimpleDateFormat("MM-dd-yy hh:mma").format(date);
+    }
+
 }
