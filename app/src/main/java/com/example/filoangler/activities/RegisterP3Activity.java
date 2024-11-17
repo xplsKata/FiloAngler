@@ -49,7 +49,17 @@ public class RegisterP3Activity extends AppCompatActivity {
                 String Bio = "null";
                 String ProfileIconURL = BuildConfig.defaultProfileIconURL;
 
-                UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus, Bio, ProfileIconURL);
+                UserModel userModel = new UserModel(Email,
+                        Password,
+                        Username,
+                        FirstName,
+                        LastName,
+                        Birthdate,
+                        ProvinceAddress,
+                        CityAddress,
+                        AnglerStatus,
+                        Bio,
+                        ProfileIconURL);
                 try{
                     registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
                         @Override

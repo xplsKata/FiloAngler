@@ -113,63 +113,11 @@ public class RegisterP2Activity extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
-
-                String Email = getIntent().getStringExtra("Email");
-                String Username = getIntent().getStringExtra("Username");
-                String Password = getIntent().getStringExtra("Password");
-                String FirstName = txtFirstName.getText().toString();
-                String LastName = txtLastName.getText().toString();
-                String Birthdate = btnDate.getText().toString();
-                String ProvinceAddress = spnrProvince.getSelectedItem().toString();
-                String CityAddress = spnrCity.getSelectedItem().toString();
-                String AnglerStatus = " ";
-                int RadioButtonId = radioGroupStatus.getCheckedRadioButtonId();
-                if(RadioButtonId != 1){
-                    RadioButton SelectedRadioButton = findViewById(RadioButtonId);
-                    AnglerStatus = SelectedRadioButton.getText().toString();
-                }
-
-                try{
-                    if (loginManager.GetCurrentUser() != null && loginManager.GetCurrentUser().isEmailVerified()) {
-                        RegisterManager registerManager = new RegisterManager();
-                        UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
-                        try{
-                            registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> taskAuth) {
-                                    if(taskAuth.isSuccessful()){
-                                        registerManager.AddUserToDatabase(userModel, taskAuth);
-                                        Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
-                                        Utils.ChangeIntent(RegisterP2Activity.this, RegisterP3Activity.class);
-                                        finish();
-                                    }
-                                }
-                            });
-                        }catch(Exception e){
-                            Log.e("TAG", "Error with adding userModel to db" + e);
-                        }
-                    }else{
-                        Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
-                        intent.putExtra("Email", Email);
-                        intent.putExtra("Username", Username);
-                        intent.putExtra("Password", Password);
-                        intent.putExtra("FirstName", FirstName);
-                        intent.putExtra("LastName", LastName);
-                        intent.putExtra("Birthdate", Birthdate);
-                        intent.putExtra("ProvinceAddress", ProvinceAddress);
-                        intent.putExtra("CityAddress", CityAddress);
-                        intent.putExtra("AnglerStatus", AnglerStatus);
-                        startActivity(intent);
-                    }
-                }catch(Exception e){
-                    Log.e("RegisterP2Activity", "Add to database: failure" + e);
-                }
+                getCredentials();
             }
         });
     }
 
-    //Handles Date
     private String getTodaysDate() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -234,9 +182,7 @@ public class RegisterP2Activity extends AppCompatActivity {
                 return "Invalid month";
         }
     }
-    //End of date handling
 
-    //Handles Json files
     private void LoadJSONData(){
         //Fetch json data (cities and provinces)
         String ProvinceName, ProvinceKey, CityName, CityKey;
@@ -292,9 +238,7 @@ public class RegisterP2Activity extends AppCompatActivity {
             Log.e("TAG", "LoadJson Cities: Error" + e);
         }
     }
-    //End
 
-    //Handles spinner content
     private void ProvincesSpinnerContent(){
         Collections.sort(ProvincesList);
         ArrayAdapter<String> ProvinceAdapter = new ArrayAdapter<>(this, R.layout.item_spinner_selected, ProvincesList);
@@ -331,5 +275,60 @@ public class RegisterP2Activity extends AppCompatActivity {
         CityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnrCity.setAdapter(CityAdapter);
     }
-    //End
+
+    private void getCredentials(){
+        LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
+
+        String Email = getIntent().getStringExtra("Email");
+        String Username = getIntent().getStringExtra("Username");
+        String Password = getIntent().getStringExtra("Password");
+        String FirstName = txtFirstName.getText().toString();
+        String LastName = txtLastName.getText().toString();
+        String Birthdate = btnDate.getText().toString();
+        String ProvinceAddress = spnrProvince.getSelectedItem().toString();
+        String CityAddress = spnrCity.getSelectedItem().toString();
+        String AnglerStatus = " ";
+        int RadioButtonId = radioGroupStatus.getCheckedRadioButtonId();
+        if(RadioButtonId != 1){
+            RadioButton SelectedRadioButton = findViewById(RadioButtonId);
+            AnglerStatus = SelectedRadioButton.getText().toString();
+        }
+
+        try{
+            if (loginManager.GetCurrentUser() != null && loginManager.GetCurrentUser().isEmailVerified()) {
+                RegisterManager registerManager = new RegisterManager();
+                UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
+                try{
+                    registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> taskAuth) {
+                            if(taskAuth.isSuccessful()){
+                                registerManager.AddUserToDatabase(userModel, taskAuth);
+                                Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
+                                Utils.ChangeIntent(RegisterP2Activity.this, RegisterP3Activity.class);
+                                finish();
+                            }
+                        }
+                    });
+                }catch(Exception e){
+                    Log.e("TAG", "Error with adding userModel to db" + e);
+                }
+            }else{
+                Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
+                intent.putExtra("Email", Email);
+                intent.putExtra("Username", Username);
+                intent.putExtra("Password", Password);
+                intent.putExtra("FirstName", FirstName);
+                intent.putExtra("LastName", LastName);
+                intent.putExtra("Birthdate", Birthdate);
+                intent.putExtra("ProvinceAddress", ProvinceAddress);
+                intent.putExtra("CityAddress", CityAddress);
+                intent.putExtra("AnglerStatus", AnglerStatus);
+                startActivity(intent);
+            }
+        }catch(Exception e){
+            Log.e("RegisterP2Activity", "Add to database: failure" + e);
+        }
+    }
+
 }

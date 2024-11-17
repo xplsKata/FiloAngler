@@ -24,7 +24,7 @@ public class UserModel {
         this.Password = Password;
     }
 
-    //Constructor for Register
+    //Constructor for RegisterP2
     public UserModel(String Email, String Password, String Username,
                      String FirstName, String LastName, String Birthdate,
                      String ProvinceAddress, String CityAddress, String AnglerStatus){
@@ -39,7 +39,7 @@ public class UserModel {
         this.AnglerStatus = AnglerStatus;
     }
 
-    //Constructor for UserModel
+    //Constructor for UserModel, RegisterP3
     public UserModel(String Email, String Password, String Username,
                      String FirstName, String LastName, String Birthdate,
                      String ProvinceAddress, String CityAddress, String AnglerStatus, String Bio, String ProfileIconURL){
