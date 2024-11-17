@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -276,6 +277,22 @@ public class RegisterP2Activity extends AppCompatActivity {
         spnrCity.setAdapter(CityAdapter);
     }
 
+    private void showDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Proficiency Verification")
+                .setMessage("As a Proficient Angler, you have the option to verify your status by submitting 3 images of your angling tournament certifications through the app later. This verification will give you a verified badge.")
+                .setPositiveButton("Got it", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setCancelable(false);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void getCredentials(){
         LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
 
@@ -314,6 +331,10 @@ public class RegisterP2Activity extends AppCompatActivity {
                     Log.e("TAG", "Error with adding userModel to db" + e);
                 }
             }else{
+                if(AnglerStatus.equals("Proficient")){
+                    showDialog();
+                }
+
                 Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
                 intent.putExtra("Email", Email);
                 intent.putExtra("Username", Username);
