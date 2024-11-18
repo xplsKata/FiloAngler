@@ -254,6 +254,7 @@
                             android:id="@+id/imgVerified"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:tint="#00C2F5"
                             app:srcCompat="@drawable/baseline_verified_24" />
                     </LinearLayout>
 
