@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -18,6 +19,7 @@ import com.example.filoangler.Model.PostModel;
 import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.activities.UserProfileActivity;
 import com.google.android.gms.auth.api.Auth;
+import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -146,6 +148,26 @@ public class Utils {
     public static String getDateAndTime() {
         java.util.Date date = new java.util.Date();
         return new java.text.SimpleDateFormat("MM-dd-yy hh:mma").format(date);
+    }
+
+    public static void loadImage(ImageView imageView, int Icon){
+        imageView.post(() -> {
+            int width = imageView.getWidth();
+            int height = imageView.getHeight();
+
+            // Only proceed with loading if dimensions are valid
+            if (width > 0 && height > 0) {
+                Picasso.get()
+                        .load(Icon)
+                        .resize(width, height)
+                        .into(imageView);
+            } else {
+                // Fallback to load without resize
+                Picasso.get()
+                        .load(Icon)
+                        .into(imageView);
+            }
+        });
     }
 
 }

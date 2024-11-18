@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -80,32 +81,12 @@ public class WeatherDialogFragment extends Fragment {
 
         updateWeatherInfo(description);
 
-        loadImage(imgWeatherIcon, weatherIcon);
-        loadImage(imgFish, R.drawable.fish);
-        loadImage(imgTips, R.drawable.bulb);
+        Utils.loadImage(imgWeatherIcon, weatherIcon);
+        Utils.loadImage(imgFish, R.drawable.fish);
+        Utils.loadImage(imgTips, R.drawable.bulb);
         loadBackgroundImage(weatherBackground, imgBackground);
 
         txtDescription.setText(description);
-    }
-
-    private void loadImage(ImageView imageView, int Icon){
-        imageView.post(() -> {
-            int width = imageView.getWidth();
-            int height = imageView.getHeight();
-
-            // Only proceed with loading if dimensions are valid
-            if (width > 0 && height > 0) {
-                Picasso.get()
-                        .load(Icon)
-                        .resize(width, height)
-                        .into(imageView);
-            } else {
-                // Fallback to load without resize
-                Picasso.get()
-                        .load(Icon)
-                        .into(imageView);
-            }
-        });
     }
 
     private void loadBackgroundImage(int drawableId, ImageView imageView) {
