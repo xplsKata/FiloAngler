@@ -1,29 +1,30 @@
 package com.example.filoangler.activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ActionMenuView;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
-
 import com.example.filoangler.Adapter.SideNavAdapter;
+import com.example.filoangler.Dialog.VerifyProfileDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
@@ -56,6 +57,7 @@ public class BloggingActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private LoginManager loginManager;
     private AuthManager authManager;
+    private VerifyProfileDialog verifyProfileDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class BloggingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_blogging);
 
         isOfflineMode = getIntent().getBooleanExtra("offline_mode", false);
+        verifyProfileDialog = new VerifyProfileDialog(this, this);
 
         initializeViews();
         setupUserProfile();
@@ -253,13 +256,13 @@ public class BloggingActivity extends AppCompatActivity {
                     Intent intent = new Intent(BloggingActivity.this, UserProfileActivity.class);
                     intent.putExtra("UserId", loginManager.GetCurrentUser().getUid());
                     startActivity(intent);
-                } else if (id == R.id.navSettings) {
-                    Log.d("SideNav", "Settings clicked");
-                    // Handle Settings action
                 } else if (id == R.id.navProficiencyTest && !isOfflineMode) {
                     Log.d("SideNav", "Proficiency Test clicked");
                     Utils.ChangeIntent(BloggingActivity.this, QuizzesActivity.class);
-                } else {
+                }  else if (id == R.id.navVerifyProfile && !isOfflineMode) {
+                    Log.d("SideNav", "Verify profile clicked");
+                    showDialog();
+                }  else {
                     return false;
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -281,6 +284,36 @@ public class BloggingActivity extends AppCompatActivity {
             });
         } else {
             Log.e("SideNav", "Logout button not found in NavigationView");
+        }
+    }
+
+    private void showDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_verify_profile);
+
+        verifyProfileDialog.getDialog(dialog);
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (verifyProfileDialog != null) {
+            verifyProfileDialog.handleActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (verifyProfileDialog != null) {
+            verifyProfileDialog.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

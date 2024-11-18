@@ -137,11 +137,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
-            android:id="@+id/imageView9"
+            android:id="@+id/imgIcon"
             android:layout_width="500px"
             android:layout_height="500px"
             android:layout_marginBottom="-40dp"
-            android:src="@drawable/shark"
+            android:src="@drawable/logotemp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout9"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout9"
             app:layout_constraintHorizontal_bias="0.49"
