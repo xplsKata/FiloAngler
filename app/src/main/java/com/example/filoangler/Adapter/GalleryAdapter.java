@@ -71,12 +71,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     private void loadThumbnail(ImageView imageView, MediaItem mediaItem) {
         try {
-            uriToLoad = mediaItem.isVideo() ? mediaItem.getThumbnailUri() : mediaItem.getUri();
-
-            // If it's a video but no thumbnail URI is available, fall back to the main URI
-            if (mediaItem.isVideo() && uriToLoad == null) {
-                uriToLoad = mediaItem.getUri();
-            }
+            uriToLoad = mediaItem.isVideo() && mediaItem.getThumbnailUri() != null ?
+                    mediaItem.getThumbnailUri() : mediaItem.getUri();
 
             Picasso.get()
                     .load(uriToLoad)
@@ -86,12 +82,21 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     .into(imageView, new com.squareup.picasso.Callback() {
                         @Override
                         public void onSuccess() {
-                            // Image loaded successfully
+                            // Success - nothing to do
                         }
 
                         @Override
                         public void onError(Exception e) {
                             Log.e("GalleryAdapter", "Error loading thumbnail: " + uriToLoad, e);
+                            // Fall back to main URI if thumbnail failed
+                            if (mediaItem.isVideo() && !uriToLoad.equals(mediaItem.getUri())) {
+                                Picasso.get()
+                                        .load(mediaItem.getUri())
+                                        .error(R.mipmap.ic_launcher)
+                                        .fit()
+                                        .centerCrop()
+                                        .into(imageView);
+                            }
                         }
                     });
         } catch (Exception e) {
@@ -116,31 +121,27 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         int currentIndex = selectedMediaItems.indexOf(mediaItem);
 
         if (currentIndex != -1) {
-            // Media is already selected, do nothing as removal should be done via remove button
+            // Media is already selected, update display to show this item
+            callback.updateDisplayState(currentIndex);
             return;
-        } else {
-            // Check if we've reached the maximum limit
-            if (selectedMediaItems.size() >= MAX_SELECTIONS) {
-                Toast.makeText(context,
-                        "Maximum " + MAX_SELECTIONS + " media items allowed",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Media is not selected, add it
-            selectedMediaItems.add(mediaItem);
-            updateSelectionUI(holder, selectedMediaItems.size() - 1);
-            callback.onMediaSelectionChanged(mediaItem, true);
-            callback.updateDisplayState(selectedMediaItems.size() - 1);
-
-            // Show remaining selections
-            if (selectedMediaItems.size() == MAX_SELECTIONS - 1) {
-                Toast.makeText(context,
-                        "You can select 1 more item",
-                        Toast.LENGTH_SHORT).show();
-            }
         }
-        notifyDataSetChanged(); // Update all items to refresh selection numbers
+
+        // Check if we've reached the maximum limit
+        if (selectedMediaItems.size() >= MAX_SELECTIONS) {
+            callback.onMaxSelectionsReached();
+            return;
+        }
+
+        // Media is not selected, add it
+        selectedMediaItems.add(mediaItem);
+        int newIndex = selectedMediaItems.size() - 1;
+        updateSelectionUI(holder, newIndex);
+
+        // Important: Update the display immediately when selecting new media
+        callback.updateDisplayState(newIndex);
+        callback.onMediaSelectionChanged(mediaItem, true);
+
+        notifyDataSetChanged();
     }
 
     public int getRemainingSelections() {

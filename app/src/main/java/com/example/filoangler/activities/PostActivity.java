@@ -124,7 +124,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestStoragePermission();
         } else {
-            loadImages(0, 20);
+            loadMoreMedia(0, 20);
         }
 
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -163,9 +163,8 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                 int totalItemCount = layoutManager.getItemCount();
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
 
-                if (lastVisibleItem + 5 >= totalItemCount) {  // Load more when 5 items are left to reach bottom
-                    // Load the next set of 20 images
-                    loadImages(totalItemCount, 20);
+                if (lastVisibleItem + 5 >= totalItemCount) {
+                    loadMoreMedia(totalItemCount, 20);
                 }
             }
         });
@@ -207,7 +206,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, load images
-                loadImages(0, 20);
+                loadMoreMedia(0, 20);
             } else {
                 // Permission denied
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
@@ -216,7 +215,6 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
     }
 
     private void loadElements() {
-
         previewView = findViewById(R.id.cameraPreview);
         btnPost = findViewById(R.id.btnPost);
         btnClose = findViewById(R.id.btnClose);
@@ -226,20 +224,21 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         imgAdd = findViewById(R.id.imgAdd);
         txtImageDescription = findViewById(R.id.txtImageDescription);
 
-        recyclerViewGallery = findViewById(R.id.recyclerViewGallery);
+        // Initialize ALL ArrayLists
         mediaItems = new ArrayList<>();
         selectedMediaItems = new ArrayList<>();
+        selectedImagePaths = new ArrayList<>();
+
+        recyclerViewGallery = findViewById(R.id.recyclerViewGallery);
 
         galleryAdapter = new GalleryAdapter(this, mediaItems, selectedMediaItems);
         recyclerViewGallery.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewGallery.setAdapter(galleryAdapter);
 
-        // Add an info text to show remaining selections (optional)
-        TextView txtRemainingSelections = findViewById(R.id.txtRemainingSelections); // You'll need to add this to your layout
+        TextView txtRemainingSelections = findViewById(R.id.txtRemainingSelections);
         if (txtRemainingSelections != null) {
-            txtRemainingSelections.setText("You can select up to " + 10 + " items"); // Use the same MAX_SELECTIONS value
+            txtRemainingSelections.setText("You can select up to " + 10 + " items");
         }
-
     }
 
     private void loadCamera(){
@@ -308,7 +307,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         }
     }
 
-    public void takePicture(ImageCapture imageCapture){
+    public void takePicture(ImageCapture imageCapture) {
         try {
             final File file = new File(getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
             ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
@@ -318,64 +317,51 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     capturedImageFilePath = file.getAbsolutePath();
                     runOnUiThread(() -> {
                         try {
-                            // Load the image and read its EXIF metadata
+                            // Process the image as before...
                             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
                             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-
-                            // Rotate the bitmap based on the EXIF orientation
                             Bitmap rotatedBitmap = rotateBitmap(bitmap, orientation);
-
-                            // Crop the rotated bitmap to square
                             squareBitmap = cropToSquare(rotatedBitmap);
 
-                            // Converts bitmap into File(uri)
                             File squareBitmapFile = new File(getExternalFilesDir(null), "square_" + System.currentTimeMillis() + ".jpg");
                             try (FileOutputStream fileOutputStream = new FileOutputStream(squareBitmapFile)) {
                                 squareBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                                fileOutputStream.close();
-                                Log.e("FileStream", "Success in creating image file");
-                            } catch(FileNotFoundException e){
-                                Log.e("FileStream", "Error in saving bitmap" + e);
                             }
 
                             imageUri = Uri.fromFile(squareBitmapFile);
-                            imgAdd.setImageURI(imageUri);
 
-                            // Add the captured image to selectedImagePaths
-                            selectedImagePaths.add(imageUri.toString());
-                            currentImageDisplayed = selectedImagePaths.size() - 1;
+                            // Create and add the new MediaItem
+                            MediaItem newItem = new MediaItem(imageUri, null, false, 0, "image/jpeg", System.currentTimeMillis() / 1000);
+                            selectedMediaItems.add(newItem);
+                            currentImageDisplayed = selectedMediaItems.size() - 1;
 
-                            // Update UI state
+                            // Update the display
+                            updateDisplayedImage();
                             updateImageDisplayControls();
+
                             if (galleryAdapter != null) {
                                 galleryAdapter.notifyDataSetChanged();
                             }
 
                         } catch (IOException e) {
                             e.printStackTrace();
-                            // Fallback in case of error
+                            // Fallback handling...
                             imageUri = Uri.fromFile(file);
-                            imgAdd.setImageURI(imageUri);
+                            MediaItem newItem = new MediaItem(imageUri, null, false, 0, "image/jpeg", System.currentTimeMillis() / 1000);
+                            selectedMediaItems.add(newItem);
+                            currentImageDisplayed = selectedMediaItems.size() - 1;
 
-                            // Still add to selectedImagePaths even in fallback case
-                            selectedImagePaths.add(imageUri.toString());
-                            currentImageDisplayed = selectedImagePaths.size() - 1;
-
-                            // Update UI state
+                            updateDisplayedImage();
                             updateImageDisplayControls();
+
                             if (galleryAdapter != null) {
                                 galleryAdapter.notifyDataSetChanged();
                             }
                         }
-
-                        btnCapture.setVisibility(View.GONE);
-                        btnFlash.setVisibility(View.GONE);
-                        btnFlipCamera.setVisibility(View.GONE);
-                        imgAdd.setVisibility(View.VISIBLE);
-                        previewView.setVisibility(View.GONE);
                     });
                 }
+
                 @Override
                 public void onError(@NonNull ImageCaptureException exception) {
                     Log.e("CameraError", "Error in Saving");
@@ -413,17 +399,16 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
 
-    // Add these methods to handle image navigation
     private void showNextSelectedImage() {
-        if (selectedImagePaths.size() > 0) {
-            currentImageDisplayed = (currentImageDisplayed + 1) % selectedImagePaths.size();
+        if (!selectedMediaItems.isEmpty()) {
+            currentImageDisplayed = (currentImageDisplayed + 1) % selectedMediaItems.size();
             updateDisplayedImage();
         }
     }
 
     private void showPreviousSelectedImage() {
-        if (selectedImagePaths.size() > 0) {
-            currentImageDisplayed = (currentImageDisplayed - 1 + selectedImagePaths.size()) % selectedImagePaths.size();
+        if (!selectedMediaItems.isEmpty()) {
+            currentImageDisplayed = (currentImageDisplayed - 1 + selectedMediaItems.size()) % selectedMediaItems.size();
             updateDisplayedImage();
         }
     }
@@ -431,20 +416,30 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
     public void updateDisplayedImage() {
-        if (currentImageDisplayed >= 0 && currentImageDisplayed < selectedImagePaths.size()) {
-            imgAdd = findViewById(R.id.imgAdd);  // Make sure this ID exists in your layout
-            Uri imageUri = Uri.parse(selectedImagePaths.get(currentImageDisplayed));
-            imgAdd.setImageURI(imageUri);
+        if (currentImageDisplayed >= 0 && currentImageDisplayed < selectedMediaItems.size()) {
+            MediaItem mediaItem = selectedMediaItems.get(currentImageDisplayed);
+            imgAdd.setImageURI(null); // Clear the current image first
+            if (mediaItem.isVideo() && mediaItem.getThumbnailUri() != null) {
+                imgAdd.setImageURI(mediaItem.getThumbnailUri());
+            } else {
+                imgAdd.setImageURI(mediaItem.getUri());
+            }
+            // Update selectedImagePaths for backward compatibility
+            selectedImagePaths.clear();
+            for (MediaItem item : selectedMediaItems) {
+                selectedImagePaths.add(item.getUri().toString());
+            }
         }
     }
 
     public void updateImageDisplayControls() {
-        if (selectedImagePaths.isEmpty()) {
+        if (selectedMediaItems.isEmpty()) {
             previewView.setVisibility(View.VISIBLE);
             imgAdd.setVisibility(View.GONE);
             btnCapture.setVisibility(View.VISIBLE);
             btnFlash.setVisibility(View.VISIBLE);
             btnFlipCamera.setVisibility(View.VISIBLE);
+            currentImageDisplayed = -1; // Reset current image index
         } else {
             previewView.setVisibility(View.GONE);
             imgAdd.setVisibility(View.VISIBLE);
@@ -501,38 +496,6 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
 
-    public ArrayList<String> getImagesPath(Context context, int offset, int limit) {
-        ArrayList<String> listOfImages = new ArrayList<>();
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
-        String[] projection = {
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATE_ADDED
-        };
-
-        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC LIMIT " + limit + " OFFSET " + offset;
-
-        try (Cursor cursor = context.getContentResolver().query(
-                uri,
-                projection,
-                null,
-                null,
-                sortOrder)) {
-            if (cursor != null && cursor.getCount() > 0) {
-                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-                while (cursor.moveToNext()) {
-                    long id = cursor.getLong(idColumn);
-                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                    listOfImages.add(imageUri.toString());
-                }
-            }
-        } catch (Exception e) {
-            Log.e("GalleryError", "Error loading images: " + e.getMessage());
-        }
-
-        return listOfImages;
-    }
-
     public ArrayList<MediaItem> getMediaItems(Context context, int offset, int limit) {
         ArrayList<MediaItem> mediaList = new ArrayList<>();
 
@@ -583,8 +546,26 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     Uri mediaUri = ContentUris.withAppendedId(contentUri, id);
 
                     if (isVideo) {
-                        // Get video thumbnail
-                        Uri thumbnailUri = ContentUris.withAppendedId(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, id);
+                        // Get video thumbnail using MediaStore
+                        Uri thumbnailUri = null;
+                        try {
+                            Bitmap thumbnail = MediaStore.Video.Thumbnails.getThumbnail(
+                                    context.getContentResolver(), id,
+                                    MediaStore.Video.Thumbnails.MINI_KIND, null);
+
+                            if (thumbnail != null) {
+                                // Save thumbnail to temporary file
+                                File tempFile = new File(context.getCacheDir(), "thumb_" + id + ".jpg");
+                                try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                                    thumbnailUri = Uri.fromFile(tempFile);
+                                }
+                                thumbnail.recycle();
+                            }
+                        } catch (Exception e) {
+                            Log.e("GalleryError", "Error creating video thumbnail: " + e.getMessage());
+                        }
+
                         long duration = getVideoDuration(context, mediaUri);
                         mediaList.add(new MediaItem(mediaUri, thumbnailUri, true, duration, mimeType, dateAdded));
                     } else {
@@ -611,12 +592,21 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         return duration;
     }
 
-    private void loadImages(int offset, int limit) {
-        ArrayList<String> newImages = getImagesPath(this, offset, limit);
-        if (!newImages.isEmpty()) {
-            int positionStart = imagePaths.size();
-            imagePaths.addAll(newImages);
-            galleryAdapter.notifyItemRangeInserted(positionStart, newImages.size());
+    private void loadMoreMedia(int offset, int limit) {
+        try {
+            ArrayList<MediaItem> newItems = getMediaItems(this, offset, limit);
+            if (!newItems.isEmpty()) {
+                int positionStart = mediaItems.size();
+                mediaItems.addAll(newItems);
+                galleryAdapter.notifyItemRangeInserted(positionStart, newItems.size());
+            } else {
+                // No more items to load
+                Log.d("PostActivity", "No more media items to load");
+            }
+        } catch (Exception e) {
+            Log.e("PostActivity", "Error loading media items: " + e.getMessage());
+            runOnUiThread(() -> Toast.makeText(this,
+                    "Error loading media items", Toast.LENGTH_SHORT).show());
         }
     }
 

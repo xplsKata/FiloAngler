@@ -3,6 +3,8 @@ package com.example.filoangler.Model;
 
 import android.net.Uri;
 
+import java.util.Objects;
+
 public class MediaItem {
     private Uri uri;
     private Uri thumbnailUri; // For videos
@@ -32,4 +34,17 @@ public class MediaItem {
     public long getDuration() { return duration; }
     public String getMimeType() { return mimeType; }
     public long getDateAdded() { return dateAdded; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MediaItem mediaItem = (MediaItem) o;
+        return Objects.equals(uri, mediaItem.uri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uri);
+    }
 }
