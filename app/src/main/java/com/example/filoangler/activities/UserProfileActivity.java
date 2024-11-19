@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.filoangler.Adapter.PostAdapter;
 import com.example.filoangler.Dialog.FollowListDialog;
@@ -161,14 +162,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
         DatabaseReference userRef = authManager.GetDb().getReference().child("Users").child(UserId);
 
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.e("UserProfileActivity", "Trying to find user");
 
                 if (!snapshot.exists()) {
                     Log.e("ProfileDetails", "User data not found for UserId: " + UserId);
-                    // Handle the error - maybe show a message to the user
+                    Toast.makeText(UserProfileActivity.this, "User not found", Toast.LENGTH_SHORT).show();
+                    finish();
                     return;
                 }
 
