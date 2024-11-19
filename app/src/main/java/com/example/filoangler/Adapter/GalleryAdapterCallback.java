@@ -1,6 +1,9 @@
 package com.example.filoangler.Adapter;
 
+import com.example.filoangler.Model.MediaItem;
+
 public interface GalleryAdapterCallback {
-    void onImageSelectionChanged(String imagePath, boolean isSelected);
-    void updateDisplayState(int currentImageDisplayed);
+    void onMediaSelectionChanged(MediaItem mediaItem, boolean isSelected);
+    void updateDisplayState(int currentMediaDisplayed);
+    default void onMaxSelectionsReached() {} // Optional callback
 }

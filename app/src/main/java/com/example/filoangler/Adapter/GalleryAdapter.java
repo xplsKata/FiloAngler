@@ -1,6 +1,7 @@
 package com.example.filoangler.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.filoangler.Model.MediaItem;
 import com.example.filoangler.R;
 import com.squareup.picasso.Picasso;
 
@@ -19,14 +22,18 @@ import java.util.ArrayList;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
     private Context context;
-    private ArrayList<String> imagePaths;
-    private ArrayList<String> selectedImagePaths;
+    private ArrayList<MediaItem> mediaItems;
+    private ArrayList<MediaItem> selectedMediaItems;
     private GalleryAdapterCallback callback;
 
-    public GalleryAdapter(Context context, ArrayList<String> imagePaths, ArrayList<String> selectedImagePaths) {
+    private static final int MAX_SELECTIONS = 10;
+
+    private Uri uriToLoad;
+
+    public GalleryAdapter(Context context, ArrayList<MediaItem> mediaItems, ArrayList<MediaItem> selectedMediaItems) {
         this.context = context;
-        this.imagePaths = imagePaths;
-        this.selectedImagePaths = selectedImagePaths;
+        this.mediaItems = mediaItems;
+        this.selectedMediaItems = selectedMediaItems;
         if (context instanceof GalleryAdapterCallback) {
             this.callback = (GalleryAdapterCallback) context;
         } else {
@@ -37,34 +44,42 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_media, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String imagePath = imagePaths.get(position);
+        MediaItem mediaItem = mediaItems.get(position);
 
-        loadImageWithPicasso(holder.imageView, imagePath);
+        loadThumbnail(holder.imageView, mediaItem);
 
-        int selectionIndex = selectedImagePaths.indexOf(imagePath);
+        // Show video indicator if it's a video
+        holder.videoIndicator.setVisibility(mediaItem.isVideo() ? View.VISIBLE : View.GONE);
+
+        int selectionIndex = selectedMediaItems.indexOf(mediaItem);
         updateSelectionUI(holder, selectionIndex);
 
-        // Handle image click events
         holder.imageView.setOnClickListener(v -> {
-            handleImageClick(imagePath, holder);
+            handleMediaClick(mediaItem, holder);
         });
 
-        // Handle remove button click events
         holder.btnRemove.setOnClickListener(v -> {
-            handleRemoveClick(imagePath, holder);
+            handleRemoveClick(mediaItem, holder);
         });
     }
 
-    private void loadImageWithPicasso(ImageView imageView, String imagePath) {
+    private void loadThumbnail(ImageView imageView, MediaItem mediaItem) {
         try {
+            uriToLoad = mediaItem.isVideo() ? mediaItem.getThumbnailUri() : mediaItem.getUri();
+
+            // If it's a video but no thumbnail URI is available, fall back to the main URI
+            if (mediaItem.isVideo() && uriToLoad == null) {
+                uriToLoad = mediaItem.getUri();
+            }
+
             Picasso.get()
-                    .load(imagePath)
+                    .load(uriToLoad)
                     .error(R.mipmap.ic_launcher)
                     .fit()
                     .centerCrop()
@@ -76,7 +91,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
                         @Override
                         public void onError(Exception e) {
-                            Log.e("GalleryAdapter", "Error loading image: " + imagePath, e);
+                            Log.e("GalleryAdapter", "Error loading thumbnail: " + uriToLoad, e);
                         }
                     });
         } catch (Exception e) {
@@ -86,70 +101,94 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     private void updateSelectionUI(ViewHolder holder, int selectionIndex) {
         if (selectionIndex != -1) {
-            // Image is selected
+            // Media is selected
             holder.selectionIndicator.setVisibility(View.VISIBLE);
             holder.selectionIndicator.setText(String.valueOf(selectionIndex + 1));
             holder.btnRemove.setVisibility(View.VISIBLE);
         } else {
-            // Image is not selected
+            // Media is not selected
             holder.selectionIndicator.setVisibility(View.GONE);
             holder.btnRemove.setVisibility(View.GONE);
         }
     }
 
-    private void handleImageClick(String imagePath, ViewHolder holder) {
-        int currentIndex = selectedImagePaths.indexOf(imagePath);
+    private void handleMediaClick(MediaItem mediaItem, ViewHolder holder) {
+        int currentIndex = selectedMediaItems.indexOf(mediaItem);
 
         if (currentIndex != -1) {
-            // Image is already selected, do nothing as removal should be done via remove button
+            // Media is already selected, do nothing as removal should be done via remove button
             return;
         } else {
-            // Image is not selected, add it
-            selectedImagePaths.add(imagePath);
-            updateSelectionUI(holder, selectedImagePaths.size() - 1);
-            callback.onImageSelectionChanged(imagePath, true);
-            callback.updateDisplayState(selectedImagePaths.size() - 1);
+            // Check if we've reached the maximum limit
+            if (selectedMediaItems.size() >= MAX_SELECTIONS) {
+                Toast.makeText(context,
+                        "Maximum " + MAX_SELECTIONS + " media items allowed",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Media is not selected, add it
+            selectedMediaItems.add(mediaItem);
+            updateSelectionUI(holder, selectedMediaItems.size() - 1);
+            callback.onMediaSelectionChanged(mediaItem, true);
+            callback.updateDisplayState(selectedMediaItems.size() - 1);
+
+            // Show remaining selections
+            if (selectedMediaItems.size() == MAX_SELECTIONS - 1) {
+                Toast.makeText(context,
+                        "You can select 1 more item",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
         notifyDataSetChanged(); // Update all items to refresh selection numbers
     }
 
-    private void handleRemoveClick(String imagePath, ViewHolder holder) {
-        int currentIndex = selectedImagePaths.indexOf(imagePath);
+    public int getRemainingSelections() {
+        return MAX_SELECTIONS - selectedMediaItems.size();
+    }
+
+    public boolean hasReachedMaxSelections() {
+        return selectedMediaItems.size() >= MAX_SELECTIONS;
+    }
+
+    private void handleRemoveClick(MediaItem mediaItem, ViewHolder holder) {
+        int currentIndex = selectedMediaItems.indexOf(mediaItem);
         if (currentIndex != -1) {
-            // Remove the image
-            selectedImagePaths.remove(imagePath);
+            // Remove the media item
+            selectedMediaItems.remove(mediaItem);
             updateSelectionUI(holder, -1);
 
             // Update the display state
-            if (selectedImagePaths.isEmpty()) {
+            if (selectedMediaItems.isEmpty()) {
                 callback.updateDisplayState(-1);
             } else {
-                // If we removed an image before the current display, adjust the index
-                int currentDisplayed = Math.min(currentIndex, selectedImagePaths.size() - 1);
+                // If we removed a media item before the current display, adjust the index
+                int currentDisplayed = Math.min(currentIndex, selectedMediaItems.size() - 1);
                 callback.updateDisplayState(currentDisplayed);
             }
 
-            callback.onImageSelectionChanged(imagePath, false);
+            callback.onMediaSelectionChanged(mediaItem, false);
             notifyDataSetChanged(); // Update all items to refresh selection numbers
         }
     }
 
     @Override
     public int getItemCount() {
-        return imagePaths.size();
+        return mediaItems.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView selectionIndicator;
         ImageButton btnRemove;
+        ImageView videoIndicator;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image);
             selectionIndicator = itemView.findViewById(R.id.txtNumber);
             btnRemove = itemView.findViewById(R.id.btnRemove);
+            videoIndicator = itemView.findViewById(R.id.videoIndicator);
         }
     }
 }
-

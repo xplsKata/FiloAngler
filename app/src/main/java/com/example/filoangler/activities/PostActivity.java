@@ -1,7 +1,5 @@
 package com.example.filoangler.activities;
 
-import static com.google.common.io.Files.getFileExtension;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -28,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -36,6 +35,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.camera.view.PreviewView;
@@ -46,6 +46,7 @@ import com.canhub.cropper.CropImageContractOptions;
 import com.example.filoangler.Adapter.GalleryAdapter;
 import com.example.filoangler.Adapter.GalleryAdapterCallback;
 import com.example.filoangler.Manager.LoginManager;
+import com.example.filoangler.Model.MediaItem;
 import com.example.filoangler.OnSwipeTouchListener;
 import com.example.filoangler.R;
 import com.example.filoangler.Manager.StorageManager;
@@ -53,7 +54,6 @@ import com.example.filoangler.Utils;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView;
 
@@ -62,6 +62,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -76,6 +77,9 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
     private SocialAutoCompleteTextView txtImageDescription;
     private StorageManager storageManager;
     private RecyclerView recyclerViewGallery;
+
+    private ArrayList<MediaItem> mediaItems;
+    private ArrayList<MediaItem> selectedMediaItems;
 
     //CropImage
     private ImageView imgAdd;
@@ -223,12 +227,18 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         txtImageDescription = findViewById(R.id.txtImageDescription);
 
         recyclerViewGallery = findViewById(R.id.recyclerViewGallery);
-        imagePaths = new ArrayList<>();
-        selectedImagePaths = new ArrayList<>();
+        mediaItems = new ArrayList<>();
+        selectedMediaItems = new ArrayList<>();
 
-        galleryAdapter = new GalleryAdapter(this, imagePaths, selectedImagePaths);
+        galleryAdapter = new GalleryAdapter(this, mediaItems, selectedMediaItems);
         recyclerViewGallery.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerViewGallery.setAdapter(galleryAdapter);
+
+        // Add an info text to show remaining selections (optional)
+        TextView txtRemainingSelections = findViewById(R.id.txtRemainingSelections); // You'll need to add this to your layout
+        if (txtRemainingSelections != null) {
+            txtRemainingSelections.setText("You can select up to " + 10 + " items"); // Use the same MAX_SELECTIONS value
+        }
 
     }
 
@@ -523,6 +533,84 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         return listOfImages;
     }
 
+    public ArrayList<MediaItem> getMediaItems(Context context, int offset, int limit) {
+        ArrayList<MediaItem> mediaList = new ArrayList<>();
+
+        // Query for both images and videos
+        String[] projection = {
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.DATE_ADDED
+        };
+
+        // Query images
+        Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        getMediaFromUri(context, imageUri, projection, offset, limit, mediaList, false);
+
+        // Query videos
+        Uri videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        getMediaFromUri(context, videoUri, projection, offset, limit, mediaList, true);
+
+        // Sort by date
+        Collections.sort(mediaList, (item1, item2) -> {
+            // You'll need to add dateAdded to MediaItem class
+            return Long.compare(item2.getDateAdded(), item1.getDateAdded());
+        });
+
+        return mediaList;
+    }
+
+    private void getMediaFromUri(Context context, Uri contentUri, String[] projection,
+                                 int offset, int limit, ArrayList<MediaItem> mediaList, boolean isVideo) {
+        String sortOrder = MediaStore.MediaColumns.DATE_ADDED + " DESC LIMIT " + limit + " OFFSET " + offset;
+
+        try (Cursor cursor = context.getContentResolver().query(
+                contentUri,
+                projection,
+                null,
+                null,
+                sortOrder)) {
+
+            if (cursor != null && cursor.getCount() > 0) {
+                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
+                int mimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE);
+                int dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED);
+
+                while (cursor.moveToNext()) {
+                    long id = cursor.getLong(idColumn);
+                    String mimeType = cursor.getString(mimeTypeColumn);
+                    long dateAdded = cursor.getLong(dateAddedColumn);
+                    Uri mediaUri = ContentUris.withAppendedId(contentUri, id);
+
+                    if (isVideo) {
+                        // Get video thumbnail
+                        Uri thumbnailUri = ContentUris.withAppendedId(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, id);
+                        long duration = getVideoDuration(context, mediaUri);
+                        mediaList.add(new MediaItem(mediaUri, thumbnailUri, true, duration, mimeType, dateAdded));
+                    } else {
+                        mediaList.add(new MediaItem(mediaUri, null, false, 0, mimeType, dateAdded));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("GalleryError", "Error loading media: " + e.getMessage());
+        }
+    }
+
+    private long getVideoDuration(Context context, Uri videoUri) {
+        long duration = 0;
+        try {
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(context, videoUri);
+            String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            duration = Long.parseLong(time);
+            retriever.release();
+        } catch (Exception e) {
+            Log.e("VideoError", "Error getting video duration: " + e.getMessage());
+        }
+        return duration;
+    }
+
     private void loadImages(int offset, int limit) {
         ArrayList<String> newImages = getImagesPath(this, offset, limit);
         if (!newImages.isEmpty()) {
@@ -536,22 +624,24 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
 
-    private void uploadPost(){
+    private void uploadPost() {
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Posting");
         progressDialog.show();
 
-        if (selectedImagePaths.size() > 0) {
-            ArrayList<String> imageUrls = new ArrayList<>();
+        if (selectedMediaItems.size() > 0) {
+            ArrayList<String> mediaUrls = new ArrayList<>();
             AtomicInteger uploadedCount = new AtomicInteger(0);
 
-            for (int i = 0; i < selectedImagePaths.size(); i++) {
-                Uri imageUri = Uri.parse(selectedImagePaths.get(i));
+            for (int i = 0; i < selectedMediaItems.size(); i++) {
+                MediaItem mediaItem = selectedMediaItems.get(i);
+                String extension = mediaItem.isVideo() ? ".mp4" : ".jpg";
+
                 StorageReference storageReference = storageManager.setStorageReference("Posts")
-                        .child(System.currentTimeMillis() + "_" + i + "." + getFileExtension(imageUri.getPath()));
+                        .child(System.currentTimeMillis() + "_" + i + extension);
 
                 try {
-                    StorageTask<UploadTask.TaskSnapshot> uploadTask = storageReference.putFile(imageUri);
+                    UploadTask uploadTask = storageReference.putFile(mediaItem.getUri());
                     int finalI = i;
                     uploadTask.continueWithTask(task -> {
                         if (!task.isSuccessful()) {
@@ -561,31 +651,11 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     }).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Uri downloadUri = task.getResult();
-                            imageUrls.add(finalI, downloadUri.toString());
+                            mediaUrls.add(finalI, downloadUri.toString());
 
-                            if (uploadedCount.incrementAndGet() == selectedImagePaths.size()) {
-                                // All images uploaded, create post
-                                LoginManager loginManager = new LoginManager(PostActivity.this);
-                                DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
-                                String postId = databaseReference.push().getKey();
-
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("PostId", postId);
-                                map.put("ImageURLs", imageUrls);
-                                map.put("Description", txtImageDescription.getText().toString());
-                                map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
-                                map.put("DatePosted", Utils.getDateAndTime());
-
-                                databaseReference.child(postId).setValue(map)
-                                        .addOnSuccessListener(aVoid -> {
-                                            progressDialog.dismiss();
-                                            Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
-                                            finish();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            progressDialog.dismiss();
-                                            Toast.makeText(PostActivity.this, "Failed to create post", Toast.LENGTH_LONG).show();
-                                        });
+                            if (uploadedCount.incrementAndGet() == selectedMediaItems.size()) {
+                                // Create post with both images and videos
+                                createPost(mediaUrls, progressDialog);
                             }
                         }
                     }).addOnFailureListener(e -> {
@@ -599,17 +669,53 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
             }
         } else {
             progressDialog.dismiss();
-            Toast.makeText(PostActivity.this, "No images selected", Toast.LENGTH_LONG).show();
+            Toast.makeText(PostActivity.this, "No media selected", Toast.LENGTH_LONG).show();
         }
     }
 
+    private void createPost(ArrayList<String> mediaUrls, ProgressDialog progressDialog) {
+        LoginManager loginManager = new LoginManager(PostActivity.this);
+        DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
+        String postId = databaseReference.push().getKey();
 
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("PostId", postId);
+        map.put("MediaURLs", mediaUrls);
+        map.put("Description", txtImageDescription.getText().toString());
+        map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
+        map.put("DatePosted", Utils.getDateAndTime());
+
+        databaseReference.child(postId).setValue(map)
+                .addOnSuccessListener(aVoid -> {
+                    progressDialog.dismiss();
+                    Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(PostActivity.this, "Failed to create post", Toast.LENGTH_LONG).show();
+                });
+    }
 
 
     @Override
-    public void onImageSelectionChanged(String imagePath, boolean isSelected) {
-        updateDisplayedImage();
-        updateImageDisplayControls();
+    public void onMediaSelectionChanged(MediaItem mediaItem, boolean isSelected) {
+        // Update selection count display if you have one
+        TextView txtRemainingSelections = findViewById(R.id.txtRemainingSelections);
+        if (txtRemainingSelections != null) {
+            int remaining = galleryAdapter.getRemainingSelections();
+            if (remaining > 0) {
+                txtRemainingSelections.setText("You can select " + remaining + " more item" +
+                        (remaining == 1 ? "" : "s"));
+            } else {
+                txtRemainingSelections.setText("Maximum selections reached");
+            }
+        }
+    }
+
+    @Override
+    public void onMaxSelectionsReached() {
+        Toast.makeText(this, "Maximum number of media items selected", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -619,7 +725,4 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         updateImageDisplayControls();
     }
 
-
-
-    //NOTE THIS FEATURE STILL NEEDS A HANDLER FOR IMAGES, A BUTTON FOR CAMERA OPTION, TEXT ONLY OPTION AND CROP OPTION.
 }
