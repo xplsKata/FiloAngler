@@ -8,10 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -20,7 +23,10 @@ import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
@@ -43,6 +49,9 @@ public class VerifyProfileDialog {
     private Button btnSubmit;
     private Button btnCancel;
     private Dialog mDialog;
+    private TextView txtTitle;
+    private TextView txtDescription;
+    private View imageContainer;
 
     private LoginManager loginManager;
     private AuthManager authManager;
@@ -54,6 +63,9 @@ public class VerifyProfileDialog {
     private int uploadCount = 0;
     private Map<String, String> downloadUrls;
     private int currentImageRequest;
+
+    private boolean isVerified = false;
+    private boolean hasPendingVerification = false;
 
     public VerifyProfileDialog(Context context, Activity activity) {
         this.mContext = context;
@@ -79,18 +91,102 @@ public class VerifyProfileDialog {
         imgThree = dialog.findViewById(R.id.imgThree);
         btnSubmit = dialog.findViewById(R.id.btnSubmit);
         btnCancel = dialog.findViewById(R.id.btnCancel);
+        txtTitle = dialog.findViewById(R.id.textView32);
+        txtDescription = dialog.findViewById(R.id.textView33);
+        imageContainer = dialog.findViewById(R.id.linearLayout17);
 
         // Setup initial state
         Utils.loadImage(imgIcon, R.drawable.shark);
+        checkVerificationStatus();
+    }
+
+    private void checkVerificationStatus() {
+        String userId = loginManager.GetCurrentUser().getUid();
+
+        // First check if user is verified
+        DatabaseReference userVerificationRef = storageManager.getDatabaseReference("Users")
+                .child(userId)
+                .child("Account Details")
+                .child("AnglerStatusVerified");
+
+        userVerificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.getValue(Boolean.class)) {
+                    isVerified = true;
+                    updateUIForVerifiedUser();
+                } else {
+                    // Check if user has pending verification
+                    checkPendingVerification(userId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(mContext, "Error checking verification status", Toast.LENGTH_SHORT).show();
+                setupDefaultUI();
+            }
+        });
+    }
+
+    private void checkPendingVerification(String userId) {
+        DatabaseReference certificationsRef = storageManager.getDatabaseReference("Certifications")
+                .child(userId);
+
+        certificationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.getChildrenCount() > 0) {
+                    hasPendingVerification = true;
+                    updateUIForPendingVerification();
+                } else {
+                    setupDefaultUI();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(mContext, "Error checking certifications", Toast.LENGTH_SHORT).show();
+                setupDefaultUI();
+            }
+        });
+    }
+
+    private void updateUIForVerifiedUser() {
+        txtTitle.setText("Verified Profile");
+        txtDescription.setText("Congratulations! Your profile has been verified. You may see your verification badge in your profile.");
+        imageContainer.setVisibility(View.INVISIBLE);
+        btnSubmit.setVisibility(View.GONE);
+        btnCancel.setText("Close");
+        setupListeners();
+    }
+
+    private void updateUIForPendingVerification() {
+        txtTitle.setText("Verification Pending");
+        txtDescription.setText("Your verification documents are currently under review. Check again next time to see if they have been approved.");
+        imageContainer.setVisibility(View.INVISIBLE);
+        btnSubmit.setVisibility(View.GONE);
+        btnCancel.setText("Close");
+        setupListeners();
+    }
+
+    private void setupDefaultUI() {
+        txtTitle.setText("Verify your profile!");
+        txtDescription.setText("Verify your proficiency by submitting 3 images of your angling certifications. All submitted images will then be processed by our team!");
+        imageContainer.setVisibility(View.VISIBLE);
+        btnSubmit.setVisibility(View.VISIBLE);
+        btnCancel.setText("Cancel");
         setupListeners();
     }
 
     private void setupListeners() {
-        imgOne.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_1));
-        imgTwo.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_2));
-        imgThree.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_3));
+        if (!isVerified && !hasPendingVerification) {
+            imgOne.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_1));
+            imgTwo.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_2));
+            imgThree.setOnClickListener(v -> checkPermissionAndPickImage(PICK_IMAGE_REQUEST_3));
+            btnSubmit.setOnClickListener(v -> submitCredentials());
+        }
 
-        btnSubmit.setOnClickListener(v -> submitCredentials());
         btnCancel.setOnClickListener(v -> mDialog.dismiss());
     }
 
