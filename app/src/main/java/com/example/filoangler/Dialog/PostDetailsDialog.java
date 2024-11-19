@@ -76,10 +76,10 @@ public class PostDetailsDialog {
                         postModel = snapshot.getValue(PostModel.class);
 
 
-                        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getImageURLs());
-                        if (postModel.getImageURLs().size() > 1) {
+                        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getMediaURLs());
+                        if (postModel.getMediaURLs().size() > 1) {
                             layoutDots.setVisibility(View.VISIBLE);
-                            setupImageIndicator(postModel.getImageURLs().size());
+                            setupImageIndicator(postModel.getMediaURLs().size());
                         } else {
                             layoutDots.setVisibility(View.GONE);
                         }

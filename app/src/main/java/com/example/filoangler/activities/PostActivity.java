@@ -620,7 +620,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         progressDialog.show();
 
         if (selectedMediaItems.size() > 0) {
-            ArrayList<String> mediaUrls = new ArrayList<>();
+            ArrayList<String> mediaUrls = new ArrayList<>(Collections.nCopies(selectedMediaItems.size(), null));
             AtomicInteger uploadedCount = new AtomicInteger(0);
 
             for (int i = 0; i < selectedMediaItems.size(); i++) {
@@ -630,27 +630,29 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                 StorageReference storageReference = storageManager.setStorageReference("Posts")
                         .child(System.currentTimeMillis() + "_" + i + extension);
 
+                final int finalI = i;
                 try {
                     UploadTask uploadTask = storageReference.putFile(mediaItem.getUri());
-                    int finalI = i;
                     uploadTask.continueWithTask(task -> {
                         if (!task.isSuccessful()) {
                             throw task.getException();
                         }
                         return storageReference.getDownloadUrl();
                     }).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Uri downloadUri = task.getResult();
-                            mediaUrls.add(finalI, downloadUri.toString());
+                        synchronized (mediaUrls) {
+                            if (task.isSuccessful()) {
+                                Uri downloadUri = task.getResult();
+                                mediaUrls.set(finalI, downloadUri.toString());
 
-                            if (uploadedCount.incrementAndGet() == selectedMediaItems.size()) {
-                                // Create post with both images and videos
-                                createPost(mediaUrls, progressDialog);
+                                if (uploadedCount.incrementAndGet() == selectedMediaItems.size()) {
+                                    // Create post with both images and videos
+                                    createPost(mediaUrls, progressDialog);
+                                }
+                            } else {
+                                progressDialog.dismiss();
+                                Toast.makeText(PostActivity.this, "Upload failed", Toast.LENGTH_LONG).show();
                             }
                         }
-                    }).addOnFailureListener(e -> {
-                        progressDialog.dismiss();
-                        Toast.makeText(PostActivity.this, "Upload failed", Toast.LENGTH_LONG).show();
                     });
                 } catch (Exception e) {
                     progressDialog.dismiss();
@@ -668,9 +670,17 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
         String postId = databaseReference.push().getKey();
 
+        HashMap<String, Object> mediaURLsMap = new HashMap<>();
+        for (int i = 0; i < mediaUrls.size(); i++) {
+            HashMap<String, Object> mediaDetails = new HashMap<>();
+            mediaDetails.put("url", mediaUrls.get(i));
+            mediaDetails.put("isVideo", selectedMediaItems.get(i).isVideo());
+            mediaURLsMap.put(String.valueOf(i), mediaDetails);
+        }
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("PostId", postId);
-        map.put("MediaURLs", mediaUrls);
+        map.put("mediaURLs", mediaURLsMap);
         map.put("Description", txtImageDescription.getText().toString());
         map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
         map.put("DatePosted", Utils.getDateAndTime());

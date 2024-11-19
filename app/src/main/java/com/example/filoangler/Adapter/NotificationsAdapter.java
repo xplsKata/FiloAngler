@@ -170,7 +170,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         PostModel postModel = snapshot.getValue(PostModel.class);
-                        Picasso.get().load(postModel.getImageURLs().get(0)).placeholder(R.drawable.logotemp).into(imgPostIcon);
+                        Picasso.get().load(postModel.getMediaURLs().get(0)).placeholder(R.drawable.logotemp).into(imgPostIcon);
                     }
 
                     @Override

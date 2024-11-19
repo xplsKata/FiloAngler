@@ -83,12 +83,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
         PostModel postModel = mPost.get(position);
 
-        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getImageURLs());
-        holder.viewPagerImages.setAdapter(imagePagerAdapter);
+        MediaPagerAdapter mediaPagerAdapter = new MediaPagerAdapter(
+                mContext,
+                postModel.getMediaURLs(),
+                postModel.getIsVideoFlags()
+        );
+        holder.viewPagerImages.setAdapter(mediaPagerAdapter);
 
-        if (postModel.getImageURLs().size() > 1) {
+        if (postModel.getMediaURLs().size() > 1) {
             holder.layoutDots.setVisibility(View.VISIBLE);
-            setupImageIndicator(holder, postModel.getImageURLs().size());
+            setupImageIndicator(holder, postModel.getMediaURLs().size());
         } else {
             holder.layoutDots.setVisibility(View.GONE);
         }
