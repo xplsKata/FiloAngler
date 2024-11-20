@@ -54,6 +54,7 @@ public class RegisterManager {
                 AccountDetailsMap.put("Username", UserModel.getUsername());
                 AccountDetailsMap.put("ProfileIconURL", UserModel.getProfileIconURL());
                 AccountDetailsMap.put("AnglerStatus", UserModel.getAnglerStatus());
+                AccountDetailsMap.put("AccountCreated", Utils.getDateAndTime());
 
                 PersonalInformationMap.put("FirstName", UserModel.getFirstName());
                 PersonalInformationMap.put("LastName", UserModel.getLastName());
