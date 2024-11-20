@@ -419,11 +419,17 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         if (currentImageDisplayed >= 0 && currentImageDisplayed < selectedMediaItems.size()) {
             MediaItem mediaItem = selectedMediaItems.get(currentImageDisplayed);
             imgAdd.setImageURI(null); // Clear the current image first
-            if (mediaItem.isVideo() && mediaItem.getThumbnailUri() != null) {
-                imgAdd.setImageURI(mediaItem.getThumbnailUri());
+
+            // Update to work with local MediaItem
+            if (mediaItem.isVideo()) {
+                // Use getThumbnailUri() method from the previous version of MediaItem
+                if (mediaItem.getThumbnailUri() != null) {
+                    imgAdd.setImageURI(mediaItem.getThumbnailUri());
+                }
             } else {
                 imgAdd.setImageURI(mediaItem.getUri());
             }
+
             // Update selectedImagePaths for backward compatibility
             selectedImagePaths.clear();
             for (MediaItem item : selectedMediaItems) {

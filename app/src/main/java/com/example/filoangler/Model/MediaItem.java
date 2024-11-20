@@ -6,6 +6,7 @@ import android.net.Uri;
 import java.util.Objects;
 
 public class MediaItem {
+    private String url;
     private Uri uri;
     private Uri thumbnailUri; // For videos
     private boolean isVideo;
@@ -15,6 +16,11 @@ public class MediaItem {
 
     public MediaItem(Uri uri, boolean isVideo) {
         this.uri = uri;
+        this.isVideo = isVideo;
+    }
+
+    public MediaItem(String url, boolean isVideo) {
+        this.url = url;
         this.isVideo = isVideo;
     }
 
@@ -34,6 +40,12 @@ public class MediaItem {
     public long getDuration() { return duration; }
     public String getMimeType() { return mimeType; }
     public long getDateAdded() { return dateAdded; }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     @Override
     public boolean equals(Object o) {

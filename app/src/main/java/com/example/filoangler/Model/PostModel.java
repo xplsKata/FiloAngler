@@ -1,51 +1,67 @@
 package com.example.filoangler.Model;
 
+import android.util.Log;
+
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostModel {
-
     private String PostId;
     private String Description;
     private String Author;
     private String DatePosted;
 
-    private ArrayList<String> mediaURLs;
-    private ArrayList<Boolean> isVideoFlags;
+    private ArrayList<MediaItem> mediaItems;
 
-    public PostModel(){
-
-    }
-
-    public PostModel(String postId, List<String> ImageURLs, String description, String author, String datePosted) {
-        PostId = postId;
-        ImageURLs = ImageURLs;
-        Description = description;
-        Author = author;
-        DatePosted = datePosted;
+    public PostModel() {
+        // Default constructor for Firebase
+        mediaItems = new ArrayList<>();
     }
 
     public PostModel(DataSnapshot snapshot) {
-        this.PostId = snapshot.child("PostId").getValue(String.class);
+        this.PostId = snapshot.getKey();
+        this.mediaItems = new ArrayList<>();
 
-        this.mediaURLs = new ArrayList<>();
-        this.isVideoFlags = new ArrayList<>();
+        try {
+            // First, try the new media structure
+            if (snapshot.child("mediaURLs").exists()) {
+                for (DataSnapshot mediaSnapshot : snapshot.child("mediaURLs").getChildren()) {
+                    String url = mediaSnapshot.child("url").getValue(String.class);
+                    Boolean isVideo = mediaSnapshot.child("isVideo").getValue(Boolean.class);
 
-        DataSnapshot mediaUrlsSnapshot = snapshot.child("MediaURLs");
-        for (DataSnapshot urlSnapshot : mediaUrlsSnapshot.getChildren()) {
-            String url = urlSnapshot.getValue(String.class);
-            this.mediaURLs.add(url);
-            // You might need to determine video/image type differently based on your upload logic
-            this.isVideoFlags.add(url.contains(".mp4"));
+                    if (url != null && isVideo != null) {
+                        this.mediaItems.add(new MediaItem(url, isVideo));
+                    }
+                }
+            }
+            // If no mediaUrls, try a fallback
+            else if (snapshot.child("MediaURLs").exists()) {
+                // Add fallback logic if your previous structure was different
+                List<String> urls = (List<String>) snapshot.child("MediaURLs").getValue();
+                if (urls != null) {
+                    for (String url : urls) {
+                        this.mediaItems.add(new MediaItem(url, false));  // Assume images by default
+                    }
+                }
+            }
+
+            this.Description = snapshot.child("Description").getValue(String.class);
+            this.Author = snapshot.child("Author").getValue(String.class);
+            this.DatePosted = snapshot.child("DatePosted").getValue(String.class);
+
+            // Log details about the post
+            Log.d("PostDebug", "Post constructed: " +
+                    "ID=" + PostId +
+                    ", Media Items=" + mediaItems.size() +
+                    ", Author=" + Author);
+        } catch (Exception e) {
+            Log.e("PostModelError", "Error constructing PostModel: " + e.getMessage(), e);
         }
-
-        this.Description = snapshot.child("Description").getValue(String.class);
-        this.Author = snapshot.child("Author").getValue(String.class);
-        this.DatePosted = snapshot.child("DatePosted").getValue(String.class);
     }
 
+    // Getters and setters
     public String getPostId() {
         return PostId;
     }
@@ -78,6 +94,24 @@ public class PostModel {
         DatePosted = datePosted;
     }
 
-    public ArrayList<String> getMediaURLs() { return mediaURLs; }
-    public ArrayList<Boolean> getIsVideoFlags() { return isVideoFlags; }
+    // Updated methods to work with MediaItem
+    public ArrayList<MediaItem> getMediaItems() {
+        return mediaItems;
+    }
+
+    public ArrayList<String> getMediaURLs() {
+        ArrayList<String> urls = new ArrayList<>();
+        for (MediaItem item : mediaItems) {
+            urls.add(item.getUrl());
+        }
+        return urls;
+    }
+
+    public ArrayList<Boolean> getIsVideoFlags() {
+        ArrayList<Boolean> flags = new ArrayList<>();
+        for (MediaItem item : mediaItems) {
+            flags.add(item.isVideo());
+        }
+        return flags;
+    }
 }

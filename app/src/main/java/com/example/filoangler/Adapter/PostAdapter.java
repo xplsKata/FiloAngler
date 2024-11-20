@@ -85,8 +85,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
         MediaPagerAdapter mediaPagerAdapter = new MediaPagerAdapter(
                 mContext,
-                postModel.getMediaURLs(),
-                postModel.getIsVideoFlags()
+                postModel.getMediaItems()
         );
         holder.viewPagerImages.setAdapter(mediaPagerAdapter);
 

@@ -10,21 +10,31 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.filoangler.Model.MediaItem;
 import com.example.filoangler.R;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.MediaViewHolder> {
     private Context context;
-    private ArrayList<String> mediaUrls;
-    private ArrayList<Boolean> isVideoFlags;
+    private List<MediaItem> mediaItems;
 
+    // Constructor for direct use with ArrayList<MediaItem>
+    public MediaPagerAdapter(Context context, List<MediaItem> mediaItems) {
+        this.context = context;
+        this.mediaItems = mediaItems;
+    }
+
+    // Backward compatibility constructor
     public MediaPagerAdapter(Context context, ArrayList<String> mediaUrls, ArrayList<Boolean> isVideoFlags) {
         this.context = context;
-        this.mediaUrls = mediaUrls;
-        this.isVideoFlags = isVideoFlags;
+        this.mediaItems = new ArrayList<>();
+        for (int i = 0; i < mediaUrls.size(); i++) {
+            this.mediaItems.add(new MediaItem(mediaUrls.get(i), isVideoFlags.get(i)));
+        }
     }
 
     @NonNull
@@ -36,8 +46,9 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
 
     @Override
     public void onBindViewHolder(@NonNull MediaViewHolder holder, int position) {
-        String mediaUrl = mediaUrls.get(position);
-        boolean isVideo = isVideoFlags.get(position);
+        MediaItem mediaItem = mediaItems.get(position);
+        String mediaUrl = mediaItem.getUrl();
+        boolean isVideo = mediaItem.isVideo();
 
         if (isVideo) {
             holder.imageView.setVisibility(View.GONE);
@@ -57,7 +68,7 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
 
     @Override
     public int getItemCount() {
-        return mediaUrls.size();
+        return mediaItems.size();
     }
 
     public class MediaViewHolder extends RecyclerView.ViewHolder {
