@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.filoangler.Adapter.ImagePagerAdapter;
+import com.example.filoangler.Adapter.MediaPagerAdapter;
 import com.example.filoangler.Adapter.PostAdapter;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -37,7 +37,6 @@ public class PostDetailsDialog {
     private PostModel postModel;
     private PostAdapter postAdapter;
     private Context mContext;
-    private ImagePagerAdapter imagePagerAdapter;
     private LinearLayout layoutDots;
     ViewPager2 viewPagerImages;
 
@@ -76,7 +75,10 @@ public class PostDetailsDialog {
                         postModel = snapshot.getValue(PostModel.class);
 
 
-                        imagePagerAdapter = new ImagePagerAdapter(mContext, postModel.getMediaURLs());
+                        MediaPagerAdapter mediaPagerAdapter = new MediaPagerAdapter(
+                                mContext,
+                                postModel.getMediaItems()
+                        );
                         if (postModel.getMediaURLs().size() > 1) {
                             layoutDots.setVisibility(View.VISIBLE);
                             setupImageIndicator(postModel.getMediaURLs().size());
@@ -86,7 +88,7 @@ public class PostDetailsDialog {
 
                         if (postModel != null) {
                             userId = postModel.getAuthor();
-                            viewPagerImages.setAdapter(imagePagerAdapter);
+                            viewPagerImages.setAdapter(mediaPagerAdapter);
                             txtCaption.setText(postModel.getDescription());
 
                             // Fetch user details
