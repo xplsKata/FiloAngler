@@ -297,19 +297,36 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 postList.clear();
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    PostModel postModel = dataSnapshot.getValue(PostModel.class);
+                    // Log the entire snapshot to verify structure
+                    Log.d("PostDebug", "PostId: " + dataSnapshot.getKey());
+                    Log.d("PostDebug", "Full Snapshot: " + dataSnapshot.toString());
 
-                    if(postModel.getAuthor() != null && postModel.getAuthor().equals(UserId)){
-                        postList.add(postModel);
+                    // Log specific children
+                    if (dataSnapshot.child("mediaUrls").exists()) {
+                        Log.d("PostDebug", "MediaUrls exist");
+                        for (DataSnapshot mediaSnapshot : dataSnapshot.child("mediaUrls").getChildren()) {
+                            Log.d("PostDebug", "Media URL: " + mediaSnapshot.child("url").getValue());
+                            Log.d("PostDebug", "Is Video: " + mediaSnapshot.child("isVideo").getValue());
+                        }
+                    } else {
+                        Log.d("PostDebug", "No mediaUrls child found");
                     }
 
+                    PostModel postModel = new PostModel(dataSnapshot);
+
+                    if(postModel != null && postModel.getMediaItems() != null && !postModel.getMediaItems().isEmpty()){
+                        postList.add(postModel);
+                        Log.d("PostDebug", "Post added: " + postModel.getPostId());
+                    } else {
+                        Log.d("PostDebug", "Post NOT added: " + postModel.getPostId());
+                    }
                 }
                 postAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("UserProfileActivity", "Failed to read posts: " + error.getMessage());
+                Log.e("HomeError", "Failed to read posts: " + error.getMessage());
             }
         });
 
