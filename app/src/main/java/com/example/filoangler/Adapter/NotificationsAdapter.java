@@ -68,17 +68,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 holder.txtDescription,
                 notificationModel.getDescription());
 
-        try{
-            if(notificationModel.getisPost()){
-                holder.imgPostIcon.setVisibility(View.VISIBLE);
-                getPostImage(holder.imgPostIcon, notificationModel.getPostId());
-            }else{
-                holder.imgPostIcon.setVisibility(View.INVISIBLE);
-            }
-        }catch (Exception e){
-            Log.e("NotificationsAdapter", "Error: " + e);
-        }
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,14 +108,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView imgProfileIcon, imgPostIcon;
+        public ImageView imgProfileIcon;
         public TextView txtName, txtDescription;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imgProfileIcon = itemView.findViewById(R.id.imgProfileIcon);
-            imgPostIcon = itemView.findViewById(R.id.imgPostIcon);
             txtName = itemView.findViewById(R.id.txtName);
             txtDescription = itemView.findViewById(R.id.txtDescription);
         }
