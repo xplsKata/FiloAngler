@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,8 +37,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +50,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
     private RecyclerView recyclerView;
     private CommentsAdapter commentsAdapter;
     private List<CommentModel> commentModelList;
-    private ImagePagerAdapter imagePagerAdapter;
 
     public PostAdapter(){
         authManager = new AuthManager();
