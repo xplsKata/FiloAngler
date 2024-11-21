@@ -3,6 +3,7 @@ package com.example.filoangler.Dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.media.Image;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -72,62 +73,69 @@ public class PostDetailsDialog {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        postModel = snapshot.getValue(PostModel.class);
+                        try {
+                            // Use the new PostModel constructor that handles DataSnapshot
+                            postModel = new PostModel(snapshot);
 
+                            if (postModel != null && postModel.getMediaItems() != null && !postModel.getMediaItems().isEmpty()) {
+                                // Create MediaPagerAdapter using MediaItems directly
+                                MediaPagerAdapter mediaPagerAdapter = new MediaPagerAdapter(
+                                        mContext,
+                                        postModel.getMediaItems()
+                                );
 
-                        MediaPagerAdapter mediaPagerAdapter = new MediaPagerAdapter(
-                                mContext,
-                                postModel.getMediaItems()
-                        );
-                        if (postModel.getMediaURLs().size() > 1) {
-                            layoutDots.setVisibility(View.VISIBLE);
-                            setupImageIndicator(postModel.getMediaURLs().size());
-                        } else {
-                            layoutDots.setVisibility(View.GONE);
-                        }
+                                // Setup image indicator
+                                if (postModel.getMediaItems().size() > 1) {
+                                    layoutDots.setVisibility(View.VISIBLE);
+                                    setupImageIndicator(postModel.getMediaItems().size());
+                                } else {
+                                    layoutDots.setVisibility(View.GONE);
+                                }
 
-                        if (postModel != null) {
-                            userId = postModel.getAuthor();
-                            viewPagerImages.setAdapter(mediaPagerAdapter);
-                            txtCaption.setText(postModel.getDescription());
+                                userId = postModel.getAuthor();
+                                viewPagerImages.setAdapter(mediaPagerAdapter);
+                                txtCaption.setText(postModel.getDescription());
 
-                            // Fetch user details
-                            authManager.GetDb().getReference().child("Users").child(postModel.getAuthor())
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
-                                            String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
-                                            String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
-                                            String username = snapshot.child("Account Details").child("Username").getValue(String.class);
+                                // Fetch user details
+                                authManager.GetDb().getReference().child("Users").child(postModel.getAuthor())
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                String firstName = snapshot.child("Personal Information").child("FirstName").getValue(String.class);
+                                                String lastName = snapshot.child("Personal Information").child("LastName").getValue(String.class);
+                                                String profileIconURL = snapshot.child("Account Details").child("ProfileIconURL").getValue(String.class);
+                                                String username = snapshot.child("Account Details").child("Username").getValue(String.class);
 
-                                            txtName.setText(firstName + " " + lastName);
-                                            txtUsername.setText(username);
-                                            txtUsernameCpt.setText(username);
-                                            if (profileIconURL != null && !profileIconURL.equals("null")) {
-                                                Picasso.get().load(profileIconURL).into(imgProfile);
-                                            } else {
-                                                imgProfile.setImageResource(R.drawable.default_icon);
+                                                txtName.setText(firstName + " " + lastName);
+                                                txtUsername.setText(username);
+                                                txtUsernameCpt.setText(username);
+                                                if (profileIconURL != null && !profileIconURL.equals("null")) {
+                                                    Picasso.get().load(profileIconURL).into(imgProfile);
+                                                } else {
+                                                    imgProfile.setImageResource(R.drawable.default_icon);
+                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            // Handle error
-                                        }
-                                    });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                // Handle error
+                                            }
+                                        });
 
-                            postAdapter.interactionCounter(postId, txtLikesAmount, "Likes");
-                            postAdapter.interactionCounter(postId, txtCommentsAmount, "Comments");
-                            postAdapter.isLiked(postId, btnLike);
+                                postAdapter.interactionCounter(postId, txtLikesAmount, "Likes");
+                                postAdapter.interactionCounter(postId, txtCommentsAmount, "Comments");
+                                postAdapter.isLiked(postId, btnLike);
 
-                            setupClickListeners(btnLike, btnComment, btnMore, txtName, imgProfile);
+                                setupClickListeners(btnLike, btnComment, btnMore, txtName, imgProfile);
+                            }
+                        } catch (Exception e) {
+                            Log.e("PostDetailsDialog", "Error processing post: " + e.getMessage(), e);
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle error
+                        Log.e("PostDetailsDialog", "Failed to read post: " + error.getMessage());
                     }
                 });
     }
