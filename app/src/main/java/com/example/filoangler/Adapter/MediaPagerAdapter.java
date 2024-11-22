@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,7 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
             holder.imageView.setVisibility(View.GONE);
             holder.videoContainer.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.VISIBLE);
+            holder.playPauseButton.setVisibility(View.VISIBLE);
 
             holder.videoView.setVideoURI(Uri.parse(mediaUrl));
             holder.videoView.setOnPreparedListener(mp -> {
@@ -73,11 +75,9 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
                     int finalHeight;
 
                     if (videoRatio > containerRatio) {
-                        // Video is wider than container
                         finalWidth = containerWidth;
                         finalHeight = (int) (containerWidth / videoRatio);
                     } else {
-                        // Video is taller than container
                         finalHeight = containerHeight;
                         finalWidth = (int) (containerHeight * videoRatio);
                     }
@@ -89,11 +89,30 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
                 });
 
                 mp.setLooping(true);
-                holder.videoView.start();
+                // Don't auto-start the video
+                holder.videoView.pause();
             });
+
+            // Set up click listeners for video control
+            holder.playPauseButton.setOnClickListener(v -> {
+                if (holder.videoView.isPlaying()) {
+                    holder.videoView.pause();
+                    holder.playPauseButton.setImageResource(android.R.drawable.ic_media_play);
+                } else {
+                    holder.videoView.start();
+                    holder.playPauseButton.setImageDrawable(null);
+                }
+            });
+
+            // Optional: Also handle clicks on the video view itself
+            holder.videoView.setOnClickListener(v -> {
+                holder.playPauseButton.performClick();
+            });
+
         } else {
             holder.videoContainer.setVisibility(View.GONE);
             holder.videoView.setVisibility(View.GONE);
+            holder.playPauseButton.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.VISIBLE);
             Picasso.get()
                     .load(mediaUrl)
@@ -112,11 +131,14 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<MediaPagerAdapter.Me
         ShapeableImageView imageView;
         VideoView videoView;
         FrameLayout videoContainer;
+        ImageButton playPauseButton;
 
         public MediaViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.postImage);
             videoView = itemView.findViewById(R.id.postVideo);
-            videoContainer = itemView.findViewById(R.id.postVideoContainer);        }
+            videoContainer = itemView.findViewById(R.id.postVideoContainer);
+            playPauseButton = itemView.findViewById(R.id.playPauseButton);
+        }
     }
 }
