@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.filoangler.Manager.LoginManager;
@@ -31,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnGoogle;
     private Button btnOfflineMode;
 
+    private ImageView imgLogo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +49,10 @@ public class LoginActivity extends AppCompatActivity {
 
         txtEmail = findViewById(R.id.txtEmail);
         txtPassword = findViewById(R.id.txtPassword);
+
+        imgLogo = findViewById(R.id.imgLogo);
+
+        Utils.loadImage(imgLogo, R.drawable.logotemp);
 
         //ForgotPassword Button
         btnForgotPassword.setOnClickListener(new View.OnClickListener() {

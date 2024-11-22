@@ -22,7 +22,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imgLogo"
                 android:layout_width="400px"
                 android:layout_height="400px"
                 android:layout_marginTop="30dp"
@@ -30,7 +30,6 @@
                 android:scaleType="centerInside"
                 android:scaleX="1.5"
                 android:scaleY="1.5"
-                android:src="@drawable/logotemp"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +45,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView">
+                app:layout_constraintTop_toBottomOf="@+id/imgLogo">
 
                 <EditText
                     android:id="@+id/txtEmail"
