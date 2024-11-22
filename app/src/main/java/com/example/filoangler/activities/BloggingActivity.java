@@ -45,6 +45,7 @@ import com.squareup.picasso.Picasso;
 
 public class BloggingActivity extends AppCompatActivity {
     private boolean isOfflineMode = false;
+    private boolean isAccountLoading = true;
 
     private BottomNavigationView bottomNavigationView;
     private Fragment selectedFragment;
@@ -52,6 +53,7 @@ public class BloggingActivity extends AppCompatActivity {
     private Button btnLogout;
     private TextView txtName, txtUsername;
     private ImageView imgProfileIcon, btnIcon;
+    private View loadingOverlay;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -73,7 +75,16 @@ public class BloggingActivity extends AppCompatActivity {
 
         if (isOfflineMode) {
             setupOfflineMode();
+            // Skip loading in offline mode
+            isAccountLoading = false;
+            updateLoadingState(false);
+            // Show NoInternetFragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
+                    .commit();
         } else {
+            // Only show loading overlay in online mode
+            updateLoadingState(true);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.bloggingActivityFrameLayout, new HomeFragment())
                     .commit();
@@ -92,23 +103,38 @@ public class BloggingActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.sideNavBar);
 
         btnLogout = navigationView.findViewById(R.id.btnLogout);
+
+        // Initialize loading overlay
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        // Don't show loading overlay initially if in offline mode
+        if (!isOfflineMode) {
+            updateLoadingState(true);
+        }
+    }
+
+    private void updateLoadingState(boolean isLoading) {
+        // Skip loading state updates if in offline mode
+        if (isOfflineMode) {
+            isAccountLoading = false;
+            if (loadingOverlay != null) {
+                loadingOverlay.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        isAccountLoading = isLoading;
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+
+        // Disable interactions while loading (only in online mode)
+        bottomNavigationView.setEnabled(!isLoading);
+        btnSearch.setEnabled(!isLoading);
+        btnIcon.setEnabled(!isLoading);
+        if (btnLogout != null) btnLogout.setEnabled(!isLoading);
     }
 
     private void setupOfflineMode() {
-        // Show NoInternetFragment fragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
-                .commit();
-
-        // Disable bottom navigation items except Home
-        Menu bottomMenu = bottomNavigationView.getMenu();
-        for (int i = 0; i < bottomMenu.size(); i++) {
-            MenuItem item = bottomMenu.getItem(i);
-            if (item.getItemId() != R.id.Home) {
-                item.setEnabled(false);
-            }
-        }
-
         // Disable specific side navigation items
         Menu sideMenu = navigationView.getMenu();
         MenuItem profileItem = sideMenu.findItem(R.id.navProfile);
@@ -126,7 +152,6 @@ public class BloggingActivity extends AppCompatActivity {
 
     private void setupUserProfile() {
         if (!isOfflineMode) {
-            // Only try to get Firebase user data if we're online
             if (loginManager.GetCurrentUser() != null) {
                 authManager.GetDb().getReference().child("Users")
                         .child(loginManager.GetCurrentUser().getUid())
@@ -141,10 +166,15 @@ public class BloggingActivity extends AppCompatActivity {
                                 } else {
                                     btnIcon.setImageResource(R.drawable.default_icon);
                                 }
+
+                                // Account loading complete
+                                updateLoadingState(false);
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
+                                // Handle error case
+                                updateLoadingState(false);
                             }
                         });
             }
@@ -169,7 +199,6 @@ public class BloggingActivity extends AppCompatActivity {
                 txtUsername = headerView.findViewById(R.id.txtUsername);
                 imgProfileIcon = headerView.findViewById(R.id.imgProfileIcon);
 
-                // Set offline mode text
                 if (txtName != null) txtName.setText("Offline Mode");
                 if (txtUsername != null) txtUsername.setText("Guest User");
                 if (imgProfileIcon != null) imgProfileIcon.setImageResource(R.drawable.default_icon);
@@ -181,8 +210,16 @@ public class BloggingActivity extends AppCompatActivity {
 
     private void setupNavigationListeners() {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (isOfflineMode) {
+            if (isAccountLoading && !isOfflineMode) {
                 return false;
+            }
+
+            if (isOfflineMode) {
+                // In offline mode, show NoInternetFragment for all navigation items
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
+                        .commit();
+                return true;
             }
 
             if (item.getItemId() == R.id.Home) {
