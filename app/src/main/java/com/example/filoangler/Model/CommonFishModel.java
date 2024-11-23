@@ -1,42 +1,41 @@
 package com.example.filoangler.Model;
 
 public class CommonFishModel {
-
-    private String FishId;
-    private String FishName;
+    private String FishId;    // Keeping PascalCase to match DB structure
     private String FishImage;
+    private String FishName;
 
     public CommonFishModel() {
-
+        // Required empty constructor for Firebase
     }
 
-    public CommonFishModel(String fishId, String fishName, String fishImage) {
-        FishId = fishId;
-        FishName = fishName;
-        FishImage = fishImage;
+    public CommonFishModel(String fishId, String fishImage, String fishName) {
+        this.FishId = fishId;
+        this.FishImage = fishImage;
+        this.FishName = fishName;
     }
 
     public String getFishId() {
-        return FishId;
-    }
-
-    public void setFishId(String fishId) {
-        FishId = fishId;
-    }
-
-    public String getFishName() {
-        return FishName;
-    }
-
-    public void setFishName(String fishName) {
-        FishName = fishName;
+        return FishId != null ? FishId : "";
     }
 
     public String getFishImage() {
-        return FishImage;
+        return FishImage != null ? FishImage : "";
+    }
+
+    public String getFishName() {
+        return FishName != null ? FishName : "";
+    }
+
+    public void setFishId(String fishId) {
+        this.FishId = fishId;
     }
 
     public void setFishImage(String fishImage) {
-        FishImage = fishImage;
+        this.FishImage = fishImage;
+    }
+
+    public void setFishName(String fishName) {
+        this.FishName = fishName;
     }
 }

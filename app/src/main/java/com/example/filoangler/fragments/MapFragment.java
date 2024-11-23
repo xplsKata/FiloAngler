@@ -99,8 +99,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         authManager.GetDb().getReference().child("Maps")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-
-
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for(DataSnapshot dataSnapshot : snapshot.getChildren()){

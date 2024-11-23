@@ -45,31 +45,35 @@ public class CommonFishAdapter extends RecyclerView.Adapter<CommonFishAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        CommonFishModel fish = mFish.get(position);
+        if (fish != null) {
+            // Set the fish name
+            holder.txtFishName.setText(fish.getFishName());
 
-        authManager = new AuthManager();
-        CommonFishModel commonFishModel = mFish.get(position);
+            // Handle the image
+            String imageName = fish.getFishImage();
+            if (imageName != null && !imageName.isEmpty()) {
+                // Get the resource ID from the image name
+                int resourceId = mContext.getResources().getIdentifier(
+                        imageName,  // The name in your database (e.g., "fish_barracuda")
+                        "drawable",
+                        mContext.getPackageName()
+                );
 
-        authManager.GetDb().getReference().child("Maps")
-                .child(locationId)
-                .child("Common Fish")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Picasso.get().load(commonFishModel.getFishImage()).into(holder.imgFish);
-                        holder.txtFishName.setText(commonFishModel.getFishName());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
+                if (resourceId != 0) {
+                    holder.imgFish.setImageResource(resourceId);
+                } else {
+                    // Set a default image if resource not found
+                    holder.imgFish.setImageResource(R.drawable.fish_barracuda);
+                    System.err.println("Image resource not found: " + imageName);
+                }
+            }
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mFish.size();
+        return mFish != null ? mFish.size() : 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

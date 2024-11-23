@@ -110,28 +110,44 @@ public class MapDetailsDialog {
 
     }
 
-    public void getCommonFish(String LocationId){
-
-        authManager.GetDb().getReference().child("Maps")
-                .child(LocationId)
+    public void getCommonFish(String locationId) {
+        authManager.GetDb().getReference()
+                .child("Maps")
+                .child(locationId)
                 .child("Common Fish")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         mFish.clear();
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                            CommonFishModel commonFishModel = dataSnapshot.getValue(CommonFishModel.class);
-                            mFish.add(commonFishModel);
+
+                        // Debug log
+                        System.out.println("Total fish entries: " + snapshot.getChildrenCount());
+
+                        for (DataSnapshot fishSnapshot : snapshot.getChildren()) {
+                            try {
+                                CommonFishModel fish = fishSnapshot.getValue(CommonFishModel.class);
+                                if (fish != null) {
+                                    mFish.add(fish);
+                                    // Debug log
+                                    System.out.println("Added fish: " + fish.getFishName());
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Error parsing fish data: " + e.getMessage());
+                                e.printStackTrace();
+                            }
                         }
+
+                        // Debug log
+                        System.out.println("Final fish list size: " + mFish.size());
+
                         commonFishAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        System.err.println("Database error: " + error.getMessage());
                     }
                 });
-
     }
 
 }
