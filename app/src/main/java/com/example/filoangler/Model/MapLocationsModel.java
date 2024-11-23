@@ -1,5 +1,10 @@
 package com.example.filoangler.Model;
 
+import com.google.firebase.database.PropertyName;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapLocationsModel {
 
     private String LocationId;
@@ -8,9 +13,11 @@ public class MapLocationsModel {
     private double LocationLongitude;
     private String LocationDescription;
     private boolean IsBeach;
+    @PropertyName("Common Fish")
+    private Map<String, CommonFishModel> CommonFish;
 
     public MapLocationsModel() {
-
+        CommonFish = new HashMap<>();
     }
 
     public MapLocationsModel(String locationId,
@@ -18,14 +25,15 @@ public class MapLocationsModel {
                              String locationDescription,
                              double locationLatitude,
                              double locationLongitude,
-                             boolean isBeach) {
+                             boolean isBeach,
+                             Map<String, CommonFishModel> commonFish) {
         this.LocationId = locationId;
         this.LocationName = locationName;
         this.LocationDescription = locationDescription;
         this.LocationLatitude = locationLatitude;
         this.LocationLongitude = locationLongitude;
         this.IsBeach = isBeach;
-
+        this.CommonFish = commonFish;
     }
 
     public String getLocationId() {
@@ -74,5 +82,15 @@ public class MapLocationsModel {
 
     public void setIsBeach(boolean beach) {
         IsBeach = beach;
+    }
+
+    @PropertyName("Common Fish")  // Add this annotation
+    public Map<String, CommonFishModel> getCommonFish() {
+        return CommonFish != null ? CommonFish : new HashMap<>();
+    }
+
+    @PropertyName("Common Fish")  // Add this annotation
+    public void setCommonFish(Map<String, CommonFishModel> commonFish) {
+        this.CommonFish = commonFish;
     }
 }

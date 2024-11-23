@@ -27,6 +27,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MapDetailsDialog {
 
@@ -68,30 +69,74 @@ public class MapDetailsDialog {
 
         recyclerView = dialog.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+
+        // Ensure proper layout
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
 
         scrollView = dialog.findViewById(R.id.scrollView);
         recyclerView.setAdapter(commonFishAdapter);
 
         getDetails(locationId);
-
     }
 
-    public void getDetails(String locationId){
+    public void getDetails(String locationId) {
+        System.out.println("Fetching details for locationId: " + locationId);
+
         authManager.GetDb().getReference().child("Maps")
                 .child(locationId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // Print the raw data
+                        System.out.println("Raw snapshot value: " + snapshot.getValue());
+
+                        // Check if Common Fish exists in the raw data
+                        DataSnapshot commonFishSnapshot = snapshot.child("Common Fish");
+                        System.out.println("Common Fish exists: " + commonFishSnapshot.exists());
+                        System.out.println("Common Fish children count: " + commonFishSnapshot.getChildrenCount());
+
                         MapLocationsModel mapLocationsModel = snapshot.getValue(MapLocationsModel.class);
+                        System.out.println("MapLocationsModel parsed: " + (mapLocationsModel != null));
+
                         if (mapLocationsModel != null) {
+                            System.out.println("Location Name: " + mapLocationsModel.getLocationName());
+                            System.out.println("IsBeach: " + mapLocationsModel.getIsBeach());
+
                             txtLocationName.setText(mapLocationsModel.getLocationName());
 
-                            if(mapLocationsModel.getIsBeach()){
+                            if (mapLocationsModel.getIsBeach()) {
                                 txtDescriptionLabel.setText(R.string.txtTerrain);
                                 txtCommonFish.setVisibility(View.VISIBLE);
                                 scrollView.setVisibility(View.VISIBLE);
-                                getCommonFish(locationId);
+
+                                // Try alternative way to get fish data
+                                mFish.clear();
+
+                                // Directly iterate through Common Fish children
+                                for (DataSnapshot fishSnapshot : commonFishSnapshot.getChildren()) {
+                                    try {
+                                        System.out.println("Processing fish key: " + fishSnapshot.getKey());
+                                        System.out.println("Raw fish data: " + fishSnapshot.getValue());
+
+                                        CommonFishModel fish = fishSnapshot.getValue(CommonFishModel.class);
+                                        if (fish != null) {
+                                            System.out.println("Fish details - Name: " + fish.getFishName()
+                                                    + ", Image: " + fish.getFishImage()
+                                                    + ", ID: " + fish.getFishId());
+                                            mFish.add(fish);
+                                        } else {
+                                            System.out.println("Failed to parse fish data");
+                                        }
+                                    } catch (Exception e) {
+                                        System.err.println("Error parsing fish: " + e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                System.out.println("Final mFish list size: " + mFish.size());
+                                commonFishAdapter.notifyDataSetChanged();
+
                             } else {
                                 txtDescriptionLabel.setText(R.string.txtDetails);
                                 txtCommonFish.setVisibility(View.GONE);
@@ -104,10 +149,9 @@ public class MapDetailsDialog {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle the error
+                        System.err.println("Database error: " + error.getMessage());
                     }
                 });
-
     }
 
     public void getCommonFish(String locationId) {
@@ -120,26 +164,26 @@ public class MapDetailsDialog {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         mFish.clear();
 
-                        // Debug log
-                        System.out.println("Total fish entries: " + snapshot.getChildrenCount());
+                        System.out.println("Fetching fish data for location: " + locationId);
+                        System.out.println("Number of fish entries: " + snapshot.getChildrenCount());
 
                         for (DataSnapshot fishSnapshot : snapshot.getChildren()) {
                             try {
                                 CommonFishModel fish = fishSnapshot.getValue(CommonFishModel.class);
                                 if (fish != null) {
                                     mFish.add(fish);
-                                    // Debug log
                                     System.out.println("Added fish: " + fish.getFishName());
+                                } else {
+                                    System.out.println("Failed to parse fish data for key: " + fishSnapshot.getKey());
                                 }
                             } catch (Exception e) {
-                                System.err.println("Error parsing fish data: " + e.getMessage());
-                                e.printStackTrace();
+                                System.err.println("Error parsing fish at key " + fishSnapshot.getKey() + ": " + e.getMessage());
+                                // Print the raw data for debugging
+                                System.err.println("Raw data: " + fishSnapshot.getValue());
                             }
                         }
 
-                        // Debug log
-                        System.out.println("Final fish list size: " + mFish.size());
-
+                        System.out.println("Total fish loaded: " + mFish.size());
                         commonFishAdapter.notifyDataSetChanged();
                     }
 

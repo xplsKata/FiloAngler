@@ -65,17 +65,25 @@
 
         <HorizontalScrollView
             android:id="@+id/scrollView"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
-            app:layout_constraintEnd_toEndOf="@+id/txtDescription"
-            app:layout_constraintStart_toStartOf="@+id/txtCommonFish"
+            android:layout_marginEnd="15dp"
+            android:scrollbars="none"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtCommonFish">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+
         </HorizontalScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
