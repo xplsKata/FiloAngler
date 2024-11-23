@@ -12,8 +12,7 @@
         android:id="@+id/imgFish"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_weight="0"
-        app:srcCompat="@drawable/logotemp" />
+        android:layout_weight="0"/>
 
     <TextView
         android:id="@+id/txtFishName"
