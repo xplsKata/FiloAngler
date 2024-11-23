@@ -14,10 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Model.CommonFishModel;
 import com.example.filoangler.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -65,7 +61,6 @@ public class CommonFishAdapter extends RecyclerView.Adapter<CommonFishAdapter.Vi
                 } else {
                     // Set a default image if resource not found
                     holder.imgFish.setImageResource(R.drawable.fish_barracuda);
-                    System.err.println("Image resource not found: " + imageName);
                 }
             }
         }
