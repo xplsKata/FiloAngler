@@ -32,9 +32,9 @@ public class GearKnowledgeFragment extends Fragment {
     }
 
     private void initializeElements(View view){
-        guideReelSetup = view.findViewById(R.id.reelSetupContainer);
-        guideRodSetup = view.findViewById(R.id.rodSetupContainer);
-        guideLeaderLineSetup = view.findViewById(R.id.leaderLineContainer);
+        guideReelSetup = view.findViewById(R.id.reelImageContainer);
+        guideRodSetup = view.findViewById(R.id.rodImageContainer);
+        guideLeaderLineSetup = view.findViewById(R.id.leaderLineImageContainer);
         guideLureHookSetupOne = view.findViewById(R.id.lureHookImageContainer1);
         guideLureHookSetupTwo = view.findViewById(R.id.lureHookImageContainer2);
     }

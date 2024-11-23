@@ -30,6 +30,7 @@ import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
 import com.example.filoangler.fragments.FishDatabankFragment;
+import com.example.filoangler.fragments.GearKnowledgeFragment;
 import com.example.filoangler.fragments.HomeFragment;
 import com.example.filoangler.fragments.MapFragment;
 import com.example.filoangler.fragments.NoInternetFragment;
@@ -287,7 +288,10 @@ public class BloggingActivity extends AppCompatActivity {
                     // Handle Equipments action
                 } else if (id == R.id.navMustKnow) {
                     Log.d("SideNav", "Must Know clicked");
-                    // Handle Must Know action
+                    selectedFragment = new GearKnowledgeFragment();
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
+                            .commit();
                 } else if (id == R.id.navProfile && !isOfflineMode) {
                     Log.d("SideNav", "Profile clicked");
                     Intent intent = new Intent(BloggingActivity.this, UserProfileActivity.class);
