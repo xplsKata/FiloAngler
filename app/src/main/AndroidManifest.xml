@@ -7,6 +7,9 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -38,6 +41,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FiloAngler"
         tools:targetApi="31">
+
+        <service
+            android:name="LocationMonitoringService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".activities.GearGuideActivity"
             android:exported="false" />
