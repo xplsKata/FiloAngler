@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -73,6 +74,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private SharedPreferences preferences;
     private MediaPlayer alertSound;
     private HashMap<String, Circle> restrictedAreaCircles;
+
+    private AlertDialog currentAlertDialog;
+    private boolean isAlertDialogShowing = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -143,9 +147,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
+            // Request only location permissions
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
         } else {
             checkGPSEnabled();
         }
@@ -160,6 +169,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     .setTitle("GPS Required")
                     .setMessage("Please enable GPS to use location features")
                     .setPositiveButton("Settings", (dialog, which) -> {
+                        // Open location settings directly
                         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivity(intent);
                     })
@@ -254,9 +264,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
 
         // Enable location layer if permission is granted
-        if (ActivityCompat.checkSelfPermission(requireContext(),
+        if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
+            checkGPSEnabled();
+        } else {
+            checkLocationPermission();
         }
 
         getLocations();
@@ -326,24 +339,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void showProximityAlert() {
+        // Only check if a dialog is already showing
+        if (isAlertDialogShowing) {
+            return;
+        }
+
         if (alertSound != null && !alertSound.isPlaying()) {
             alertSound.start();
         }
 
-        new AlertDialog.Builder(requireContext())
+        // Check if fragment is still attached to activity
+        if (getContext() == null || getActivity() == null || getActivity().isFinishing()) {
+            return;
+        }
+
+        isAlertDialogShowing = true;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
                 .setTitle("Restricted Area Alert")
                 .setMessage("You are approaching a no-fishing zone!")
-                .setPositiveButton("OK", null)
-                .show();
+                .setPositiveButton("OK", (dialog, which) -> {
+                    isAlertDialogShowing = false;
+                })
+                .setOnCancelListener(dialog -> {
+                    isAlertDialogShowing = false;
+                });
+
+        // Dismiss any existing dialog before showing new one
+        if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
+            currentAlertDialog.dismiss();
+        }
+
+        // Create and show new dialog
+        currentAlertDialog = builder.create();
+        currentAlertDialog.show();
     }
 
-    public void locationDetailsDialog(String locationId){
+    public void locationDetailsDialog(String locationId) {
+        // Dismiss any showing proximity alert before showing location details
+        if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
+            currentAlertDialog.dismiss();
+        }
 
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_map_details_dialog);
 
-        if(locationId != null){
+        if (locationId != null) {
             MapDetailsDialog mapDetailsDialog = new MapDetailsDialog(getContext(), locationId);
             mapDetailsDialog.showDialog(dialog);
         }
@@ -353,7 +395,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
-
     }
 
     @Override
@@ -361,9 +402,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                            @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationMonitoring();
+                // Permission was granted
+                if (ContextCompat.checkSelfPermission(requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    checkGPSEnabled();
+                    startLocationMonitoring();
+                    if (googleMap != null) {
+                        googleMap.setMyLocationEnabled(true);
+                    }
+                }
+            } else {
+                // Permission denied
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Location Permission Required")
+                        .setMessage("This app needs location permission to alert you about restricted fishing areas. Please grant location permission in settings.")
+                        .setPositiveButton("Settings", (dialog, which) -> {
+                            // Open app settings
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
+                            intent.setData(uri);
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Dismiss any showing dialog when fragment is paused
+        if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
+            currentAlertDialog.dismiss();
+        }
+        isAlertDialogShowing = false;
     }
 
     @Override
@@ -375,9 +448,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (alertSound != null) {
             alertSound.release();
         }
-        // Stop the location service when fragment is destroyed
         if (serviceIntent != null) {
             requireContext().stopService(serviceIntent);
+        }
+        // Dismiss any showing dialog
+        if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
+            currentAlertDialog.dismiss();
         }
     }
 
