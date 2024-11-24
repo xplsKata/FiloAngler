@@ -56,6 +56,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap googleMap;
@@ -65,6 +67,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private Intent serviceIntent;
 
+    private MediaPlayer alertSound;
+    private boolean isPlayingAlert = false;
+    private Timer alertTimer;
+    private TimerTask alertTask;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private static final float GEOFENCE_RADIUS = 300; // meters
 
@@ -72,7 +79,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private LocationCallback locationCallback;
     private boolean isLocationEnabled = true; // Default value
     private SharedPreferences preferences;
-    private MediaPlayer alertSound;
     private HashMap<String, Circle> restrictedAreaCircles;
 
     private AlertDialog currentAlertDialog;
@@ -325,6 +331,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void checkProximityToRestrictedAreas(Location userLocation) {
         if (!isLocationEnabled) return;
 
+        boolean isInRestrictedArea = false;
         for (Circle circle : restrictedAreaCircles.values()) {
             Location circleCenter = new Location("");
             circleCenter.setLatitude(circle.getCenter().latitude);
@@ -332,21 +339,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             float distance = userLocation.distanceTo(circleCenter);
             if (distance <= GEOFENCE_RADIUS) {
+                isInRestrictedArea = true;
                 showProximityAlert();
                 break;
             }
         }
+
+        // Stop alert sound if user is no longer in restricted area
+        if (!isInRestrictedArea && isPlayingAlert) {
+            stopAlertSound();
+        }
+    }
+
+    private void stopAlertSound() {
+        isPlayingAlert = false;
+        if (alertTimer != null) {
+            alertTimer.cancel();
+            alertTimer = null;
+        }
+        if (alertTask != null) {
+            alertTask.cancel();
+            alertTask = null;
+        }
+        if (alertSound != null && alertSound.isPlaying()) {
+            alertSound.stop();
+            alertSound.prepareAsync();
+        }
     }
 
     private void showProximityAlert() {
-        // Only check if a dialog is already showing
+        // Only show one dialog at a time
         if (isAlertDialogShowing) {
             return;
         }
 
-        if (alertSound != null && !alertSound.isPlaying()) {
-            alertSound.start();
-        }
+        // Start continuous alert sound
+        handleAlertSound();
 
         // Check if fragment is still attached to activity
         if (getContext() == null || getActivity() == null || getActivity().isFinishing()) {
@@ -355,24 +383,54 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         isAlertDialogShowing = true;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-                .setTitle("Restricted Area Alert")
-                .setMessage("You are approaching a no-fishing zone!")
-                .setPositiveButton("OK", (dialog, which) -> {
-                    isAlertDialogShowing = false;
-                })
-                .setOnCancelListener(dialog -> {
-                    isAlertDialogShowing = false;
-                });
+        // Run on UI thread to show dialog
+        requireActivity().runOnUiThread(() -> {
+            // Dismiss existing dialog if any
+            if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
+                currentAlertDialog.dismiss();
+            }
 
-        // Dismiss any existing dialog before showing new one
-        if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
-            currentAlertDialog.dismiss();
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                    .setTitle("Restricted Area Alert")
+                    .setMessage("You are approaching a no-fishing zone!")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        isAlertDialogShowing = false;
+                        // Don't stop the alert sound here
+                    })
+                    .setOnCancelListener(dialog -> {
+                        isAlertDialogShowing = false;
+                        // Don't stop the alert sound here
+                    });
+
+            currentAlertDialog = builder.create();
+            currentAlertDialog.show();
+        });
+    }
+
+    private void handleAlertSound() {
+        if (alertTimer != null) {
+            alertTimer.cancel();
+            alertTimer = null;
         }
 
-        // Create and show new dialog
-        currentAlertDialog = builder.create();
-        currentAlertDialog.show();
+        if (alertTask != null) {
+            alertTask.cancel();
+            alertTask = null;
+        }
+
+        alertTimer = new Timer();
+        alertTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (alertSound != null && !alertSound.isPlaying() && isPlayingAlert) {
+                    alertSound.start();
+                }
+            }
+        };
+
+        // Schedule alert sound to play every 3 seconds
+        alertTimer.scheduleAtFixedRate(alertTask, 0, 3000);
+        isPlayingAlert = true;
     }
 
     public void locationDetailsDialog(String locationId) {
@@ -442,16 +500,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
-        }
+        stopAlertSound();
         if (alertSound != null) {
             alertSound.release();
+            alertSound = null;
+        }
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
         }
         if (serviceIntent != null) {
             requireContext().stopService(serviceIntent);
         }
-        // Dismiss any showing dialog
         if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
             currentAlertDialog.dismiss();
         }
