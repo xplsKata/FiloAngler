@@ -1,0 +1,122 @@
+{
+  "guide_leader_line_setup": {
+    "steps": [
+      {
+        "id": "Step One",
+        "timestamp": "00:00",
+        "description": "With the fluorocarbon on your left hand, make a loop and hold it in place."
+      },
+      {
+        "id": "Step Two",
+        "timestamp": "00:04",
+        "description": "With the braided line on your right hand, thread the braided line into the loop you just made with the fluorocarbon."
+      },
+      {
+        "id": "Step Three",
+        "timestamp": "00:06",
+        "description": "Loop your braided line around the fluorocarbon 6-12 times and thread it back onto the fluorocarbon's loop."
+      },
+      {
+        "id": "Step Four",
+        "timestamp": "00:09",
+        "description": "Cinch the knot by carefully pulling on the two ends of your line."
+      }
+    ]
+  },
+  "guide_lure_hook_one_setup": {
+    "steps": [
+      {
+        "id": "Step One",
+        "timestamp": "00:00",
+        "description": "With the hook on your left hand and your line on your right, carefully thread the line onto the eye of the hook or lure."
+      },
+      {
+        "id": "Step Two",
+        "timestamp": "00:02",
+        "description": "After threading the line onto the eye, make a loop and carefully wrap the line onto the hook and your existing line for at least 6-12 wraps."
+      },
+      {
+        "id": "Step Three",
+        "timestamp": "00:07",
+        "description": "While holding in place the wraps you have made, carefully thread the line end onto the loop you have made."
+      },
+      {
+        "id": "Step Four",
+        "timestamp": "00:09",
+        "description": "After threading the line end onto the loop, carefully pull on the line from your right hand to tighten it."
+      }
+    ]
+  },
+  "guide_lure_hook_two_setup": {
+    "steps": [
+      {
+        "id": "Step One",
+        "timestamp": "00:00",
+        "description": "With the hook on your left hand and your line on your right, carefully thread the line onto the eye of the hook or lure."
+      },
+      {
+        "id": "Step Two",
+        "timestamp": "00:02",
+        "description": "After threading the line onto the eye, leave a small loop and carefully wrap your line for at least 6-12 wraps."
+      },
+      {
+        "id": "Step Three",
+        "timestamp": "00:06",
+        "description": "After wrapping your line, thread back the line end onto the small loop you have left out, and back to secure it."
+      },
+      {
+        "id": "Step Four",
+        "timestamp": "00:09",
+        "description": "Carefully tighten using your right hand to lock it in place."
+      }
+    ]
+  },
+  "guide_reel_setup": {
+    "steps": [
+      {
+        "id": "Step One",
+        "timestamp": "00:00",
+        "description": "First step is to secure your line onto your reel by making a simple knot."
+      },
+      {
+        "id": "Step Two",
+        "timestamp": "00:04",
+        "description": "Secure the line you have made and put the cover back to the reel."
+      },
+      {
+        "id": "Step Three",
+        "timestamp": "00:06",
+        "description": "After assembling the reel, you may slowly reel in your line to fill up your reel's line holder."
+      },
+      {
+        "id": "Step Four",
+        "timestamp": "00:10",
+        "description": "Once filled, you may cut the excess line and store it for later use."
+      }
+    ]
+  },
+  "guide_rod_setup": {
+    "steps": [
+      {
+        "id": "Step One",
+        "timestamp": "00:00",
+        "description": "To assemble the rod, prepare your reel and rod on a flat surface."
+      },
+      {
+        "id": "Step Two",
+        "timestamp": "00:02",
+        "description": "To attach the reel onto the rod, gently align the bottom of the reel onto the rod's reel slot and tighten the knobs to secure it in place."
+      },
+      {
+        "id": "Step Three",
+        "timestamp": "00:05",
+        "description": "Next up is to thread your line onto the ring guides. Ensure that each ring guide has been passed."
+      },
+      {
+        "id": "Step Four",
+        "timestamp": "00:09",
+        "description": "This finishes your rod setup and now you're ready to tie in your hook or lures!"
+      }
+    ]
+  }
+}

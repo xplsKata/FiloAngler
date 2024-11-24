@@ -1,18 +1,25 @@
 package com.example.filoangler.Model;
 
 public class Waypoint {
-    private String title;
+    private String id;
     private String description;
-    private int timestamp; // in milliseconds
+    private int timestamp;
 
-    public Waypoint(String title, String description, int timestamp) {
-        this.title = title;
+    public Waypoint(String id, String description, int timestamp) {
+        this.id = id;
         this.description = description;
         this.timestamp = timestamp;
     }
 
-    // Getters
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public int getTimestamp() { return timestamp; }
+    public String getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
 }

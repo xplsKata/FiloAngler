@@ -36,7 +36,8 @@ public class WaypointAdapter extends RecyclerView.Adapter<WaypointAdapter.Waypoi
     @Override
     public void onBindViewHolder(@NonNull WaypointViewHolder holder, int position) {
         Waypoint waypoint = waypoints.get(position);
-        holder.titleText.setText(waypoint.getTitle());
+        // Use getId() instead of getTitle() since our model uses id
+        holder.titleText.setText(waypoint.getId());
         holder.descriptionText.setText(waypoint.getDescription());
         holder.timestampText.setText(formatTime(waypoint.getTimestamp()));
 
