@@ -154,9 +154,16 @@
                     android:textColor="@color/white"
                     android:textColorHint="#FFFFFF"
                     android:textSize="18sp"
-                    app:hashtagColor="@color/iconBlue"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
+                    android:maxLines="5"
+                    android:scrollbars="vertical"
+                    android:gravity="top|start"
+                    app:socialFlags="mention"
                     app:mentionColor="@color/iconBlue"
-                    app:socialFlags="hashtag|mention" />
+                    android:dropDownAnchor="@id/txtImageDescription"
+                    android:dropDownHeight="wrap_content"
+                    android:dropDownWidth="match_parent" />
 
                 <LinearLayout
                     android:id="@+id/frmImages"

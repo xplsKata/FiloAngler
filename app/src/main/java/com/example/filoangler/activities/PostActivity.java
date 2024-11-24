@@ -24,14 +24,18 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -45,6 +49,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.canhub.cropper.CropImageContractOptions;
 import com.example.filoangler.Adapter.GalleryAdapter;
 import com.example.filoangler.Adapter.GalleryAdapterCallback;
+import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.MediaItem;
 import com.example.filoangler.OnSwipeTouchListener;
@@ -52,7 +57,10 @@ import com.example.filoangler.R;
 import com.example.filoangler.Manager.StorageManager;
 import com.example.filoangler.Utils;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView;
@@ -64,9 +72,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PostActivity extends AppCompatActivity implements GalleryAdapterCallback {
 
@@ -80,6 +92,12 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
     private ArrayList<MediaItem> mediaItems;
     private ArrayList<MediaItem> selectedMediaItems;
+
+    private List<String> followingUsernames;
+    private List<String> followingUserIds;
+    private Map<String, String> taggedUsers;
+
+    private AuthManager authManager;
 
     //CropImage
     private ImageView imgAdd;
@@ -115,9 +133,15 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         setContentView(R.layout.activity_post);
 
         storageManager = new StorageManager();
+        authManager = new AuthManager();
+        followingUsernames = new ArrayList<>();
+        followingUserIds = new ArrayList<>();
+        taggedUsers = new HashMap<>();
 
         loadElements();
         loadCamera();
+        loadFollowingUsers();
+        setupUserTagging();
 
         // Request permissions if needed
         if (ContextCompat.checkSelfPermission(this,
@@ -224,6 +248,9 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         imgAdd = findViewById(R.id.imgAdd);
         txtImageDescription = findViewById(R.id.txtImageDescription);
 
+        txtImageDescription.setHashtagEnabled(false);
+        txtImageDescription.setMentionEnabled(true);
+
         // Initialize ALL ArrayLists
         mediaItems = new ArrayList<>();
         selectedMediaItems = new ArrayList<>();
@@ -253,7 +280,36 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         }
     }
 
+    private void loadFollowingUsers() {
+        LoginManager loginManager = new LoginManager(this);
+        String currentUserId = loginManager.GetFirebaseAuth().getCurrentUser().getUid();
 
+        DatabaseReference followingRef = authManager.GetDb().getReference()
+                .child("Users")
+                .child(currentUserId)
+                .child("Following");
+
+        followingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot followingSnapshot) {
+                // Clear existing lists to prevent duplicates
+                followingUsernames.clear();
+                followingUserIds.clear();
+
+                for (DataSnapshot userIdSnapshot : followingSnapshot.getChildren()) {
+                    String userId = userIdSnapshot.getKey();
+                    if (userId != null && Boolean.TRUE.equals(userIdSnapshot.getValue(Boolean.class))) {
+                        fetchUsername(userId);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(PostActivity.this, "Failed to load following users", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 
 
@@ -618,6 +674,114 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
 
 
+    private void fetchUsername(String userId) {
+        DatabaseReference userRef = authManager.GetDb().getReference()
+                .child("Users")
+                .child(userId)
+                .child("Account Details")
+                .child("Username");
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = snapshot.getValue(String.class);
+                if (username != null && !followingUsernames.contains(username)) {
+                    followingUsernames.add(username);
+                    followingUserIds.add(userId);
+                    // Notify adapter of new data
+                    runOnUiThread(() -> {
+                        ArrayAdapter<String> adapter = (ArrayAdapter<String>) txtImageDescription.getMentionAdapter();
+                        if (adapter != null) {
+                            adapter.clear();
+                            adapter.addAll(followingUsernames);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("PostActivity", "Error fetching username: " + error.getMessage());
+            }
+        });
+    }
+
+    private void setupUserTagging() {
+        txtImageDescription.setMentionEnabled(true);
+        txtImageDescription.setHashtagEnabled(false);
+        txtImageDescription.setMentionColor(Color.BLUE);
+        txtImageDescription.setThreshold(1); // Show suggestions after 1 character
+
+        // Initialize adapter with empty list
+        ArrayAdapter<String> mentionAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<>()
+        );
+        txtImageDescription.setMentionAdapter(mentionAdapter);
+
+        txtImageDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count > 0 && s.length() > start) {
+                    // Get the current word being typed
+                    int wordStart = start;
+                    while (wordStart > 0 && s.charAt(wordStart - 1) != ' ' && s.charAt(wordStart - 1) != '\n') {
+                        wordStart--;
+                    }
+                    String currentWord = s.subSequence(wordStart, start + count).toString();
+
+                    // If the word starts with @, filter and show suggestions
+                    if (currentWord.startsWith("@")) {
+                        String searchTerm = currentWord.substring(1).toLowerCase();
+                        updateMentionSuggestions(searchTerm);
+                        txtImageDescription.showDropDown();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateTaggedUsers(s.toString());
+            }
+        });
+    }
+
+    private void updateMentionSuggestions(String searchTerm) {
+        // Filter usernames based on search term
+        List<String> filteredUsernames = new ArrayList<>();
+        for (String username : followingUsernames) {
+            if (username.toLowerCase().contains(searchTerm.toLowerCase())) {
+                filteredUsernames.add(username);
+            }
+        }
+
+        // Update adapter with filtered results
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) txtImageDescription.getMentionAdapter();
+        adapter.clear();
+        adapter.addAll(filteredUsernames);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateTaggedUsers(String text) {
+        taggedUsers.clear();
+        Pattern pattern = Pattern.compile("@(\\w+)");
+        Matcher matcher = pattern.matcher(text);
+
+        while (matcher.find()) {
+            String username = matcher.group(1);
+            int index = followingUsernames.indexOf(username);
+            if (index != -1) {
+                String userId = followingUserIds.get(index);
+                taggedUsers.put(userId, username);
+            }
+        }
+    }
+
 
 
     private void uploadPost() {
@@ -676,6 +840,7 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
         DatabaseReference databaseReference = storageManager.getDatabaseReference("Posts");
         String postId = databaseReference.push().getKey();
 
+        // Create mediaURLs map as before
         HashMap<String, Object> mediaURLsMap = new HashMap<>();
         for (int i = 0; i < mediaUrls.size(); i++) {
             HashMap<String, Object> mediaDetails = new HashMap<>();
@@ -684,15 +849,24 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
             mediaURLsMap.put(String.valueOf(i), mediaDetails);
         }
 
+        // Create tagged users map
+        HashMap<String, Object> taggedUsersMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : taggedUsers.entrySet()) {
+            taggedUsersMap.put(entry.getKey(), true);
+        }
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("PostId", postId);
         map.put("mediaURLs", mediaURLsMap);
         map.put("Description", txtImageDescription.getText().toString());
         map.put("Author", loginManager.GetFirebaseAuth().getCurrentUser().getUid());
         map.put("DatePosted", Utils.getDateAndTime());
+        map.put("TaggedUsers", taggedUsersMap);
 
         databaseReference.child(postId).setValue(map)
                 .addOnSuccessListener(aVoid -> {
+                    // Create notifications for tagged users
+                    createTagNotifications(postId);
                     progressDialog.dismiss();
                     Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
                     finish();
@@ -701,6 +875,27 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     progressDialog.dismiss();
                     Toast.makeText(PostActivity.this, "Failed to create post", Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void createTagNotifications(String postId) {
+        LoginManager loginManager = new LoginManager(PostActivity.this);
+        String currentUserId = loginManager.GetFirebaseAuth().getCurrentUser().getUid();
+
+        for (String taggedUserId : taggedUsers.keySet()) {
+            DatabaseReference notifRef = authManager.GetDb().getReference()
+                    .child("Users")
+                    .child(taggedUserId)
+                    .child("Notifications")
+                    .push();
+
+            HashMap<String, Object> notifMap = new HashMap<>();
+            notifMap.put("Description", "Tagged you in a post");
+            notifMap.put("PostId", postId);
+            notifMap.put("UserId", currentUserId);
+            notifMap.put("isPost", true);
+
+            notifRef.setValue(notifMap);
+        }
     }
 
 
