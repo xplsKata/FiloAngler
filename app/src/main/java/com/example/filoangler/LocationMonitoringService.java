@@ -32,6 +32,8 @@ public class LocationMonitoringService extends Service {
     private static final int NOTIFICATION_ID = 1;
     private static final float GEOFENCE_RADIUS = 300; // meters
 
+    private NotificationManager notificationManager;
+
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private AuthManager authManager;
@@ -44,6 +46,7 @@ public class LocationMonitoringService extends Service {
         authManager = new AuthManager();
         restrictedLocations = new ArrayList<>();
         preferences = getSharedPreferences("MapSettings", MODE_PRIVATE);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         createNotificationChannel();
         setupLocationUpdates();
@@ -164,6 +167,15 @@ public class LocationMonitoringService extends Service {
         if (fusedLocationClient != null && locationCallback != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
+        // Remove all notifications when service is destroyed
+        notificationManager.cancelAll();
+        stopForeground(true);
+    }
+
+    public void stopLocationService() {
+        notificationManager.cancelAll();
+        stopForeground(true);
+        stopSelf();
     }
 
     @Override

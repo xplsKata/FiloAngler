@@ -62,6 +62,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private AuthManager authManager;
     private HashMap<Marker, String> markerLocationId;
 
+    private Intent serviceIntent;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private static final float GEOFENCE_RADIUS = 300; // meters
 
@@ -201,7 +203,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void startLocationMonitoring() {
         // Start the foreground service
-        Intent serviceIntent = new Intent(requireContext(), LocationMonitoringService.class);
+        serviceIntent = new Intent(requireContext(), LocationMonitoringService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             requireContext().startForegroundService(serviceIntent);
         } else {
@@ -373,44 +375,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (alertSound != null) {
             alertSound.release();
         }
+        // Stop the location service when fragment is destroyed
+        if (serviceIntent != null) {
+            requireContext().stopService(serviceIntent);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Stop the location service when view is destroyed
+        if (serviceIntent != null) {
+            requireContext().stopService(serviceIntent);
+        }
     }
 }
-
-
-
-/*
-@Override
-    public void onMapReady(GoogleMap map){
-        googleMap = map;
-
-        // Define the bounds of the Philippines (lat/lng values for the country's borders)
-        philippinesBounds = new LatLngBounds(
-                new LatLng(4.5, 116.0), // Southwest corner of the Philippines
-                new LatLng(21.0, 127.0) // Northeast corner of the Philippines
-        );
-
-        // Move the camera to the Philippines and restrict user panning to stay within the bounds
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(philippinesBounds, 0));
-
-        // Restrict the map to the bounds of the Philippines
-        googleMap.setLatLngBoundsForCameraTarget(philippinesBounds);
-
-        // Optional: Disable zooming out too far (optional)
-        googleMap.setMinZoomPreference(5.0f);
-        googleMap.setMaxZoomPreference(15.0f);
-
-        getLocations();
-
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-
-                String locationId = markerLocationId.get(marker);
-
-                locationDetailsDialog(locationId);
-
-                return false;
-            }
-        });
-    }
-*/
