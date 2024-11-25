@@ -1,20 +1,14 @@
 package com.example.filoangler.activities;
 
-import android.graphics.PixelFormat;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.filoangler.R;
-import com.unity3d.player.UnityPlayer;
 
 public class FishDetailsActivity extends AppCompatActivity {
 
@@ -23,16 +17,9 @@ public class FishDetailsActivity extends AppCompatActivity {
     private TextView txtFishBehavior;
     private TextView txtFishHabitat;
     private TextView txtFishLaw;
+    private TextView txtViewModel;
     private TextView txtFishLawLabel;
-
     private ImageView btnBack;
-
-    //Unity
-    private FrameLayout unityLayout;
-    private UnityPlayer mUnityPlayer;
-
-    private ScaleGestureDetector scaleGestureDetector;
-    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +29,9 @@ public class FishDetailsActivity extends AppCompatActivity {
         initializeViews();
         setTexts();
         setupListeners();
-        bindUnity();
-
-
     }
 
-    private void initializeViews(){
+    private void initializeViews() {
         txtFishName = findViewById(R.id.txtFishName);
         txtFishDescription = findViewById(R.id.txtFishDescription);
         txtFishBehavior = findViewById(R.id.txtFishBehavior);
@@ -55,9 +39,10 @@ public class FishDetailsActivity extends AppCompatActivity {
         txtFishLaw = findViewById(R.id.txtFishLaw);
         txtFishLawLabel = findViewById(R.id.textView22);
         btnBack = findViewById(R.id.btnBack);
+        txtViewModel = findViewById(R.id.txtViewModel);
     }
 
-    private void setTexts(){
+    private void setTexts() {
         String FishName = getIntent().getStringExtra("FishName");
         String FishDescription = getIntent().getStringExtra("FishDescription");
         String FishBehavior = getIntent().getStringExtra("FishBehavior");
@@ -69,7 +54,7 @@ public class FishDetailsActivity extends AppCompatActivity {
         txtFishBehavior.setText(FishBehavior);
         txtFishHabitat.setText(FishHabitat);
 
-        if(txtFishLaw.equals("none") || FishLaw.equals("None")){
+        if (FishLaw == null || FishLaw.equalsIgnoreCase("none")) {
             txtFishLaw.setVisibility(View.GONE);
             txtFishLawLabel.setVisibility(View.GONE);
         } else {
@@ -80,48 +65,20 @@ public class FishDetailsActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnBack.setOnClickListener(v -> {
-            // Ensure Unity player is properly cleaned up before finishing
-            if (mUnityPlayer != null) {
-                mUnityPlayer.quit();
-            }
-            finish();
-        });
+        btnBack.setOnClickListener(v -> finish());
 
+        txtViewModel.setOnClickListener(v -> launch3DView());
     }
 
-    //Unity
-    @Override
-    protected void onDestroy() {
-        if (mUnityPlayer != null) {
-            mUnityPlayer.quit();
-        }
-        mUnityPlayer = null; // Set to null to prevent any lingering references
-        super.onDestroy();
-    }
+    private void launch3DView() {
+        // Get the Fish3DModel ID from intent
+        String fish3DModel = getIntent().getStringExtra("Fish3DModel");
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mUnityPlayer != null) {
-            mUnityPlayer.pause();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mUnityPlayer != null) {
-            mUnityPlayer.resume();
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (mUnityPlayer != null) {
-            mUnityPlayer.windowFocusChanged(hasFocus);
-        }
+        // Create intent for Unity activity
+        Intent intent = new Intent(this, UnityViewActivity.class);
+        // Pass the model ID to Unity
+        intent.putExtra("Fish3DModel", fish3DModel);
+        startActivity(intent);
     }
 
     @Override
@@ -129,60 +86,4 @@ public class FishDetailsActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
-
-    private void bindUnity() {
-        unityLayout = findViewById(R.id.imgFishModel);
-        unityLayout.removeAllViews();
-
-        mUnityPlayer = new UnityPlayer(this);
-
-        getWindow().setFormat(PixelFormat.RGBA_8888);
-
-        mUnityPlayer.requestFocus();
-        mUnityPlayer.windowFocusChanged(true);
-
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT);
-        unityLayout.addView(mUnityPlayer.getView(), 0, lp);
-
-        // Get the Fish3DModel from intent
-        String Fish3DModel = getIntent().getStringExtra("Fish3DModel");
-        loadModel(Fish3DModel);
-        setupGestureDetectors();
-    }
-
-    private void setupGestureDetectors() {
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            @Override
-            public boolean onScale(ScaleGestureDetector detector) {
-                float scaleFactor = detector.getScaleFactor();
-                // Send zoom factor to Unity
-                UnityPlayer.UnitySendMessage("ModelContainer", "OnZoomReceived", String.valueOf(scaleFactor));
-                return true;
-            }
-        });
-
-        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                // Format: "distanceX,distanceY"
-                String movement = distanceX + "," + distanceY;
-                UnityPlayer.UnitySendMessage("ModelContainer", "OnRotationReceived", movement);
-                return true;
-            }
-        });
-
-        unityLayout.setOnTouchListener((v, event) -> {
-            scaleGestureDetector.onTouchEvent(event);
-            gestureDetector.onTouchEvent(event);
-            return true;
-        });
-    }
-
-    private void loadModel(String modelId) {
-        // Send the model ID to Unity
-        UnityPlayer.UnitySendMessage("ModelContainer", "OnModelDataReceived", modelId);
-    }
-
 }

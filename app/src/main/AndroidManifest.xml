@@ -50,7 +50,6 @@
             android:foregroundServiceType="location"
             android:enabled="true"
             android:exported="false" />
-
         <activity
             android:name=".activities.GearGuideActivity"
             android:exported="false" />
@@ -58,9 +57,13 @@
             android:name=".activities.QuizzesActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.UnityViewActivity"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"/>
+        <activity
             android:name=".activities.FishDetailsActivity"
             android:exported="false" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapsApiKey}" />

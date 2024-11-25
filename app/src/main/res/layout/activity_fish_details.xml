@@ -24,28 +24,38 @@
     <LinearLayout
         android:id="@+id/linearLayout9"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="30dp"
-        android:background="@drawable/shape_posts_container"
+        android:background="@android:color/transparent"
         android:backgroundTint="@color/bgBlue"
-        android:orientation="horizontal"
+        android:gravity="center"
+        android:orientation="vertical"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout8"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout8"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
+        <VideoView
             android:id="@+id/imgFishModel"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="300dp"
             android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/booking_menu_text">
 
-        </FrameLayout>
+        </VideoView>
+
+        <TextView
+            android:id="@+id/txtViewModel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="View 3D Model"
+            android:textColor="@color/bgBlue"
+            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -54,7 +64,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="15dp"
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
