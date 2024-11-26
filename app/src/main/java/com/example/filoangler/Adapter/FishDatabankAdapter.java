@@ -58,7 +58,7 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inflater = LayoutInflater.from(mContext);
 
         if (viewType == TYPE_SECTION_HEADER) {
-            View view = inflater.inflate(R.layout.item_fish_heading, parent, false);
+            View view = inflater.inflate(R.layout.item_heading, parent, false);
             return new SectionHeaderViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_fish_button, parent, false);

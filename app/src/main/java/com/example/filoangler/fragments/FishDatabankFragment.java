@@ -1,6 +1,5 @@
 package com.example.filoangler.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -18,9 +17,7 @@ import com.example.filoangler.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +26,7 @@ public class FishDatabankFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fish_databank, container, false);
+        View view = inflater.inflate(R.layout.fragment_databank, container, false);
 
         String json = Utils.loadJSONFromAsset(getContext(), "fish_databank.json");
 
