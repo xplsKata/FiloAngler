@@ -300,19 +300,25 @@ public class RegisterP2Activity extends AppCompatActivity {
     }
 
     private void getCredentials() {
+        // Validate input fields
+        if (!validateInputFields()) {
+            return;
+        }
+
         LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
 
         String Email = getIntent().getStringExtra("Email");
         String Username = getIntent().getStringExtra("Username");
         String Password = getIntent().getStringExtra("Password");
-        String FirstName = txtFirstName.getText().toString();
-        String LastName = txtLastName.getText().toString();
-        String Birthdate = btnDate.getText().toString();
+        String FirstName = txtFirstName.getText().toString().trim();
+        String LastName = txtLastName.getText().toString().trim();
+        String Birthdate = btnDate.getText().toString().trim();
         String ProvinceAddress = spnrProvince.getSelectedItem().toString();
         String CityAddress = spnrCity.getSelectedItem().toString();
         String AnglerStatus = " ";
+
         int RadioButtonId = radioGroupStatus.getCheckedRadioButtonId();
-        if (RadioButtonId != 1) {
+        if (RadioButtonId != -1) {
             RadioButton SelectedRadioButton = findViewById(RadioButtonId);
             AnglerStatus = SelectedRadioButton.getText().toString();
         }
@@ -368,6 +374,52 @@ public class RegisterP2Activity extends AppCompatActivity {
         intent.putExtra("CityAddress", CityAddress);
         intent.putExtra("AnglerStatus", AnglerStatus);
         startActivity(intent);
+    }
+
+    private boolean validateInputFields() {
+        boolean isValid = true;
+
+        // Check First Name
+        if (txtFirstName == null || txtFirstName.getText() == null ||
+                txtFirstName.getText().toString().trim().isEmpty()) {
+            txtFirstName.setError("First Name is required");
+            isValid = false;
+        }
+
+        // Check Last Name
+        if (txtLastName == null || txtLastName.getText() == null ||
+                txtLastName.getText().toString().trim().isEmpty()) {
+            txtLastName.setError("Last Name is required");
+            isValid = false;
+        }
+
+        // Check Date Button
+        if (btnDate == null || btnDate.getText() == null ||
+                btnDate.getText().toString().trim().isEmpty()) {
+            btnDate.setError("Birthdate is required");
+            Toast.makeText(this, "Please select a birthdate", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        // Check Province Spinner
+        if (spnrProvince == null || spnrProvince.getSelectedItem() == null) {
+            Toast.makeText(this, "Please select a province", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        // Check City Spinner
+        if (spnrCity == null || spnrCity.getSelectedItem() == null) {
+            Toast.makeText(this, "Please select a city", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        // Check Angler Status
+        if (radioGroupStatus == null || radioGroupStatus.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select an Angler Status", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        return isValid;
     }
 
 }
