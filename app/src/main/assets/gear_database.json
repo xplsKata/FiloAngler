@@ -1,0 +1,272 @@
+{
+  "fishing_equipment": {
+    "Reels": [
+      {
+        "name": "Overhead Reel",
+        "description": "An overhead reel is designed for precise line control and high line capacity, ideal for targeting powerful saltwater species. It offers excellent leverage due to its top-mounted design, making it perfect for fighting hard-pulling fish like barracuda and mangrove jack. This reel excels in demanding techniques like trolling, bottom fishing, and jigging in Philippine waters.",
+        "tips_for_use": [
+          "Use a braided mainline paired with a fluorocarbon leader for improved line strength and invisibility.",
+          "Adjust the drag based on the fish size to prevent line breaks during powerful runs."
+        ],
+        "maintenance_tips": [
+          "Disassemble and clean the internal components regularly to prevent salt buildup.",
+          "Lubricate the reel’s moving parts to maintain smooth operation."
+        ],
+        "GearImage": "gear_trollingreel",
+        "Gear3DModel": "gear_trollingreel"
+      },
+      {
+        "name": "Spincast Reel",
+        "description": "A spincast reel features a closed-face design, making it easy to use and highly suitable for beginners or casual anglers. This reel minimizes tangling issues, making it ideal for targeting smaller saltwater species like threadfin bream and ladyfish along the Philippine coastline. Lightweight and user-friendly, it’s perfect for short fishing trips.",
+        "tips_for_use": [
+          "Avoid overloading the reel with line to ensure smooth casting and retrieval.",
+          "Use this reel for calm waters or when targeting smaller species."
+        ],
+        "maintenance_tips": [
+          "Open the reel occasionally to clean and remove any accumulated salt or debris.",
+          "Replace the line periodically to ensure it remains strong and reliable."
+        ],
+        "GearImage": "gear_spincastreel",
+        "Gear3DModel": "gear_spincastreel"
+      },
+      {
+        "name": "Spinning Reel",
+        "description": "A spinning reel is a versatile and widely used tool that hangs beneath the rod, offering excellent balance and control. It excels at casting lightweight lures over long distances, making it ideal for targeting species like mangrove jack, goatfish, and trevally along Philippine shores. Its user-friendly design suits anglers of all experience levels.",
+        "tips_for_use": [
+          "Use smaller reels for inshore fishing and larger reels for offshore applications.",
+          "Adjust the drag to suit the strength of fish like barracuda or crescent grunter."
+        ],
+        "maintenance_tips": [
+          "Rinse the reel with freshwater after every trip and allow it to dry completely.",
+          "Periodically oil the bearings and spool to prevent rust and maintain performance."
+        ],
+        "GearImage": "gear_spinningreel",
+        "Gear3DModel": "gear_spinningreel"
+      },
+      {
+        "name": "Baitcaster Reel",
+        "description": "A baitcaster reel is a high-performance reel designed for precision casting and control. It features a spool that rotates with the line, allowing anglers to place lures accurately. Baitcasters are popular for targeting larger and more aggressive species like trevally and mangrove jack in Philippine waters.",
+        "tips_for_use": [
+          "Adjust the spool tension and braking system based on the lure's weight to minimize backlash during casting.",
+          "Use heavier braided or fluorocarbon lines to maximize the baitcaster's strength and durability.",
+          "Practice thumb control to stop the spool at the right time and improve casting accuracy."
+        ],
+        "maintenance_tips": [
+          "Clean the reel thoroughly after every trip, especially if used in saltwater, to prevent corrosion.",
+          "Lubricate the spool bearings and gears regularly to maintain smooth operation.",
+          "Inspect the line guide for wear and replace it if necessary to avoid line fraying."
+        ],
+        "GearImage": "gear_baitcasterreel",
+        "Gear3DModel": "gear_baitcasterreel"
+      }
+    ],
+    "Rods": [
+      {
+        "name": "Overhead Rod",
+        "description": "The rod for an overhead reel is built with strength and resilience to handle the stress of heavy saltwater fishing. Designed with a strong backbone and robust guides, it ensures optimal performance when targeting large, aggressive fish.",
+        "tips_for_use": [
+          "Opt for a rod with medium-heavy power for versatile applications, suitable for trevally and crescent grunter.",
+          "Use a shorter rod for bottom fishing and a longer rod for trolling to maximize leverage and casting distance."
+        ],
+        "maintenance_tips": [
+          "Wipe the rod down after each use and inspect for cracks or damage in the guides.",
+          "Store the rod in a rod holder to maintain its shape and integrity."
+        ],
+        "GearImage": "gear_trollingrod",
+        "Gear3DModel": "gear_trollingrod"
+      },
+      {
+        "name": "Spincast Rod",
+        "description": "The rod designed for a spincast reel is lightweight and balanced for ease of use, making it great for targeting smaller fish species. With its flexible action, it’s well-suited for beginners and light fishing setups.",
+        "tips_for_use": [
+          "Pair the rod with lightweight lures like soft plastics to attract species like lizardfish and threadfin bream.",
+          "Choose a medium-light rod for better sensitivity when fishing inshore."
+        ],
+        "maintenance_tips": [
+          "Rinse the rod guides with freshwater to prevent salt buildup.",
+          "Check the reel seat for any signs of rust or wear."
+        ],
+        "GearImage": "gear_spincastrod",
+        "Gear3DModel": "gear_spincastrod"
+      },
+      {
+        "name": "Spinning Rod",
+        "description": "The spinning rod complements the spinning reel with its lightweight design and exceptional casting ability. It is perfect for a variety of fishing styles, from jigging to topwater casting, and is widely used for shoreline fishing in the Philippines.",
+        "tips_for_use": [
+          "Opt for a fast-action rod to handle sudden strikes from predatory fish like barracuda or mangrove jack.",
+          "Use medium-power rods for versatility across different lure weights and fish sizes."
+        ],
+        "maintenance_tips": [
+          "Keep the rod guides free of debris to avoid line damage.",
+          "Store the rod upright or in a rod case to prevent bending."
+        ],
+        "GearImage": "gear_spinningrod",
+        "Gear3DModel": "gear_spinningrod"
+      },
+      {
+        "name": "Baitcaster Rod",
+        "description": "A rod designed for a baitcaster reel is built for strength, accuracy, and control. It features a trigger grip for comfortable handling and guides positioned to accommodate the baitcaster's top-mounted design. This rod is ideal for power techniques like flipping, pitching, and casting heavier lures.",
+        "tips_for_use": [
+          "Choose a medium-heavy power rod for versatile applications, such as jigging or casting crankbaits.",
+          "Opt for a fast-action rod to handle sudden strikes and improve hook-setting power when targeting species like barracuda or mangrove jack.",
+          "Pair the rod with a baitcaster reel that matches its weight and power rating for optimal balance."
+        ],
+        "maintenance_tips": [
+          "Rinse the rod guides and reel seat with freshwater after every trip to remove salt and debris.",
+          "Store the rod horizontally or in a protective case to avoid damage to the blank or guides.",
+          "Check for cracks or chips in the rod blank to ensure it remains strong and reliable."
+        ],
+        "GearImage": "gear_baitcasterrod",
+        "Gear3DModel": "gear_baitcasterrod"
+      }
+    ],
+    "Lures": [
+      {
+        "name": "Metal Jig",
+        "description": "A metal jig is a compact, dense fishing lure crafted from metal, designed to sink rapidly and mimic the erratic darting movement of a distressed baitfish. It is highly effective for vertical jigging in deeper waters, especially for species like trevally, blacktip grouper, and barracuda. The wide range of weights and colors available makes it adaptable to varying water depths, currents, and visibility conditions.",
+        "tips_for_use": [
+          "Choose lighter jigs for calmer waters or shallower areas to attract species like goatfish and pigface bream.",
+          "Create an alternating fast and slow jigging rhythm to mimic natural prey movements and provoke strikes.",
+          "Match the color to the local baitfish or water clarity for increased effectiveness."
+        ],
+        "maintenance_tips": [
+          "Wash thoroughly with freshwater to remove salt deposits and prevent rusting.",
+          "Inspect and replace the hooks periodically to maintain sharpness and durability."
+        ],
+        "GearImage": "gear_metaljig",
+        "Gear3DModel": "gear_metaljig"
+      },
+      {
+        "name": "Popper Lure",
+        "description": "A popper lure is a surface lure designed to splash water and create popping sounds that mimic injured baitfish. This topwater lure is highly effective in Philippine waters for species like trevally, ladyfish, and mangrove jack. It is particularly exciting to use during low-light conditions like dawn or dusk.",
+        "tips_for_use": [
+          "Retrieve with short jerks to create splashes and noise that attract aggressive fish.",
+          "Target shallow areas or around structures where predatory fish often hunt."
+        ],
+        "maintenance_tips": [
+          "Rinse the lure with freshwater and dry it thoroughly after use.",
+          "Check the treble hooks for rust and replace them as needed."
+        ],
+        "GearImage": "gear_popperlure",
+        "Gear3DModel": "gear_popperlure"
+      },
+      {
+        "name": "Minnow Lure",
+        "description": "A minnow lure mimics the appearance and swimming action of small baitfish, making it highly effective for predatory species like barracuda, mangrove jack, and trevally. It is commonly used in both shallow and deep waters.",
+        "tips_for_use": [
+          "Use a steady retrieve with occasional pauses to mimic a swimming baitfish.",
+          "Choose natural colors for clear water and brighter colors for murky conditions."
+        ],
+        "maintenance_tips": [
+          "Rinse with freshwater after use to prevent corrosion.",
+          "Inspect the hooks and replace them if they show signs of rust or dullness."
+        ],
+        "GearImage": "gear_minnowlure",
+        "Gear3DModel": "gear_minnowlure"
+      },
+      {
+        "name": "Stickbait Lure",
+        "description": "A stickbait lure is a long, slender surface lure designed to imitate injured baitfish or squid. It is highly effective for topwater fishing, attracting species like trevally, ladyfish, and barracuda.",
+        "tips_for_use": [
+          "Retrieve with sharp twitches to create erratic movements that provoke strikes.",
+          "Target shallow areas or surface-feeding fish during dawn or dusk."
+        ],
+        "maintenance_tips": [
+          "Dry thoroughly after rinsing to prevent rusting.",
+          "Check the split rings and hooks for wear and replace if necessary."
+        ],
+        "GearImage": "gear_stickbaitlure",
+        "Gear3DModel": "gear_stickbaitlure"
+      },
+      {
+        "name": "Soft Lure",
+        "description": "Soft lures are made of pliable plastic or silicone and imitate the texture and movement of live bait. They are versatile and effective for a variety of species like threadfin bream, goatfish, and lizardfish.",
+        "tips_for_use": [
+          "Use jig heads to control the sinking speed and depth.",
+          "Match the lure size to the target species for better success."
+        ],
+        "maintenance_tips": [
+          "Store in a cool, dry place to avoid warping.",
+          "Inspect for tears or damage after use and replace if necessary."
+        ],
+        "GearImage": "gear_softlure",
+        "Gear3DModel": "gear_softlure"
+      }
+    ],
+    "Misc": [
+      {
+        "name": "J Hook",
+        "description": "A J hook is a traditional fishing hook with a curved shape resembling the letter 'J.' It is widely used with live bait and artificial lures, ensuring a strong hookup with fish. J hooks come in various sizes, making them suitable for species ranging from small panfish to large game fish like tuna.",
+        "tips_for_use": [
+          "Use smaller J hooks for inshore species like threadfin bream and larger ones for offshore targets like barracuda or tuna.",
+          "Pair the hook with live bait for natural movement to entice cautious fish.",
+          "Ensure the hook size matches the bait size for optimal presentation and hookups."
+        ],
+        "maintenance_tips": [
+          "Inspect the hook for rust or dull points before each use, sharpening or replacing as needed.",
+          "Store hooks in a dry container with desiccants to minimize corrosion."
+        ],
+        "GearImage": "gear_jhook",
+        "Gear3DModel": "gear_jhook"
+      },
+      {
+        "name": "Treble Hook",
+        "description": "A treble hook has three hooks on a single shank, increasing the chances of hooking fish during strikes. It is often attached to hard-bodied lures like crankbaits and spoons for improved catch rates. Treble hooks are effective for targeting aggressive species but require careful handling due to their sharp points.",
+        "tips_for_use": [
+          "Use treble hooks on topwater or crankbait lures to improve hookup rates with predatory species like trevally and mangrove jack.",
+          "Replace factory-installed treble hooks on lures with higher-quality models for better performance and durability.",
+          "Keep hook points exposed but avoid overcrowding the lure to maintain its intended action."
+        ],
+        "maintenance_tips": [
+          "Check the hooks regularly for bent or dull points after catching fish.",
+          "Coat treble hooks with anti-corrosion spray after saltwater use to extend their lifespan."
+        ],
+        "GearImage": "gear_treblehook",
+        "Gear3DModel": "gear_treblehook"
+      },
+      {
+        "name": "Split Ring",
+        "description": "A split ring is a small, coiled metal ring used to attach lures or hooks to fishing lines. It provides flexibility and ease of interchangeability for upgrading or modifying fishing setups. Split rings are available in various sizes to accommodate different lure weights and fish species.",
+        "tips_for_use": [
+          "Choose split rings with sufficient strength for the target species to prevent deformation under load.",
+          "Use split ring pliers for quick and safe installation or removal of hooks and lures.",
+          "Regularly inspect split rings for signs of wear, especially after battling large fish."
+        ],
+        "maintenance_tips": [
+          "Rinse split rings with freshwater after use to prevent rust and ensure durability.",
+          "Keep spare split rings organized by size and material to streamline tackle maintenance."
+        ],
+        "GearImage": "gear_splitring",
+        "Gear3DModel": "gear_splitring"
+      },
+      {
+        "name": "Fluorocarbon Line",
+        "description": "Fluorocarbon line is nearly invisible underwater, making it ideal for targeting wary fish. It is resistant to abrasion and UV rays, perfect for rocky or clear waters.",
+        "tips_for_use": [
+          "Use as a leader for improved stealth and durability.",
+          "Pair with braided mainline for a balanced setup."
+        ],
+        "maintenance_tips": [
+          "Store in a cool, dark place to prevent UV degradation.",
+          "Replace periodically to avoid brittleness."
+        ],
+        "GearImage": "gear_flourocarbonline",
+        "Gear3DModel": "gear_flourocarbonline"
+      },
+      {
+        "name": "Braided Line",
+        "description": "Braided line is a strong, thin fishing line with excellent sensitivity. It is ideal for fishing in heavy cover or deep waters.",
+        "tips_for_use": [
+          "Use with a fluorocarbon leader to enhance stealth.",
+          "Spool tightly to prevent wind knots during casting."
+        ],
+        "maintenance_tips": [
+          "Rinse with freshwater after each use to remove salt deposits.",
+          "Check for frays or damage and replace if necessary."
+        ],
+        "GearImage": "gear_braidedline",
+        "Gear3DModel": "gear_braidedline"
+      }
+    ]
+  }
+}
