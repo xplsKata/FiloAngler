@@ -8,9 +8,12 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
+import com.squareup.picasso.Picasso;
 
 public class RegisterP1Activity extends AppCompatActivity {
 
@@ -20,17 +23,38 @@ public class RegisterP1Activity extends AppCompatActivity {
     private EditText txtPassword;
     private EditText txtConfirmPassword;
     private Button btnConfirm;
+    private ImageView imgLogo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_p1);
 
+        imgLogo = findViewById(R.id.imgLogo);
         txtEmail = findViewById(R.id.txtEmail);
         txtUsername = findViewById(R.id.txtUsername);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirmPassword = findViewById(R.id.txtConfirmPw);
         btnConfirm = findViewById(R.id.btnConfirm);
+
+        imgLogo.post(() -> {
+            int width = imgLogo.getWidth();
+            int height = imgLogo.getHeight();
+
+            // Only proceed with loading if dimensions are valid
+            if (width > 0 && height > 0) {
+                Picasso.get()
+                        .load(R.drawable.logotemp)
+                        .resize(width, height)
+                        .centerInside()
+                        .into(imgLogo);
+            } else {
+                // Fallback to load without resize
+                Picasso.get()
+                        .load(R.drawable.logotemp)
+                        .into(imgLogo);
+            }
+        });
 
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
