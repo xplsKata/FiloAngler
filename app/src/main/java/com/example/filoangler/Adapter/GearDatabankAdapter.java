@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.filoangler.Model.GearDatabankModel;
 import com.example.filoangler.R;
-import com.example.filoangler.Utils;
 import com.example.filoangler.activities.DatabankDetailsActivity;
 import com.squareup.picasso.Picasso;
 
@@ -81,7 +81,8 @@ public class GearDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // Set gear image
             int resourceId = mContext.getResources().getIdentifier(gear.getGearImage(), "drawable", mContext.getPackageName());
             if (resourceId != 0) {
-                Utils.loadImage(gearHolder.gearImage, resourceId);
+                Picasso.get().load(resourceId)
+                        .into(gearHolder.gearImage);
             }
 
             gearHolder.gearContainerButton.setOnClickListener(v -> {
@@ -89,8 +90,18 @@ public class GearDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 intent.putExtra("GearName", gear.getName());
                 intent.putExtra("Gear3DModel", gear.getGear3DModel());
                 intent.putExtra("GearDescription", gear.getDescription());
-                //intent.putExtra("GearTipsForUse", gear.getTipsForUse());
-                //intent.putExtra("GearMaintenanceTips", gear.getMaintenanceTips());
+
+                // Convert lists to String arrays
+                String[] tipsForUse = gear.getTipsForUse() != null
+                        ? gear.getTipsForUse().toArray(new String[0])
+                        : new String[0];
+                String[] maintenanceTips = gear.getMaintenanceTips() != null
+                        ? gear.getMaintenanceTips().toArray(new String[0])
+                        : new String[0];
+
+                intent.putExtra("GearTipsForUse", tipsForUse);
+                intent.putExtra("GearMaintenanceTips", maintenanceTips);
+
                 mContext.startActivity(intent);
             });
         }
