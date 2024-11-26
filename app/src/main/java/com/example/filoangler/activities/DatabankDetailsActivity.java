@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.filoangler.R;
 
-public class FishDetailsActivity extends AppCompatActivity {
+public class DatabankDetailsActivity extends AppCompatActivity {
 
     private TextView txtFishName;
     private TextView txtFishDescription;

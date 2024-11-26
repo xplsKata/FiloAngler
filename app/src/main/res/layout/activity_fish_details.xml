@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgLightBlue"
-    tools:context=".activities.FishDetailsActivity">
+    tools:context=".activities.DatabankDetailsActivity">
 
     <ImageView
         android:id="@+id/btnBack"

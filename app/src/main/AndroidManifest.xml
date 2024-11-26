@@ -62,7 +62,7 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".activities.FishDetailsActivity"
+            android:name=".activities.DatabankDetailsActivity"
             android:exported="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"

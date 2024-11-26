@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.filoangler.Model.FishDatabankModel;
 import com.example.filoangler.R;
-import com.example.filoangler.activities.FishDetailsActivity;
+import com.example.filoangler.activities.DatabankDetailsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             fishHolder.fishButton.setOnClickListener(v -> {
-                Intent intent = new Intent(mContext, FishDetailsActivity.class);
+                Intent intent = new Intent(mContext, DatabankDetailsActivity.class);
                 intent.putExtra("FishName", fish.getFishName());
                 intent.putExtra("Fish3DModel", fish.getFish3DModel());
                 intent.putExtra("FishDescription", fish.getDescription());
