@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.filoangler.Model.GearDatabankModel;
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 import com.example.filoangler.activities.DatabankDetailsActivity;
 import com.squareup.picasso.Picasso;
 
@@ -81,12 +82,12 @@ public class GearDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             // Set gear image
             int resourceId = mContext.getResources().getIdentifier(gear.getGearImage(), "drawable", mContext.getPackageName());
             if (resourceId != 0) {
-                Picasso.get().load(resourceId)
-                        .into(gearHolder.gearImage);
+                Utils.loadImage(gearHolder.gearImage,resourceId);
             }
 
             gearHolder.gearContainerButton.setOnClickListener(v -> {
                 Intent intent = new Intent(mContext, DatabankDetailsActivity.class);
+                intent.putExtra("DataType", "Gear");
                 intent.putExtra("GearName", gear.getName());
                 intent.putExtra("Gear3DModel", gear.getGear3DModel());
                 intent.putExtra("GearDescription", gear.getDescription());

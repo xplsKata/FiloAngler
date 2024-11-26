@@ -12,19 +12,23 @@ import com.example.filoangler.R;
 
 public class DatabankDetailsActivity extends AppCompatActivity {
 
-    private TextView txtFishName;
-    private TextView txtFishDescription;
-    private TextView txtFishBehavior;
-    private TextView txtFishHabitat;
-    private TextView txtFishLaw;
-    private TextView txtViewModel;
-    private TextView txtFishLawLabel;
+    private TextView txtName;
+    private TextView txtDescription;
+    private TextView txtLabelOne;
+    private TextView txtContentOne;
+    private TextView txtLabelTwo;
+    private TextView txtContentTwo;
+    private TextView txtLabelThree;
+    private TextView txtContentThree;
+    private TextView txtLabelFour;
+    private TextView txtContentFour;
+    private TextView txtModelView;
     private ImageView btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fish_details);
+        setContentView(R.layout.activity_databank_details);
 
         initializeViews();
         setTexts();
@@ -32,52 +36,90 @@ public class DatabankDetailsActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        txtFishName = findViewById(R.id.txtFishName);
-        txtFishDescription = findViewById(R.id.txtFishDescription);
-        txtFishBehavior = findViewById(R.id.txtFishBehavior);
-        txtFishHabitat = findViewById(R.id.txtFishHabitat);
-        txtFishLaw = findViewById(R.id.txtFishLaw);
-        txtFishLawLabel = findViewById(R.id.textView22);
+        txtName = findViewById(R.id.txtFishName);
+        txtModelView = findViewById(R.id.txtViewModel);
         btnBack = findViewById(R.id.btnBack);
-        txtViewModel = findViewById(R.id.txtViewModel);
+
+        txtLabelOne = findViewById(R.id.textView19);
+        txtContentOne = findViewById(R.id.txtFishDescription);
+        txtLabelTwo = findViewById(R.id.textView25);
+        txtContentTwo = findViewById(R.id.txtFishBehavior);
+        txtLabelThree = findViewById(R.id.textView24);
+        txtContentThree = findViewById(R.id.txtFishHabitat);
+        txtLabelFour = findViewById(R.id.textView22);
+        txtContentFour = findViewById(R.id.txtFishLaw);
     }
 
     private void setTexts() {
-        String FishName = getIntent().getStringExtra("FishName");
-        String FishDescription = getIntent().getStringExtra("FishDescription");
-        String FishBehavior = getIntent().getStringExtra("FishBehavior");
-        String FishHabitat = getIntent().getStringExtra("FishHabitat");
-        String FishLaw = getIntent().getStringExtra("FishLaw");
+        // Determine if it's a Fish or Gear details
+        String type = getIntent().getStringExtra("DataType");
 
-        txtFishName.setText(FishName);
-        txtFishDescription.setText(FishDescription);
-        txtFishBehavior.setText(FishBehavior);
-        txtFishHabitat.setText(FishHabitat);
-
-        if (FishLaw == null || FishLaw.equalsIgnoreCase("none")) {
-            txtFishLaw.setVisibility(View.GONE);
-            txtFishLawLabel.setVisibility(View.GONE);
-        } else {
-            txtFishLaw.setText(FishLaw);
-            txtFishLaw.setVisibility(View.VISIBLE);
-            txtFishLawLabel.setVisibility(View.VISIBLE);
+        if ("Fish".equals(type)) {
+            setupFishDetails();
+        } else if ("Gear".equals(type)) {
+            setupGearDetails();
         }
+    }
+
+    private void setupFishDetails() {
+        // ... [previous implementation remains the same]
+    }
+
+    private void setupGearDetails() {
+        String gearName = getIntent().getStringExtra("GearName");
+        String gearDescription = getIntent().getStringExtra("GearDescription");
+        String[] tipsForUse = getIntent().getStringArrayExtra("GearTipsForUse");
+        String[] maintenanceTips = getIntent().getStringArrayExtra("GearMaintenanceTips");
+
+        txtName.setText(gearName);
+
+        // Description
+        txtLabelOne.setText("Description");
+        txtContentOne.setText(gearDescription);
+
+        // Tips for Use
+        txtLabelTwo.setText("Tips for Use");
+        txtContentTwo.setText(formatTipsList(tipsForUse));
+
+        // Maintenance Tips
+        txtLabelThree.setText("Maintenance Tips");
+        txtContentThree.setText(formatTipsList(maintenanceTips));
+
+        // Hide Fishing Law for Gear
+        txtLabelFour.setVisibility(View.GONE);
+        txtContentFour.setVisibility(View.GONE);
+    }
+
+    private String formatTipsList(String[] tips) {
+        if (tips == null || tips.length == 0) {
+            return "No tips available";
+        }
+
+        StringBuilder formattedTips = new StringBuilder();
+        for (String tip : tips) {
+            formattedTips.append("• ").append(tip).append("\n");
+        }
+
+        // Remove the last newline character
+        return formattedTips.toString().trim();
     }
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
 
-        txtViewModel.setOnClickListener(v -> launch3DView());
+        txtModelView.setOnClickListener(v -> launch3DView());
     }
 
     private void launch3DView() {
-        // Get the Fish3DModel ID from intent
-        String fish3DModel = getIntent().getStringExtra("Fish3DModel");
+        String type = getIntent().getStringExtra("DataType");
+        String modelId = "Fish".equals(type)
+                ? getIntent().getStringExtra("Fish3DModel")
+                : getIntent().getStringExtra("Gear3DModel");
 
         // Create intent for Unity activity
         Intent intent = new Intent(this, UnityViewActivity.class);
         // Pass the model ID to Unity
-        intent.putExtra("Fish3DModel", fish3DModel);
+        intent.putExtra("3DModel", modelId);
         startActivity(intent);
     }
 

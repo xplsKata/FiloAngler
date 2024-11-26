@@ -12,10 +12,10 @@ public class UnityViewActivity extends UnityPlayerActivity {
         // Get the Fish3DModel from intent
         Intent intent = getIntent();
         if (intent != null) {
-            String fish3DModel = intent.getStringExtra("Fish3DModel");
+            String Model = intent.getStringExtra("3DModel");
             // Send the model ID to Unity
-            if (fish3DModel != null) {
-                mUnityPlayer.UnitySendMessage("ModelContainer", "OnModelDataReceived", fish3DModel);
+            if (Model != null) {
+                mUnityPlayer.UnitySendMessage("ModelContainer", "OnModelDataReceived", Model);
             }
         }
     }
