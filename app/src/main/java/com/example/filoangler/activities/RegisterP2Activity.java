@@ -277,13 +277,19 @@ public class RegisterP2Activity extends AppCompatActivity {
         spnrCity.setAdapter(CityAdapter);
     }
 
-    private void showDialog(){
+    private void showDialog(final String Email, final String Username, final String Password,
+                            final String FirstName, final String LastName, final String Birthdate,
+                            final String ProvinceAddress, final String CityAddress,
+                            final String AnglerStatus) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Proficiency Verification")
                 .setMessage("As a Proficient Angler, you have the option to verify your status by submitting 3 images of your angling tournament certifications through the app later. This verification will give you a verified badge.")
                 .setPositiveButton("Got it", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Proceed to next activity after dialog confirmation
+                        proceedToNextActivity(Email, Username, Password, FirstName, LastName,
+                                Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
                         dialog.dismiss();
                     }
                 })
@@ -293,7 +299,7 @@ public class RegisterP2Activity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void getCredentials(){
+    private void getCredentials() {
         LoginManager loginManager = new LoginManager(RegisterP2Activity.this);
 
         String Email = getIntent().getStringExtra("Email");
@@ -306,20 +312,20 @@ public class RegisterP2Activity extends AppCompatActivity {
         String CityAddress = spnrCity.getSelectedItem().toString();
         String AnglerStatus = " ";
         int RadioButtonId = radioGroupStatus.getCheckedRadioButtonId();
-        if(RadioButtonId != 1){
+        if (RadioButtonId != 1) {
             RadioButton SelectedRadioButton = findViewById(RadioButtonId);
             AnglerStatus = SelectedRadioButton.getText().toString();
         }
 
-        try{
+        try {
             if (loginManager.GetCurrentUser() != null && loginManager.GetCurrentUser().isEmailVerified()) {
                 RegisterManager registerManager = new RegisterManager();
                 UserModel userModel = new UserModel(Email, Password, Username, FirstName, LastName, Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
-                try{
+                try {
                     registerManager.RegisterUser(userModel, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> taskAuth) {
-                            if(taskAuth.isSuccessful()){
+                            if (taskAuth.isSuccessful()) {
                                 registerManager.AddUserToDatabase(userModel, taskAuth);
                                 Toast.makeText(RegisterP2Activity.this, "Registered Successfully!", Toast.LENGTH_SHORT).show();
                                 Utils.ChangeIntent(RegisterP2Activity.this, RegisterP3Activity.class);
@@ -327,29 +333,41 @@ public class RegisterP2Activity extends AppCompatActivity {
                             }
                         }
                     });
-                }catch(Exception e){
+                } catch (Exception e) {
                     Log.e("TAG", "Error with adding userModel to db" + e);
                 }
-            }else{
-                if(AnglerStatus.equals("Proficient")){
-                    showDialog();
+            } else {
+                // Modify this part to handle Proficient Angler dialog
+                if (AnglerStatus.equals("Proficient")) {
+                    // Show dialog with a callback to proceed to next activity
+                    showDialog(Email, Username, Password, FirstName, LastName, Birthdate,
+                            ProvinceAddress, CityAddress, AnglerStatus);
+                } else {
+                    // For non-Proficient Anglers, proceed directly to next activity
+                    proceedToNextActivity(Email, Username, Password, FirstName, LastName,
+                            Birthdate, ProvinceAddress, CityAddress, AnglerStatus);
                 }
-
-                Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
-                intent.putExtra("Email", Email);
-                intent.putExtra("Username", Username);
-                intent.putExtra("Password", Password);
-                intent.putExtra("FirstName", FirstName);
-                intent.putExtra("LastName", LastName);
-                intent.putExtra("Birthdate", Birthdate);
-                intent.putExtra("ProvinceAddress", ProvinceAddress);
-                intent.putExtra("CityAddress", CityAddress);
-                intent.putExtra("AnglerStatus", AnglerStatus);
-                startActivity(intent);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.e("RegisterP2Activity", "Add to database: failure" + e);
         }
+    }
+
+    private void proceedToNextActivity(String Email, String Username, String Password,
+                                       String FirstName, String LastName, String Birthdate,
+                                       String ProvinceAddress, String CityAddress,
+                                       String AnglerStatus) {
+        Intent intent = new Intent(RegisterP2Activity.this, RegisterP3Activity.class);
+        intent.putExtra("Email", Email);
+        intent.putExtra("Username", Username);
+        intent.putExtra("Password", Password);
+        intent.putExtra("FirstName", FirstName);
+        intent.putExtra("LastName", LastName);
+        intent.putExtra("Birthdate", Birthdate);
+        intent.putExtra("ProvinceAddress", ProvinceAddress);
+        intent.putExtra("CityAddress", CityAddress);
+        intent.putExtra("AnglerStatus", AnglerStatus);
+        startActivity(intent);
     }
 
 }
