@@ -192,12 +192,11 @@ public class BloggingActivity extends AppCompatActivity {
         btnSearch.setEnabled(false);
         btnSearch.setAlpha(0.5f);
 
-        // Reset bottom navigation items
+        // Reset bottom navigation items - now they remain enabled but will show NoInternetFragment
         Menu bottomMenu = bottomNavigationView.getMenu();
         for (int i = 0; i < bottomMenu.size(); i++) {
             MenuItem item = bottomMenu.getItem(i);
-            // Only enable Home in offline mode
-            item.setEnabled(item.getItemId() == R.id.Home);
+            item.setEnabled(true); // Keep items enabled
         }
 
         // Ensure logout button is still functional
@@ -307,7 +306,8 @@ public class BloggingActivity extends AppCompatActivity {
             }
 
             if (isOfflineMode) {
-                // In offline mode, show NoInternetFragment for all navigation items
+                // In offline mode, always show NoInternetFragment for all navigation items
+                selectedFragment = new NoInternetFragment();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
                         .commit();
