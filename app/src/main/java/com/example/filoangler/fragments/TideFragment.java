@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,13 +84,22 @@ public class TideFragment extends Fragment {
     private int minHeight;
     private int maxHeight;
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient createOkHttpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+    }
+
+    private OkHttpClient client;
 
     private String worldWeatherOnline_API = BuildConfig.worldWeatherOnlineApiKey;
     private String worldWeatherOnline_URL = "https://api.worldweatheronline.com/premium/v1/marine.ashx?";
 
     private String openWeather_API = BuildConfig.openWeatherApiKey;
-    private static final String GEOCODING_API_URL = "http://api.openweathermap.org/geo/1.0/direct";
+    private static final String GEOCODING_API_URL = "https://api.openweathermap.org/geo/1.0/direct";
 
     private List<JSONObject> sevenDayForecast;
     private List<String> cityProvinceNames;
@@ -108,6 +118,8 @@ public class TideFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tide, container, false);
         gson = new Gson();
+
+        client = createOkHttpClient();
 
         loadElements(view);
         loadAutoComplete();
@@ -171,8 +183,67 @@ public class TideFragment extends Fragment {
     }
 
     private void makeApiCall(String url, Callback callback) {
-        Request request = new Request.Builder().url(url).build();
-        client.newCall(request).enqueue(callback);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Connection", "close")
+                .build();
+
+        try {
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("TideFragment", "API Call Failed", e);
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(),
+                                "Network error: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    });
+                    callback.onFailure(call, e);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try {
+                        // Explicitly check for null response body
+                        if (response.body() == null) {
+                            Log.w("TideFragment", "Response body was null");
+                            return;
+                        }
+
+                        callback.onResponse(call, response);
+                    } catch (IllegalStateException e) {
+                        // Specifically handle the "closed" error
+                        if ("closed".equals(e.getMessage())) {
+                            Log.w("TideFragment", "Response processing completed despite closed body", e);
+                            // Since the data was already processed, we can silently handle this
+                            return;
+                        }
+
+                        // For other exceptions, log and show a toast
+                        Log.e("TideFragment", "Response Processing Error", e);
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(),
+                                    "Error processing response: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
+                    } catch (Exception e) {
+                        Log.e("TideFragment", "Unexpected Response Processing Error", e);
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(),
+                                    "Unexpected error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
+                    } finally {
+                        // Ensure the response is always closed
+                        if (response.body() != null) {
+                            response.close();
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.e("TideFragment", "API Call Setup Error", e);
+        }
     }
 
     private void loadElements(View view){
@@ -267,19 +338,32 @@ public class TideFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonData = response.body().string();
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonData);
-                        JSONObject data = jsonObject.getJSONObject("data");
-                        updateUIWithTideData(data);
-                        storeSevenDayForecast(data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing tide data", Toast.LENGTH_SHORT).show());
+                try {
+                    if (response.isSuccessful()) {
+                        // Use responseBody.string() only once
+                        String jsonData = response.body().string();
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(jsonData);
+                            JSONObject data = jsonObject.getJSONObject("data");
+                            updateUIWithTideData(data);
+                            storeSevenDayForecast(data);
+                        } catch (JSONException e) {
+                            Log.e("TideFragment", "JSON Parsing Error", e);
+                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing tide data", Toast.LENGTH_SHORT).show());
+                        }
+                    } else {
+                        // Log the error response
+                        String errorBody = response.body() != null ? response.body().string() : "No error body";
+                        Log.e("TideFragment", "Error Response: " + errorBody);
+
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get tide data", Toast.LENGTH_SHORT).show());
                     }
-                } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get tide data", Toast.LENGTH_SHORT).show());
+                } finally {
+                    // Ensure the response is always closed
+                    if (response.body() != null) {
+                        response.close();
+                    }
                 }
             }
         });
@@ -457,41 +541,55 @@ public class TideFragment extends Fragment {
     }
 
     private void getCoordinatesAndFetchTide(String location) {
-        // Encode the location string to handle spaces and special characters
         String encodedLocation = Uri.encode(location);
         String url = GEOCODING_API_URL + "?q=" + encodedLocation + "&limit=1&appid=" + openWeather_API;
-        Log.e("Location", url);//LOG
 
-        makeApiCall(url,new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
-            }
+        // Add more detailed logging
+        Log.e("LocationAPI", "Full URL: " + url);
+        Log.e("LocationAPI", "API Key: " + openWeather_API); // Log the API key (be careful in production)
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String jsonData = response.body().string();
-                    try {
-                        JSONArray jsonArray = new JSONArray(jsonData);
-                        if (jsonArray.length() > 0) {
-                            JSONObject locationData = jsonArray.getJSONObject(0);
-                            double lat = locationData.getDouble("lat");
-                            double lon = locationData.getDouble("lon");
-                            getTideData(lat, lon);
-                        } else {
-                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show());
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
-                    }
-                } else {
-                    getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
+        try{
+            makeApiCall(url, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    // Log the full exception details
+                    Log.e("LocationAPI", "API Call Failure", e);
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(),
+                                "Failed to get location data: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    });
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String jsonData = response.body().string();
+                        try {
+                            JSONArray jsonArray = new JSONArray(jsonData);
+                            if (jsonArray.length() > 0) {
+                                JSONObject locationData = jsonArray.getJSONObject(0);
+                                double lat = locationData.getDouble("lat");
+                                double lon = locationData.getDouble("lon");
+                                getTideData(lat, lon);
+                            } else {
+                                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show());
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
+                        }
+                    } else {
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
+                    }
+                    String responseBody = response.body().string();
+                    Log.e("LocationAPI", "Response Code: " + response.code());
+                    Log.e("LocationAPI", "Response Body: " + responseBody);
+                }
+            });
+        }catch (Exception e){
+            Log.e("LocationAPI", "Error: " + e.getMessage());
+        }
     }
 
     private void hideText(){
