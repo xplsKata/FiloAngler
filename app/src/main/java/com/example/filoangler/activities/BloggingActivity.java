@@ -175,6 +175,9 @@ public class BloggingActivity extends AppCompatActivity {
     }
 
     private void setupOfflineMode() {
+        // Ensure the offline mode flag is set
+        isOfflineMode = true;
+
         // Disable specific side navigation items
         Menu sideMenu = navigationView.getMenu();
         MenuItem profileItem = sideMenu.findItem(R.id.navProfile);
@@ -189,20 +192,21 @@ public class BloggingActivity extends AppCompatActivity {
         btnSearch.setEnabled(false);
         btnSearch.setAlpha(0.5f);
 
-        // Disable bottom navigation items that require online mode
+        // Reset bottom navigation items
         Menu bottomMenu = bottomNavigationView.getMenu();
         for (int i = 0; i < bottomMenu.size(); i++) {
             MenuItem item = bottomMenu.getItem(i);
-            // You might want to customize this based on which items should be disabled
-            if (item.getItemId() != R.id.Home) {
-                item.setEnabled(false);
-            }
+            // Only enable Home in offline mode
+            item.setEnabled(item.getItemId() == R.id.Home);
         }
 
         // Ensure logout button is still functional
         if (btnLogout != null) {
             btnLogout.setEnabled(true);
         }
+
+        // Update UI state
+        updateLoadingState(false);
     }
 
     private void setupLoadingTimeout() {
@@ -222,23 +226,12 @@ public class BloggingActivity extends AppCompatActivity {
                     btnProceedOffline.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // Switch to offline mode
-                            isOfflineMode = true;
-
-                            // Fully initialize the views and setup
-                            initializeViews();
-                            setupUserProfile();
-                            setupNavigationListeners();
-                            setupOfflineMode();
-
-                            // Update loading state
-                            updateLoadingState(false);
-                            slowConnectionLayout.setVisibility(View.GONE);
-
-                            // Show NoInternetFragment
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
-                                    .commit();
+                            // Restart the activity in offline mode
+                            Intent offlineIntent = new Intent(BloggingActivity.this, BloggingActivity.class);
+                            offlineIntent.putExtra("offline_mode", true);
+                            offlineIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(offlineIntent);
+                            finish(); // Finish the current activity
                         }
                     });
                 }
@@ -316,7 +309,7 @@ public class BloggingActivity extends AppCompatActivity {
             if (isOfflineMode) {
                 // In offline mode, show NoInternetFragment for all navigation items
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
+                        .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
                         .commit();
                 return true;
             }
