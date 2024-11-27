@@ -2,15 +2,22 @@ package com.example.filoangler.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -22,6 +29,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.filoangler.Adapter.SideNavAdapter;
 import com.example.filoangler.Dialog.VerifyProfileDialog;
@@ -63,10 +71,27 @@ public class BloggingActivity extends AppCompatActivity {
     private AuthManager authManager;
     private VerifyProfileDialog verifyProfileDialog;
 
+    private Handler loadingTimeoutHandler;
+    private Runnable loadingTimeoutRunnable;
+    private ConstraintLayout slowConnectionLayout;
+    private Button btnProceedOffline;
+    private TextView txtSlowConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blogging);
+
+        // Initialize slow connection layout
+        slowConnectionLayout = findViewById(R.id.slowConnectionLayout);
+        btnProceedOffline = findViewById(R.id.btnProceedOffline);
+        txtSlowConnection = findViewById(R.id.txtSlowConnection);
+
+        // Initially hide the slow connection layout
+        slowConnectionLayout.setVisibility(View.GONE);
+
+        // Set up loading timeout
+        setupLoadingTimeout();
 
         isOfflineMode = getIntent().getBooleanExtra("offline_mode", false);
         verifyProfileDialog = new VerifyProfileDialog(this, this);
@@ -121,12 +146,25 @@ public class BloggingActivity extends AppCompatActivity {
             if (loadingOverlay != null) {
                 loadingOverlay.setVisibility(View.GONE);
             }
+            // Cancel the timeout handler
+            if (loadingTimeoutHandler != null && loadingTimeoutRunnable != null) {
+                loadingTimeoutHandler.removeCallbacks(loadingTimeoutRunnable);
+            }
             return;
         }
 
         isAccountLoading = isLoading;
         if (loadingOverlay != null) {
             loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+
+        // If loading is complete, cancel the timeout handler
+        if (!isLoading) {
+            if (loadingTimeoutHandler != null && loadingTimeoutRunnable != null) {
+                loadingTimeoutHandler.removeCallbacks(loadingTimeoutRunnable);
+            }
+            // Hide slow connection layout
+            slowConnectionLayout.setVisibility(View.GONE);
         }
 
         // Disable interactions while loading (only in online mode)
@@ -150,6 +188,65 @@ public class BloggingActivity extends AppCompatActivity {
         // Disable search button
         btnSearch.setEnabled(false);
         btnSearch.setAlpha(0.5f);
+
+        // Disable bottom navigation items that require online mode
+        Menu bottomMenu = bottomNavigationView.getMenu();
+        for (int i = 0; i < bottomMenu.size(); i++) {
+            MenuItem item = bottomMenu.getItem(i);
+            // You might want to customize this based on which items should be disabled
+            if (item.getItemId() != R.id.Home) {
+                item.setEnabled(false);
+            }
+        }
+
+        // Ensure logout button is still functional
+        if (btnLogout != null) {
+            btnLogout.setEnabled(true);
+        }
+    }
+
+    private void setupLoadingTimeout() {
+        loadingTimeoutHandler = new Handler(Looper.getMainLooper());
+        loadingTimeoutRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check if still loading
+                if (isAccountLoading && !isOfflineMode) {
+                    // Show slow connection layout
+                    runOnUiThread(() -> {
+                        slowConnectionLayout.setVisibility(View.VISIBLE);
+                        txtSlowConnection.setText("It's taking longer than expected to load. Would you like to proceed to offline mode?");
+                    });
+
+                    // Set up proceed to offline mode button
+                    btnProceedOffline.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Switch to offline mode
+                            isOfflineMode = true;
+
+                            // Fully initialize the views and setup
+                            initializeViews();
+                            setupUserProfile();
+                            setupNavigationListeners();
+                            setupOfflineMode();
+
+                            // Update loading state
+                            updateLoadingState(false);
+                            slowConnectionLayout.setVisibility(View.GONE);
+
+                            // Show NoInternetFragment
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.bloggingActivityFrameLayout, new NoInternetFragment())
+                                    .commit();
+                        }
+                    });
+                }
+            }
+        };
+
+        // Post the runnable after 15 seconds
+        loadingTimeoutHandler.postDelayed(loadingTimeoutRunnable, 15000);
     }
 
     private void setupUserProfile() {
@@ -371,6 +468,15 @@ public class BloggingActivity extends AppCompatActivity {
             super.onBackPressed();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up handler to prevent memory leaks
+        if (loadingTimeoutHandler != null && loadingTimeoutRunnable != null) {
+            loadingTimeoutHandler.removeCallbacks(loadingTimeoutRunnable);
+        }
     }
 
 }
