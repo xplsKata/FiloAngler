@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.filoangler.Dialog.UserFeedbackDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.CommentModel;
@@ -486,7 +487,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reportPost();
+                reportPost(postModel.getPostId(), postModel.getAuthor());
                 dialog.dismiss();
             }
         });
@@ -514,7 +515,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                 });
     }
 
-    public void reportPost(){
-        //REPORT POST HERE
+    public void reportPost(String PostId, String reportedUser){
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_report_dialog);
+
+        UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(mContext, PostId, reportedUser , "isPost");
+        userFeedbackDialog.getDialog(dialog);
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 }
