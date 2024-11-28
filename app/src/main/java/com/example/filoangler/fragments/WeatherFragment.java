@@ -140,6 +140,8 @@ public class WeatherFragment extends Fragment {
 
     private boolean isFragmentAttached = false;
 
+    private boolean isWeatherDataLoaded = false;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -161,6 +163,12 @@ public class WeatherFragment extends Fragment {
 
         loadElements(view);
         loadAutoComplete();
+
+        // Disable buttons initially
+        btnWeatherMore.setEnabled(false);
+        btnMoonMore.setEnabled(false);
+        btnMiscLearnMore.setEnabled(false);
+
         getWeatherForCurrentLocation();
 
         txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -172,6 +180,9 @@ public class WeatherFragment extends Fragment {
                         && event.getAction() == KeyEvent.ACTION_DOWN) {
 
                     location = txtSearch.getText().toString();
+                    // Reset data loaded state when searching new location
+                    isWeatherDataLoaded = false;
+                    disableLearnMoreButtons();
                     fetchWeather(location);
 
                     return true;
@@ -183,24 +194,35 @@ public class WeatherFragment extends Fragment {
         btnWeatherMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showWeatherMoreDialog();
+                if (isWeatherDataLoaded) {
+                    showWeatherMoreDialog();
+                } else {
+                    showDataNotLoadedToast();
+                }
             }
         });
 
         btnMoonMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showMoonMoreDialog();
+                if (isWeatherDataLoaded) {
+                    showMoonMoreDialog();
+                } else {
+                    showDataNotLoadedToast();
+                }
             }
         });
 
         btnMiscLearnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showMiscInfoMoreDialog();
+                if (isWeatherDataLoaded) {
+                    showMiscInfoMoreDialog();
+                } else {
+                    showDataNotLoadedToast();
+                }
             }
         });
-
 
         return view;
     }
@@ -287,6 +309,16 @@ public class WeatherFragment extends Fragment {
         setAutoComplete(cityProvinceNames);
     }
 
+    private void showDataNotLoadedToast() {
+        showToast("Weather information not loaded yet. Please wait.");
+    }
+
+    private void disableLearnMoreButtons() {
+        btnWeatherMore.setEnabled(false);
+        btnMoonMore.setEnabled(false);
+        btnMiscLearnMore.setEnabled(false);
+    }
+
     public void setAutoComplete(List<String> cityNames){
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, cityNames);
@@ -354,8 +386,15 @@ public class WeatherFragment extends Fragment {
             // Update moon phase information
             updateMoonPhase(days);
 
+            btnWeatherMore.setEnabled(true);
+            btnMoonMore.setEnabled(true);
+            btnMiscLearnMore.setEnabled(true);
+            isWeatherDataLoaded = true;
+
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
+            disableLearnMoreButtons();
+            isWeatherDataLoaded = false;
         }
     }
 
@@ -443,6 +482,8 @@ public class WeatherFragment extends Fragment {
                 return;
             }
             showToast(errorMessage);
+            disableLearnMoreButtons();
+            isWeatherDataLoaded = false;
         });
     }
 
@@ -552,6 +593,10 @@ public class WeatherFragment extends Fragment {
     }
 
     private void showWeatherMoreDialog() {
+        if (!isWeatherDataLoaded) {
+            showDataNotLoadedToast();
+            return;
+        }
 
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -566,6 +611,7 @@ public class WeatherFragment extends Fragment {
             );
             weatherDialogFragment.getDialog(dialog);
         } else {
+            showToast("Weather information not available");
             return;
         }
 
@@ -574,10 +620,14 @@ public class WeatherFragment extends Fragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
-
     }
 
     private void showMoonMoreDialog() {
+        if (!isWeatherDataLoaded) {
+            showDataNotLoadedToast();
+            return;
+        }
+
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_weather_dialog);
@@ -590,6 +640,7 @@ public class WeatherFragment extends Fragment {
             );
             moonDialogFragment.getDialog(dialog);
         } else {
+            showToast("Moon information not available");
             return;
         }
 
@@ -600,7 +651,12 @@ public class WeatherFragment extends Fragment {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
-    private void showMiscInfoMoreDialog(){
+    private void showMiscInfoMoreDialog() {
+        if (!isWeatherDataLoaded) {
+            showDataNotLoadedToast();
+            return;
+        }
+
         final Dialog dialog = new Dialog(getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_weather_misc_dialog);
@@ -609,6 +665,7 @@ public class WeatherFragment extends Fragment {
             MiscWeatherDialog miscWeatherDialog = new MiscWeatherDialog(windSpeed, temp, humidity);
             miscWeatherDialog.getDialog(dialog);
         } else {
+            showToast("Weather details not available");
             return;
         }
 
