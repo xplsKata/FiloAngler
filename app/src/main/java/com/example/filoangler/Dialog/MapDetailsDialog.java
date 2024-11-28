@@ -42,7 +42,7 @@ public class MapDetailsDialog {
 
     private RecyclerView recyclerView;
 
-    private HorizontalScrollView scrollView;
+    private ScrollView scrollView;
 
     private CommonFishAdapter commonFishAdapter;
 

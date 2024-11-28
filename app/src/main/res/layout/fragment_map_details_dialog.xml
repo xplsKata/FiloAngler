@@ -64,9 +64,9 @@
             app:layout_constraintStart_toStartOf="@+id/txtDescription"
             app:layout_constraintTop_toBottomOf="@+id/txtDescription" />
 
-        <HorizontalScrollView
+        <ScrollView
             android:id="@+id/scrollView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
@@ -78,14 +78,14 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp" />
 
-        </HorizontalScrollView>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
