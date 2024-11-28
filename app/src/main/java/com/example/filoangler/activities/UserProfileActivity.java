@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.filoangler.Adapter.PostAdapter;
 import com.example.filoangler.Dialog.FollowListDialog;
+import com.example.filoangler.Dialog.UserFeedbackDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.PostModel;
@@ -128,6 +129,13 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewFollowing();
+            }
+        });
+
+        btnMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reportUser(UserId);
             }
         });
 
@@ -331,6 +339,21 @@ public class UserProfileActivity extends AppCompatActivity {
         }else{
             //error here
         }
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void reportUser(String reportedUser){
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_report_dialog);
+
+        UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(this, reportedUser, reportedUser,"isUser");
+        userFeedbackDialog.getDialog(dialog);
 
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
