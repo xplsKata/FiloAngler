@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.filoangler.Dialog.UserFeedbackDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.CommentModel;
@@ -109,17 +110,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             public void onClick(View v) {
                 try{
                     if(holder.btnLike.getTag().equals("Like")){
-                        /* String commentId = commentModel.getCommentId();
-                        Log.e("CommentID", "Data: " + commentId);
-                        authManager.GetDb().getReference()
-                                .child("Posts")
-                                .child(PostId)
-                                .child("Comments")
-                                .child(commentId)//comment id essentially ERROR HERE IS THAT ITS GETTING POST ID INSTEAD OF COMMENT ID
-                                .child("Likes")
-                                .child(loginManager.GetCurrentUser().getUid())
-                                .setValue(true);*/
-
                         authManager.GetDb().getReference()
                                 .child("Posts")
                                 .child(PostId)
@@ -129,14 +119,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                                 .child(loginManager.GetCurrentUser().getUid())
                                 .setValue(true);
                     }else{
-                        /*authManager.GetDb().getReference()
-                                .child("Posts")
-                                .child(PostId)
-                                .child("Comments")
-                                .child(commentModel.getCommentId())
-                                .child("Likes")
-                                .child(loginManager.GetCurrentUser().getUid())
-                                .removeValue();*/
                         authManager.GetDb().getReference()
                                 .child("Posts")
                                 .child(PostId)
@@ -235,7 +217,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reportPost();
+                reportPost(commentModel.getAuthor(), commentModel.getCommentId());
                 dialog.dismiss();
             }
         });
@@ -265,8 +247,19 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 });
     }
 
-    public void reportPost(){
-        //REPORT POST HERE
+    public void reportPost(String reportedUser, String commentId){
+        final Dialog dialog = new Dialog(mContext);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_report_dialog);
+
+        UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(mContext, PostId, reportedUser, commentId,"isComment");
+        userFeedbackDialog.getDialog(dialog);
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     public void isLiked(String commentId, ImageView imageView, String postId){
