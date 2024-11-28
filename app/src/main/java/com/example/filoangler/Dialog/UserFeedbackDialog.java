@@ -72,6 +72,7 @@ public class UserFeedbackDialog {
         this.Id = Id;
         this.classification = classification;
         this.reportedUser = reportedUser;
+        this.commentId = commentId;
     }
 
     public void getDialog(Dialog dialog) {
@@ -112,6 +113,7 @@ public class UserFeedbackDialog {
                 Map<String, Object> reportData = new HashMap<>();
                 reportData.put("ReportedBy", reportedBy);
                 reportData.put("Reason", reason);
+                reportData.put("DateReported", Utils.getDateAndTime());
                 if(reportedUser != null){
                     reportData.put("ReportedUser", reportedUser);
                 }
@@ -124,7 +126,7 @@ public class UserFeedbackDialog {
                         break;
                     case "isComment":
                         reportData.put("id", Id);  // Comment ID being reported
-                        reportData.put("postId", commentId);
+                        reportData.put("commentId", commentId);
                         reportData.put("isComment", true);
                         break;
                     case "isUser":
