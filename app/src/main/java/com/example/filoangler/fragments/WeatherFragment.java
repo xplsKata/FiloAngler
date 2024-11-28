@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -125,7 +126,16 @@ public class WeatherFragment extends Fragment {
     private AuthManager authManager;
     private LoginManager loginManager;
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient createOkHttpClient() {
+        return new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+    }
+
+    private OkHttpClient client;
 
     private String location;
     private String weatherDescription;
@@ -160,6 +170,7 @@ public class WeatherFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
         authManager = new AuthManager();
         loginManager = new LoginManager(getContext());
+        client = createOkHttpClient();
 
         loadElements(view);
         loadAutoComplete();
