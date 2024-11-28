@@ -10,21 +10,23 @@
 
     <AutoCompleteTextView
         android:id="@+id/txtSearch"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:layout_marginEnd="200dp"
         android:background="@drawable/shape_posts_container"
         android:ems="10"
         android:hint="@string/txtSearch"
+        android:imeOptions="actionSearch"
         android:inputType="text"
+        android:maxLines="1"
         android:paddingHorizontal="15dp"
         android:paddingVertical="10dp"
+        android:singleLine="true"
         android:textColor="@color/white"
         android:textColorHighlight="@color/white"
         android:textColorHint="@color/white"
-        android:imeOptions="actionSearch"
-        android:singleLine="true"
-        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="@id/water_container"
         app:layout_constraintStart_toStartOf="@+id/water_container"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -225,5 +227,33 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <FrameLayout
+        android:id="@+id/overlay_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/constraintLayout3"
+        app:layout_constraintEnd_toEndOf="@id/constraintLayout3"
+        app:layout_constraintStart_toStartOf="@id/constraintLayout3"
+        app:layout_constraintTop_toTopOf="@id/water_container">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#E6000000"
+            app:shapeAppearance="@style/rounded20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="Search for a location to get tide predictions.\n\nUse the suggested locations to ensure accurate readings."
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,13 @@
 package com.example.filoangler.fragments;
 
+import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,13 +16,16 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +89,9 @@ public class TideFragment extends Fragment {
     private int minHeight;
     private int maxHeight;
 
+    private FrameLayout overlayContainer;
+    private boolean isDataLoaded = false;
+
     private OkHttpClient createOkHttpClient() {
         return new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
@@ -113,6 +121,9 @@ public class TideFragment extends Fragment {
     private double lowTideHeight;
     private double currentHeight;
 
+    private int originalEndMargin;
+    private ValueAnimator searchBarAnimator;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -124,6 +135,44 @@ public class TideFragment extends Fragment {
         loadElements(view);
         loadAutoComplete();
         hideText();
+
+        txtSearch.clearFocus();
+        txtSearch.setFocusable(false);
+        txtSearch.setFocusableInTouchMode(false);
+
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) txtSearch.getLayoutParams();
+        originalEndMargin = params.getMarginEnd();
+
+        searchBarAnimator = new ValueAnimator();
+        searchBarAnimator.setDuration(300);
+        searchBarAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) txtSearch.getLayoutParams();
+                params.setMarginEnd((Integer) animation.getAnimatedValue());
+                txtSearch.setLayoutParams(params);
+            }
+        });
+
+        txtSearch.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                txtSearch.setFocusable(true);
+                txtSearch.setFocusableInTouchMode(true);
+                return false;
+            }
+        });
+
+        txtSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    expandSearchBar();
+                } else {
+                    collapseSearchBar();
+                }
+            }
+        });
 
         txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -145,7 +194,10 @@ public class TideFragment extends Fragment {
                         Toast.makeText(getContext(), "Please enter a location", Toast.LENGTH_LONG).show();
                     }else{
                         getCoordinatesAndFetchTide(location);
-                        Utils.hideKeyboard(getActivity()); // Add this utility method
+                        Utils.hideKeyboard(getActivity());
+                        txtSearch.clearFocus();
+                        txtSearch.setFocusable(false);
+                        txtSearch.setFocusableInTouchMode(false);
                     }
                     return true;
                 }
@@ -156,7 +208,11 @@ public class TideFragment extends Fragment {
         btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog();
+                if (isDataLoaded) {
+                    showDialog();
+                } else {
+                    Toast.makeText(getContext(), "Please search for a location first", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -180,6 +236,36 @@ public class TideFragment extends Fragment {
             }
         });
 
+    }
+
+    private void expandSearchBar() {
+        if (searchBarAnimator.isRunning()) {
+            searchBarAnimator.cancel();
+        }
+
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) txtSearch.getLayoutParams();
+
+        // Animate from current margin to 0
+        searchBarAnimator.setIntValues(
+                params.getMarginEnd(),
+                150
+        );
+        searchBarAnimator.start();
+    }
+
+    private void collapseSearchBar() {
+        if (searchBarAnimator.isRunning()) {
+            searchBarAnimator.cancel();
+        }
+
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) txtSearch.getLayoutParams();
+
+        // Animate back to the original end margin
+        searchBarAnimator.setIntValues(
+                params.getMarginEnd(),
+                originalEndMargin
+        );
+        searchBarAnimator.start();
     }
 
     private void makeApiCall(String url, Callback callback) {
@@ -247,6 +333,7 @@ public class TideFragment extends Fragment {
     }
 
     private void loadElements(View view){
+        overlayContainer = view.findViewById(R.id.overlay_container);
         waveView = view.findViewById(R.id.waveView);
         water_container = view.findViewById(R.id.water_container);
 
@@ -430,6 +517,11 @@ public class TideFragment extends Fragment {
                     showText();
                     updateWaveViewHeight(calculateWaterLevel(finalHighestTide, finalLowestTide, getCurrentTideHeight(tideDataArray)));
 
+                    isDataLoaded = true;
+                    if (overlayContainer != null) {
+                        overlayContainer.setVisibility(View.GONE);
+                    }
+
                     // Update RecyclerView
                     tidesAdapter.notifyDataSetChanged();
                 });
@@ -559,6 +651,7 @@ public class TideFragment extends Fragment {
                                 "Failed to get location data: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     });
+                    handleLocationSearchFailure();
                 }
 
                 @Override
@@ -578,9 +671,11 @@ public class TideFragment extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                             getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error parsing location data", Toast.LENGTH_SHORT).show());
+                            handleLocationSearchFailure();
                         }
                     } else {
                         getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Failed to get location data", Toast.LENGTH_SHORT).show());
+                        handleLocationSearchFailure();
                     }
                     String responseBody = response.body().string();
                     Log.e("LocationAPI", "Response Code: " + response.code());
@@ -590,6 +685,16 @@ public class TideFragment extends Fragment {
         }catch (Exception e){
             Log.e("LocationAPI", "Error: " + e.getMessage());
         }
+    }
+
+    private void handleLocationSearchFailure() {
+        getActivity().runOnUiThread(() -> {
+            // Ensure overlay is visible if data load fails
+            if (overlayContainer != null) {
+                overlayContainer.setVisibility(View.VISIBLE);
+            }
+            isDataLoaded = false;
+        });
     }
 
     private void hideText(){
