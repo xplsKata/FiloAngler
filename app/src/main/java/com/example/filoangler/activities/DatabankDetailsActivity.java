@@ -62,7 +62,30 @@ public class DatabankDetailsActivity extends AppCompatActivity {
     }
 
     private void setupFishDetails() {
-        // ... [previous implementation remains the same]
+        String FishName = getIntent().getStringExtra("FishName");
+        String FishDescription = getIntent().getStringExtra("FishDescription");
+        String FishBehavior = getIntent().getStringExtra("FishBehavior");
+        String FishHabitat = getIntent().getStringExtra("FishHabitat");
+        String FishLaw = getIntent().getStringExtra("FishLaw");
+
+        txtLabelOne.setText("Description");
+        txtLabelTwo.setText("Behavior");
+        txtLabelThree.setText("Habitat");
+        txtLabelFour.setText("Law");
+
+        txtName.setText(FishName);
+        txtContentOne.setText(FishDescription);
+        txtContentTwo.setText(FishBehavior);
+        txtContentThree.setText(FishHabitat);
+
+        if (FishLaw == null || FishLaw.equalsIgnoreCase("none")) {
+            txtContentFour.setVisibility(View.GONE);
+            txtLabelFour.setVisibility(View.GONE);
+        } else {
+            txtContentFour.setText(FishLaw);
+            txtContentFour.setVisibility(View.VISIBLE);
+            txtLabelFour.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupGearDetails() {
