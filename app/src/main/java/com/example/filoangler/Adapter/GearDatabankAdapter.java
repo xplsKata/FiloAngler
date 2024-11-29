@@ -89,6 +89,7 @@ public class GearDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 Intent intent = new Intent(mContext, DatabankDetailsActivity.class);
                 intent.putExtra("DataType", "Gear");
                 intent.putExtra("GearName", gear.getName());
+                intent.putExtra("ImageBig", gear.getImageBig());
                 intent.putExtra("Gear3DModel", gear.getGear3DModel());
                 intent.putExtra("GearDescription", gear.getDescription());
 

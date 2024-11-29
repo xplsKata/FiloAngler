@@ -13,7 +13,8 @@
           "Lubricate the reel’s moving parts to maintain smooth operation."
         ],
         "GearImage": "gear_trollingreel",
-        "Gear3DModel": "gear_trollingreel"
+        "Gear3DModel": "gear_trollingreel",
+        "ImageBig": "gear_trollingreelbig"
       },
       {
         "name": "Spincast Reel",
@@ -27,7 +28,8 @@
           "Replace the line periodically to ensure it remains strong and reliable."
         ],
         "GearImage": "gear_spincastreel",
-        "Gear3DModel": "gear_spincastreel"
+        "Gear3DModel": "gear_spincastreel",
+        "ImageBig": "gear_spincastreelbig"
       },
       {
         "name": "Spinning Reel",
@@ -41,7 +43,8 @@
           "Periodically oil the bearings and spool to prevent rust and maintain performance."
         ],
         "GearImage": "gear_spinningreel",
-        "Gear3DModel": "gear_spinningreel"
+        "Gear3DModel": "gear_spinningreel",
+        "ImageBig": "gear_spinningreelbig"
       },
       {
         "name": "Baitcaster Reel",
@@ -57,7 +60,8 @@
           "Inspect the line guide for wear and replace it if necessary to avoid line fraying."
         ],
         "GearImage": "gear_baitcasterreel",
-        "Gear3DModel": "gear_baitcasterreel"
+        "Gear3DModel": "gear_baitcasterreel",
+        "ImageBig": "gear_baitcasterreel"
       }
     ],
     "Rods": [
@@ -73,7 +77,8 @@
           "Store the rod in a rod holder to maintain its shape and integrity."
         ],
         "GearImage": "gear_trollingrod",
-        "Gear3DModel": "gear_trollingrod"
+        "Gear3DModel": "gear_trollingrod",
+        "ImageBig": "gear_trollingrodbig"
       },
       {
         "name": "Spincast Rod",
@@ -87,7 +92,8 @@
           "Check the reel seat for any signs of rust or wear."
         ],
         "GearImage": "gear_spincastrod",
-        "Gear3DModel": "gear_spincastrod"
+        "Gear3DModel": "gear_spincastrod",
+        "ImageBig": "gear_spincastrodbig"
       },
       {
         "name": "Spinning Rod",
@@ -101,7 +107,8 @@
           "Store the rod upright or in a rod case to prevent bending."
         ],
         "GearImage": "gear_spinningrod",
-        "Gear3DModel": "gear_spinningrod"
+        "Gear3DModel": "gear_spinningrod",
+        "ImageBig": "gear_spinningrodbig"
       },
       {
         "name": "Baitcaster Rod",
@@ -117,7 +124,8 @@
           "Check for cracks or chips in the rod blank to ensure it remains strong and reliable."
         ],
         "GearImage": "gear_baitcasterrod",
-        "Gear3DModel": "gear_baitcasterrod"
+        "Gear3DModel": "gear_baitcasterrod",
+        "ImageBig": "gear_baitcasterrodbig"
       }
     ],
     "Lures": [
@@ -134,7 +142,8 @@
           "Inspect and replace the hooks periodically to maintain sharpness and durability."
         ],
         "GearImage": "gear_metaljig",
-        "Gear3DModel": "gear_metaljig"
+        "Gear3DModel": "gear_metaljig",
+        "ImageBig": "gear_metaljigbig"
       },
       {
         "name": "Popper Lure",
@@ -148,7 +157,8 @@
           "Check the treble hooks for rust and replace them as needed."
         ],
         "GearImage": "gear_popperlure",
-        "Gear3DModel": "gear_popperlure"
+        "Gear3DModel": "gear_popperlure",
+        "ImageBig": "gear_popperlurebig"
       },
       {
         "name": "Minnow Lure",
@@ -162,7 +172,8 @@
           "Inspect the hooks and replace them if they show signs of rust or dullness."
         ],
         "GearImage": "gear_minnowlure",
-        "Gear3DModel": "gear_minnowlure"
+        "Gear3DModel": "gear_minnowlure",
+        "ImageBig": "gear_minnowlurebig"
       },
       {
         "name": "Stickbait Lure",
@@ -176,7 +187,8 @@
           "Check the split rings and hooks for wear and replace if necessary."
         ],
         "GearImage": "gear_stickbaitlure",
-        "Gear3DModel": "gear_stickbaitlure"
+        "Gear3DModel": "gear_stickbaitlure",
+        "ImageBig": "gear_stickbaitlure"
       },
       {
         "name": "Soft Lure",
@@ -190,7 +202,8 @@
           "Inspect for tears or damage after use and replace if necessary."
         ],
         "GearImage": "gear_softlure",
-        "Gear3DModel": "gear_softlure"
+        "Gear3DModel": "gear_softlure",
+        "ImageBig": "gear_softlurebig"
       }
     ],
     "Misc": [
@@ -207,7 +220,8 @@
           "Store hooks in a dry container with desiccants to minimize corrosion."
         ],
         "GearImage": "gear_jhook",
-        "Gear3DModel": "gear_jhook"
+        "Gear3DModel": "gear_jhook",
+        "ImageBig": "gear_jhookbig"
       },
       {
         "name": "Treble Hook",
@@ -222,7 +236,8 @@
           "Coat treble hooks with anti-corrosion spray after saltwater use to extend their lifespan."
         ],
         "GearImage": "gear_treblehook",
-        "Gear3DModel": "gear_treblehook"
+        "Gear3DModel": "gear_treblehook",
+        "ImageBig": "gear_treblehookbig"
       },
       {
         "name": "Split Ring",
@@ -237,7 +252,8 @@
           "Keep spare split rings organized by size and material to streamline tackle maintenance."
         ],
         "GearImage": "gear_splitring",
-        "Gear3DModel": "gear_splitring"
+        "Gear3DModel": "gear_splitring",
+        "ImageBig": "gear_splitringbig"
       },
       {
         "name": "Fluorocarbon Line",
@@ -251,7 +267,8 @@
           "Replace periodically to avoid brittleness."
         ],
         "GearImage": "gear_flourocarbonline",
-        "Gear3DModel": "gear_flourocarbonline"
+        "Gear3DModel": "gear_flourocarbonline",
+        "ImageBig": "gear_flourocarbonlinebig"
       },
       {
         "name": "Braided Line",
@@ -265,7 +282,8 @@
           "Check for frays or damage and replace if necessary."
         ],
         "GearImage": "gear_braidedline",
-        "Gear3DModel": "gear_braidedline"
+        "Gear3DModel": "gear_braidedline",
+        "ImageBig": "gear_braidedlinebig"
       }
     ]
   }

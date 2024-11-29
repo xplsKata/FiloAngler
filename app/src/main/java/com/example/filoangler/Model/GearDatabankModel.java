@@ -9,6 +9,7 @@ public class GearDatabankModel {
     private List<String> maintenance_tips;
     private String GearImage;
     private String Gear3DModel;
+    private String ImageBig;
 
     // Getters
     public String getName() {
@@ -34,4 +35,9 @@ public class GearDatabankModel {
     public String getGear3DModel() {
         return Gear3DModel;
     }
+
+    public String getImageBig() {
+        return ImageBig;
+    }
+
 }

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 
 public class DatabankDetailsActivity extends AppCompatActivity {
 
@@ -24,6 +25,7 @@ public class DatabankDetailsActivity extends AppCompatActivity {
     private TextView txtContentFour;
     private TextView txtModelView;
     private ImageView btnBack;
+    private ImageView imgBig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,8 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         txtContentThree = findViewById(R.id.txtFishHabitat);
         txtLabelFour = findViewById(R.id.textView22);
         txtContentFour = findViewById(R.id.txtFishLaw);
+
+        imgBig = findViewById(R.id.imgBig);
     }
 
     private void setTexts() {
@@ -67,6 +71,7 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         String FishBehavior = getIntent().getStringExtra("FishBehavior");
         String FishHabitat = getIntent().getStringExtra("FishHabitat");
         String FishLaw = getIntent().getStringExtra("FishLaw");
+        String BigImage = getIntent().getStringExtra("ImageBig");
 
         txtLabelOne.setText("Description");
         txtLabelTwo.setText("Behavior");
@@ -86,11 +91,17 @@ public class DatabankDetailsActivity extends AppCompatActivity {
             txtContentFour.setVisibility(View.VISIBLE);
             txtLabelFour.setVisibility(View.VISIBLE);
         }
+
+        if(BigImage != null){
+            int resourceId = getResources().getIdentifier(BigImage, "drawable", getPackageName());
+            Utils.loadImage(imgBig, resourceId);
+        }
     }
 
     private void setupGearDetails() {
         String gearName = getIntent().getStringExtra("GearName");
         String gearDescription = getIntent().getStringExtra("GearDescription");
+        String BigImage = getIntent().getStringExtra("ImageBig");
         String[] tipsForUse = getIntent().getStringArrayExtra("GearTipsForUse");
         String[] maintenanceTips = getIntent().getStringArrayExtra("GearMaintenanceTips");
 
@@ -111,6 +122,11 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         // Hide Fishing Law for Gear
         txtLabelFour.setVisibility(View.GONE);
         txtContentFour.setVisibility(View.GONE);
+
+        if(BigImage != null){
+            int resourceId = getResources().getIdentifier(BigImage, "drawable", getPackageName());
+            Utils.loadImage(imgBig, resourceId);
+        }
     }
 
     private String formatTipsList(String[] tips) {

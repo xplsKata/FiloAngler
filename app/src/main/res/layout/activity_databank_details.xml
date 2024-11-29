@@ -37,16 +37,12 @@
         app:layout_constraintStart_toStartOf="@+id/constraintLayout8"
         app:layout_constraintTop_toTopOf="parent">
 
-        <VideoView
-            android:id="@+id/imgFishModel"
-            android:layout_width="wrap_content"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgBig"
+            android:layout_width="300dp"
             android:layout_height="300dp"
-            android:background="@android:color/transparent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/booking_menu_text">
-
-        </VideoView>
+            android:padding="20dp"
+            app:shapeAppearance="@style/circle"/>
 
         <TextView
             android:id="@+id/txtViewModel"

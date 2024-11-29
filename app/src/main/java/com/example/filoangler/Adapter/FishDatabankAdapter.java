@@ -89,6 +89,7 @@ public class FishDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 intent.putExtra("DataType", "Fish");
                 intent.putExtra("FishName", fish.getFishName());
                 intent.putExtra("Fish3DModel", fish.getFish3DModel());
+                intent.putExtra("ImageBig", fish.getImageBig());
                 intent.putExtra("FishDescription", fish.getDescription());
                 intent.putExtra("FishBehavior", fish.getBehavior());
                 intent.putExtra("FishHabitat", fish.getHabitat());

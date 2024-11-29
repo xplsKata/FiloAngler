@@ -4,6 +4,7 @@ public class FishDatabankModel {
 
     private String FishName;
     private String FishImage;
+    private String ImageBig;
     private String Fish3DModel;
     private String Description;
     private String Behavior;
@@ -77,5 +78,13 @@ public class FishDatabankModel {
 
     public void setLaw(String law) {
         Law = law;
+    }
+
+    public String getImageBig() {
+        return ImageBig;
+    }
+
+    public void setImageBig(String imageBig) {
+        ImageBig = imageBig;
     }
 }
