@@ -78,7 +78,9 @@
                     android:backgroundTint="@color/white"
                     android:ems="10"
                     android:hint="..."
-                    android:inputType="text"
+                    android:inputType="textMultiLine"
+                    android:minLines="1"
+                    android:maxLines="10"
                     android:padding="10dp"
                     android:textColor="@color/bgBlue" />
             </LinearLayout>

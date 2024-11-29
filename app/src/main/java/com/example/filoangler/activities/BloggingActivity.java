@@ -8,13 +8,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,9 +25,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.filoangler.Adapter.SideNavAdapter;
+import com.example.filoangler.Dialog.UserFeedbackDialog;
 import com.example.filoangler.Dialog.VerifyProfileDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
@@ -76,6 +72,8 @@ public class BloggingActivity extends AppCompatActivity {
     private ConstraintLayout slowConnectionLayout;
     private Button btnProceedOffline;
     private TextView txtSlowConnection;
+
+    private Button helpItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +128,7 @@ public class BloggingActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.sideNavBar);
 
         btnLogout = navigationView.findViewById(R.id.btnLogout);
+        helpItem = navigationView.findViewById(R.id.btnFeedback);
 
         // Initialize loading overlay
         loadingOverlay = findViewById(R.id.loadingOverlay);
@@ -181,7 +180,6 @@ public class BloggingActivity extends AppCompatActivity {
         // Disable specific side navigation items
         Menu sideMenu = navigationView.getMenu();
         MenuItem profileItem = sideMenu.findItem(R.id.navProfile);
-        MenuItem helpItem = sideMenu.findItem(R.id.btnHelp);
         MenuItem proficiencyTestItem = sideMenu.findItem(R.id.navProficiencyTest);
 
         if (profileItem != null) profileItem.setEnabled(false);
@@ -360,7 +358,7 @@ public class BloggingActivity extends AppCompatActivity {
                 if (isOfflineMode) {
                     // In offline mode, only allow certain menu items
                     int id = item.getItemId();
-                    if (id == R.id.navProfile || id == R.id.btnHelp) {
+                    if (id == R.id.navProfile || id == R.id.btnFeedback) {
                         return false;
                     }
                 }
@@ -420,6 +418,13 @@ public class BloggingActivity extends AppCompatActivity {
         } else {
             Log.e("SideNav", "Logout button not found in NavigationView");
         }
+
+        helpItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFeedbackDialog();
+            }
+        });
     }
 
     private void showDialog(){
@@ -428,6 +433,21 @@ public class BloggingActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.fragment_verify_profile);
 
         verifyProfileDialog.getDialog(dialog);
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    private void showFeedbackDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_report_dialog);
+
+        UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(this, true);
+        userFeedbackDialog.getDialog(dialog);
 
         dialog.show();
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

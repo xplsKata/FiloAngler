@@ -8,7 +8,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.BloggingActivity">
+    tools:context=".activities.BloggingActivity"
+    tools:openDrawer="left">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/sideNavBar"
@@ -40,11 +41,11 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <Button
-                android:id="@+id/btnHelp"
+                android:id="@+id/btnFeedback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
-                android:text="Need Help?"
+                android:text="Feedback"
                 app:layout_constraintBottom_toBottomOf="@+id/btnLogout"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
