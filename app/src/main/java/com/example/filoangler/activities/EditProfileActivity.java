@@ -1,7 +1,5 @@
 package com.example.filoangler.activities;
 
-import static com.google.common.io.Files.getFileExtension;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -34,9 +32,7 @@ import com.canhub.cropper.CropImageView;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Manager.StorageManager;
-import com.example.filoangler.Model.CommentModel;
 import com.example.filoangler.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;

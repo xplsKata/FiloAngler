@@ -1,24 +1,16 @@
 package com.example.filoangler;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
-import com.example.filoangler.Model.CommentModel;
-import com.example.filoangler.Model.NotificationModel;
-import com.example.filoangler.Model.PostModel;
 import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.activities.UserProfileActivity;
-import com.google.android.gms.auth.api.Auth;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;

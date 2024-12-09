@@ -3,7 +3,6 @@ package com.example.filoangler.Dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -16,7 +15,6 @@ import com.example.filoangler.Adapter.UserAdapter;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.R;
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;

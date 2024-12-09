@@ -66,7 +66,6 @@ import com.google.firebase.storage.UploadTask;
 import com.hendraanggrian.appcompat.socialview.widget.SocialAutoCompleteTextView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -781,7 +780,6 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
             }
         }
     }
-
 
 
     private void uploadPost() {

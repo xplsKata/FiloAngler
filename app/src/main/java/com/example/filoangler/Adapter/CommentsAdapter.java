@@ -2,7 +2,6 @@ package com.example.filoangler.Adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
@@ -11,13 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import android.app.Activity;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,18 +24,14 @@ import com.example.filoangler.Dialog.UserFeedbackDialog;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.CommentModel;
-import com.example.filoangler.Model.PostModel;
 import com.example.filoangler.R;
 import com.example.filoangler.Utils;
-import com.example.filoangler.activities.UserProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Comment;
 
 import java.util.List;
 

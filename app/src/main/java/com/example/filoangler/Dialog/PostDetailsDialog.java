@@ -2,7 +2,6 @@ package com.example.filoangler.Dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.media.Image;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;

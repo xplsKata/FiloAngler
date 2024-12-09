@@ -1,11 +1,8 @@
 package com.example.filoangler.Dialog;
 
-import static java.security.AccessController.getContext;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
-import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,16 +15,12 @@ import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Model.CommonFishModel;
 import com.example.filoangler.Model.MapLocationsModel;
 import com.example.filoangler.R;
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MapDetailsDialog {
 

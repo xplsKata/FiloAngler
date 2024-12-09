@@ -1,7 +1,6 @@
 package com.example.filoangler.fragments;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -199,7 +198,6 @@ public class HomeFragment extends Fragment {
         Utils.ChangeIntent(getActivity(), PostActivity.class);
     }
 
-    // Existing readPosts method remains the same as in your original code
     private void readPosts() {
         authManager.GetDb().getReference().child("Posts").addValueEventListener(new ValueEventListener() {
             @Override

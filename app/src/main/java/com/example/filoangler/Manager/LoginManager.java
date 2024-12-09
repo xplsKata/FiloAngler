@@ -12,7 +12,6 @@ import com.example.filoangler.BuildConfig;
 import com.example.filoangler.Model.UserModel;
 import com.example.filoangler.Utils;
 import com.example.filoangler.activities.BloggingActivity;
-import com.example.filoangler.activities.GoogleLoginActivity;
 import com.example.filoangler.activities.RegisterP2Activity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

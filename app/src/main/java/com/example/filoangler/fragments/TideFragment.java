@@ -20,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -31,7 +30,6 @@ import android.widget.Toast;
 
 import com.example.filoangler.Adapter.TidesAdapter;
 import com.example.filoangler.BuildConfig;
-import com.example.filoangler.Dialog.MiscWeatherDialog;
 import com.example.filoangler.Dialog.TideDetailsDialog;
 import com.example.filoangler.Model.CitiesModel;
 import com.example.filoangler.Model.ProvinceModel;
@@ -40,8 +38,6 @@ import com.example.filoangler.R;
 import com.example.filoangler.Utils;
 import com.example.filoangler.WaveView;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
