@@ -145,21 +145,6 @@ public class DatabankDetailsActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
-
-        txtModelView.setOnClickListener(v -> launch3DView());
-    }
-
-    private void launch3DView() {
-        String type = getIntent().getStringExtra("DataType");
-        String modelId = "Fish".equals(type)
-                ? getIntent().getStringExtra("Fish3DModel")
-                : getIntent().getStringExtra("Gear3DModel");
-
-        // Create intent for Unity activity
-        Intent intent = new Intent(this, UnityViewActivity.class);
-        // Pass the model ID to Unity
-        intent.putExtra("3DModel", modelId);
-        startActivity(intent);
     }
 
     @Override
