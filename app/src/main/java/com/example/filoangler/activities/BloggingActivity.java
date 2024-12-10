@@ -38,6 +38,7 @@ import com.example.filoangler.fragments.GearDatabankFragment;
 import com.example.filoangler.fragments.GearKnowledgeFragment;
 import com.example.filoangler.fragments.HomeFragment;
 import com.example.filoangler.fragments.MapFragment;
+import com.example.filoangler.fragments.NewsFragment;
 import com.example.filoangler.fragments.NoInternetFragment;
 import com.example.filoangler.fragments.NotificationsFragment;
 import com.example.filoangler.fragments.TideFragment;
@@ -111,7 +112,7 @@ public class BloggingActivity extends AppCompatActivity {
             // Only show loading overlay in online mode
             updateLoadingState(true);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.bloggingActivityFrameLayout, new HomeFragment())
+                    .replace(R.id.bloggingActivityFrameLayout, new NewsFragment())
                     .commit();
         }
     }
@@ -320,9 +321,11 @@ public class BloggingActivity extends AppCompatActivity {
                 selectedFragment = new WeatherFragment();
             } else if (item.getItemId() == R.id.Tide) {
                 selectedFragment = new TideFragment();
-            } else if (item.getItemId() == R.id.Notifications) {
-                selectedFragment = new NotificationsFragment();
+            } else if (item.getItemId() == R.id.News) {
+                selectedFragment = new NewsFragment();
             }
+
+            //NOTIFICATIONS WAS TAKEN OUT
 
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()

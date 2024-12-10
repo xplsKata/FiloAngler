@@ -5,14 +5,20 @@
         android:id="@+id/Home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/baseline_home_24"
-        android:title="Home" />
+        android:icon="@drawable/baseline_message_24"
+        android:title="Blogging" />
     <item
         android:id="@+id/Map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="Map"
         android:icon="@drawable/baseline_map_24"/>
+    <item
+        android:id="@+id/News"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Home"
+        android:icon="@drawable/baseline_home_24"/>
     <item
         android:id="@+id/Weather"
         android:layout_width="wrap_content"
@@ -25,10 +31,5 @@
         android:layout_height="wrap_content"
         android:title="Tide"
         android:icon="@drawable/baseline_water_24"/>
-    <item
-        android:id="@+id/Notifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:title="Notifications"
-        android:icon="@drawable/baseline_notifications_24"/>
+
 </menu>
