@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bgLightBlue"
+    android:background="@drawable/background_databank"
     tools:context=".activities.DatabankDetailsActivity">
 
     <ImageView
@@ -19,7 +19,7 @@
         android:src="@drawable/baseline_arrow_back_ios_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/bgBlue" />
+        app:tint="@color/white" />
 
     <LinearLayout
         android:id="@+id/linearLayout9"
@@ -42,7 +42,7 @@
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:padding="20dp"
-            app:shapeAppearance="@style/circle"/>
+            app:shapeAppearance="@style/circle" />
 
         <TextView
             android:id="@+id/txtViewModel"
@@ -51,7 +51,8 @@
             android:clickable="true"
             android:text="View 3D Model"
             android:textColor="@color/bgBlue"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -59,9 +60,8 @@
         android:id="@+id/constraintLayout8"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="15dp"
+        android:background="@drawable/gradient_overlay"
+        android:backgroundTint="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_fish_details"
+            android:background="@drawable/gradient_overlay"
+            android:backgroundTint="#CC000000"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +113,7 @@
                     android:justificationMode="inter_word"
                     android:padding="10dp"
                     android:text="TextView"
-                    android:textColor="@color/white"
+                    android:textColor="@color/bgBlue"
                     android:textSize="18sp" />
 
                 <TextView
@@ -134,7 +135,7 @@
                     android:justificationMode="inter_word"
                     android:padding="10dp"
                     android:text="TextView"
-                    android:textColor="@color/white"
+                    android:textColor="@color/bgBlue"
                     android:textSize="18sp" />
 
                 <TextView
@@ -156,7 +157,7 @@
                     android:justificationMode="inter_word"
                     android:padding="10dp"
                     android:text="TextView"
-                    android:textColor="@color/white"
+                    android:textColor="@color/bgBlue"
                     android:textSize="18sp" />
 
                 <TextView
@@ -178,7 +179,7 @@
                     android:justificationMode="inter_word"
                     android:padding="10dp"
                     android:text="TextView"
-                    android:textColor="@color/white"
+                    android:textColor="@color/bgBlue"
                     android:textSize="18sp" />
             </LinearLayout>
         </ScrollView>
