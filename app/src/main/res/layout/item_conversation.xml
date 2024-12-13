@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        tools:background="@color/bgBlue">
+        android:background="@color/bgBlue">
 
         <!-- Profile Picture -->
         <com.google.android.material.imageview.ShapeableImageView
