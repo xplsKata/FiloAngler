@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -32,23 +33,28 @@ import com.example.filoangler.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserProfileActivity extends AppCompatActivity {
 
     private ImageView imgProfileIcon, imgVerified;
     private ImageButton btnBack, btnMore;
-    private Button btnEditProfile, btnFollow;
+    private Button btnEditProfile, btnFollow, btnMessage;
     private TextView txtName, txtUsername, txtAnglerStatus, txtBio, txtFollowers, txtFollowing, txtPosts;
     private LinearLayout btnFollowers, btnFollowing;
     private LoginManager loginManager;
     private AuthManager authManager;
 
     private String UserId;
+    private String otherUserId;
 
     private PostAdapter postAdapter;
     private List<PostModel> postList;
@@ -78,6 +84,7 @@ public class UserProfileActivity extends AppCompatActivity {
         imgProfileIcon = findViewById(R.id.imgProfileIcon);
         btnBack = findViewById(R.id.btnBack);
         btnMore = findViewById(R.id.btnMore);
+        btnMessage = findViewById(R.id.btnMessage);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         txtName = findViewById(R.id.txtName);
         txtAnglerStatus = findViewById(R.id.txtAnglerStatus);
@@ -93,6 +100,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
         UserId = getIntent().getStringExtra("UserId");
         Log.e("UserProfileActivity", "Intent Received: " + UserId);
+
+        otherUserId = getIntent().getStringExtra("UserId");
 
         populateProfile();
         readPosts();
@@ -139,6 +148,59 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        btnMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initiateConversation();
+            }
+        });
+
+    }
+
+    private void initiateConversation() {
+        // Get current user ID
+        String currentUserId = loginManager.GetCurrentUser().getUid();
+
+        // Generate or retrieve conversation ID
+        DatabaseReference conversationsRef = authManager.GetDb().getReference("Conversations");
+        String conversationId = conversationsRef.push().getKey();
+
+        // Create conversation object with a different structure
+        Map<String, Object> conversationData = new HashMap<>();
+
+        // Create a participants map without using '/'
+        Map<String, Boolean> participantsMap = new HashMap<>();
+        participantsMap.put(currentUserId, true);
+        participantsMap.put(otherUserId, true);
+
+        conversationData.put("participants", participantsMap);
+        conversationData.put("createdAt", ServerValue.TIMESTAMP);
+
+        // Optional: Add initial metadata
+        conversationData.put("lastMessage", "");
+        conversationData.put("lastMessageTimestamp", ServerValue.TIMESTAMP);
+
+        // Save conversation
+        conversationsRef.child(conversationId).setValue(conversationData)
+                .addOnSuccessListener(aVoid -> {
+                    // Update user-specific conversations references
+                    DatabaseReference userConversationsRef = FirebaseDatabase.getInstance().getReference("UserConversations");
+
+                    // Add conversation to current user's conversations
+                    userConversationsRef.child(currentUserId).child(conversationId).setValue(true);
+
+                    // Add conversation to other user's conversations
+                    userConversationsRef.child(otherUserId).child(conversationId).setValue(true);
+
+                    // Start ChatActivity with conversation details
+                    Intent chatIntent = new Intent(UserProfileActivity.this, ChatActivity.class);
+                    chatIntent.putExtra("CONVERSATION_ID", conversationId);
+                    chatIntent.putExtra("USER_ID", otherUserId);
+                    startActivity(chatIntent);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to start conversation: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void viewFollowers(){
@@ -218,11 +280,13 @@ public class UserProfileActivity extends AppCompatActivity {
                         if(UserId.equals(loginManager.GetCurrentUser().getUid())){
                             btnFollow.setVisibility(View.GONE);
                             btnMore.setVisibility(View.GONE);
+                            btnMessage.setVisibility(View.GONE);
                             btnEditProfile.setVisibility(View.VISIBLE);
                         }else{
                             btnEditProfile.setVisibility(View.GONE);
                             btnMore.setVisibility(View.VISIBLE);
                             btnFollow.setVisibility(View.VISIBLE);
+                            btnMessage.setVisibility(View.VISIBLE);
 
                             isFollowed(UserId, btnFollow);
                         }

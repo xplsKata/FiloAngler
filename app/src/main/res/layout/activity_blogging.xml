@@ -8,8 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.BloggingActivity"
-    tools:openDrawer="left">
+    tools:context=".activities.BloggingActivity">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/sideNavBar"
@@ -87,17 +86,43 @@
                         app:shapeAppearanceOverlay="@style/circle"/>
 
                     <ImageButton
-                        android:id="@+id/btnSearch"
+                        android:id="@+id/btnMessages"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15dp"
                         android:backgroundTint="#00FFFFFF"
                         android:scaleX="1.5"
                         android:scaleY="1.5"
-                        android:src="@drawable/baseline_search_24"
+                        android:src="@drawable/baseline_chat_bubble_outline_24"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/btnNotifications"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#00FFFFFF"
+                        android:scaleX="1.5"
+                        android:scaleY="1.5"
+                        android:src="@drawable/baseline_notifications_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/btnMessages"
+                        app:layout_constraintEnd_toStartOf="@+id/btnMessages"
+                        app:layout_constraintTop_toTopOf="@+id/btnMessages"
+                        app:layout_constraintVertical_bias="0.406" />
+
+                    <ImageButton
+                        android:id="@+id/btnSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#00FFFFFF"
+                        android:scaleX="1.5"
+                        android:scaleY="1.5"
+                        android:src="@drawable/baseline_search_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/btnNotifications"
+                        app:layout_constraintEnd_toStartOf="@+id/btnNotifications"
+                        app:layout_constraintTop_toTopOf="@+id/btnNotifications"
+                        app:layout_constraintVertical_bias="0.0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
@@ -136,7 +161,7 @@
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ProgressBar
             android:layout_width="wrap_content"

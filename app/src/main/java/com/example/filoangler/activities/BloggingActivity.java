@@ -56,7 +56,7 @@ public class BloggingActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Fragment selectedFragment;
-    private ImageButton btnSearch;
+    private ImageButton btnSearch, btnMessages, btnNotifications;
     private Button btnLogout;
     private TextView txtName, txtUsername;
     private ImageView imgProfileIcon, btnIcon;
@@ -115,6 +115,17 @@ public class BloggingActivity extends AppCompatActivity {
                     .replace(R.id.bloggingActivityFrameLayout, new NewsFragment())
                     .commit();
         }
+
+        btnNotifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.bloggingActivityFrameLayout, new NotificationsFragment())
+                        .commit();
+            }
+        });
+
+        btnMessages.setOnClickListener(v -> {Utils.ChangeIntent(this, InboxActivity.class);});
     }
 
     private void initializeViews() {
@@ -124,6 +135,9 @@ public class BloggingActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         btnIcon = findViewById(R.id.btnIcon);
         btnSearch = findViewById(R.id.btnSearch);
+
+        btnNotifications = findViewById(R.id.btnNotifications);
+        btnMessages = findViewById(R.id.btnMessages);
 
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.sideNavBar);

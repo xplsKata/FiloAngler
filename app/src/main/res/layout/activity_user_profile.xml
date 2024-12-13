@@ -189,18 +189,36 @@
                             android:layout_weight="1"
                             android:backgroundTint="@color/iconBlue"
                             android:text="@string/txtEditProfile"
-                            app:cornerRadius="30dp" />
+                            app:cornerRadius="30dp"
+                            tools:visibility="gone" />
 
-                        <Button
-                            android:id="@+id/btnFollow"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="30dp"
-                            android:layout_marginVertical="0dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/iconBlue"
-                            android:text="@string/txtFollow"
-                            app:cornerRadius="30dp" />
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="30dp">
+
+                            <Button
+                                android:id="@+id/btnFollow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginVertical="0dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/iconBlue"
+                                android:text="@string/txtFollow"
+                                app:cornerRadius="30dp" />
+
+                            <Button
+                                android:id="@+id/btnMessage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginVertical="0dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/iconBlue"
+                                android:text="Message"
+                                app:cornerRadius="30dp" />
+                        </LinearLayout>
 
                     </LinearLayout>
                 </LinearLayout>
