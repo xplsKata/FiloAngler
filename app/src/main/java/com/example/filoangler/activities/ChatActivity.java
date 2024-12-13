@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.filoangler.Adapter.MessageAdapter;
+import com.example.filoangler.BuildConfig;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.MessagingUtils;
 import com.example.filoangler.Model.Message;
@@ -28,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +100,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private void extractIntentExtras() {
         Intent intent = getIntent();
-        conversationId = intent.getStringExtra("CONVERSATION_ID");
         otherUserId = intent.getStringExtra("USER_ID");
 
         // Fetch and set user details
@@ -109,13 +110,8 @@ public class ChatActivity extends AppCompatActivity {
         messagingUtils.canInitiateChat(currentUserId, otherUserId)
                 .addOnSuccessListener(canChat -> {
                     if (canChat) {
-                        // If conversation doesn't exist, create it
-                        if (TextUtils.isEmpty(conversationId)) {
-                            createNewConversation();
-                        } else {
-                            // Load existing messages
-                            loadMessages();
-                        }
+                        // Create a new conversation
+                        createNewConversation();
                     } else {
                         // Cannot chat - show error and finish activity
                         Toast.makeText(this, "You can only chat with users you follow", Toast.LENGTH_SHORT).show();
@@ -142,11 +138,7 @@ public class ChatActivity extends AppCompatActivity {
                     String profilePicUrl = snapshot.child("ProfileIconURL").getValue(String.class);
 
                     userNameTextView.setText(username);
-
-                    // Load profile picture (using Glide)
-                    // Glide.with(ChatActivity.this)
-                    //      .load(profilePicUrl)
-                    //      .into(profilePicImageView);
+                    Picasso.get().load(profilePicUrl).into(profilePicImageView);
                 }
             }
 
@@ -158,16 +150,51 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void createNewConversation() {
-        messagingUtils.createConversation(currentUserId, otherUserId)
-                .addOnSuccessListener(newConversationId -> {
-                    conversationId = newConversationId;
-                    // Now ready to send messages
-                    setupMessageInput();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to create conversation", Toast.LENGTH_SHORT).show();
-                    finish();
-                });
+        DatabaseReference conversationsRef = FirebaseDatabase.getInstance(BuildConfig.firebaseDatabaseApiKey)
+                .getReference("Users")
+                .child(currentUserId)
+                .child("Inbox")
+                .child(otherUserId);
+
+        conversationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    // Conversation already exists, use the existing conversation ID
+                    for (DataSnapshot conversationSnapshot : snapshot.getChildren()) {
+                        if (conversationSnapshot.getKey() != null &&
+                                !conversationSnapshot.getKey().equals("Messages")) {
+                            conversationId = conversationSnapshot.getKey();
+                            setupMessageInput();
+                            loadMessages();
+                            return;
+                        }
+                    }
+                }
+
+                // If no existing conversation is found, create a new one
+                messagingUtils.createConversation(currentUserId, otherUserId)
+                        .addOnSuccessListener(newConversationId -> {
+                            conversationId = newConversationId;
+                            setupMessageInput();
+                            loadMessages();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(ChatActivity.this,
+                                    "Failed to create conversation",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ChatActivity.this,
+                        "Error checking existing conversations",
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
 
     private void setupMessageInput() {
@@ -177,20 +204,12 @@ public class ChatActivity extends AppCompatActivity {
     private void sendMessage() {
         String messageText = messageInputEditText.getText().toString().trim();
 
-        if (TextUtils.isEmpty(messageText) || TextUtils.isEmpty(conversationId)) {
+        if (TextUtils.isEmpty(messageText)) {
             return;
         }
 
-        // Create message object
-        Message message = new Message(
-                currentUserId,
-                otherUserId,
-                messageText,
-                System.currentTimeMillis()
-        );
-
         // Send message via messaging utils
-        messagingUtils.sendMessage(conversationId, message)
+        messagingUtils.sendMessage(currentUserId, otherUserId, messageText)
                 .addOnSuccessListener(aVoid -> {
                     // Clear input after successful send
                     messageInputEditText.setText("");
@@ -208,11 +227,13 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
-
-
         // Reference to messages in this conversation
-        DatabaseReference messagesRef = authManager.GetDb()
-                .getReference("Messaging/Messages")
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance(BuildConfig.firebaseDatabaseApiKey)
+                .getReference("Users")
+                .child(currentUserId)
+                .child("Inbox")
+                .child(otherUserId)
+                .child("Messages")
                 .child(conversationId);
 
         messagesRef.addChildEventListener(new ChildEventListener() {

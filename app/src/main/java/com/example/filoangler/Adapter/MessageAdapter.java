@@ -10,8 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.filoangler.Manager.AuthManager;
+import com.example.filoangler.Manager.LoginManager;
 import com.example.filoangler.Model.Message;
 import com.example.filoangler.R;
+import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,11 +28,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private List<Message> messageList;
     private String currentUserId;
+    private DatabaseReference usersRef;
+
+    private LoginManager loginManager;
+    private AuthManager authManager;
 
     public MessageAdapter(Context context, List<Message> messageList, String currentUserId) {
+        this.loginManager = new LoginManager(context);
+        this.authManager = new AuthManager();
+
         this.context = context;
         this.messageList = messageList;
         this.currentUserId = currentUserId;
+        this.usersRef = authManager.GetDb().getReference().child("Users");
     }
 
     @Override
@@ -47,12 +58,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.item_message, parent, false);
 
         if (viewType == VIEW_TYPE_SENT) {
-            View view = inflater.inflate(R.layout.item_message, parent, false);
             return new SentMessageViewHolder(view);
         } else {
-            View view = inflater.inflate(R.layout.item_message, parent, false);
             return new ReceivedMessageViewHolder(view);
         }
     }
@@ -108,5 +118,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             messageTextView = itemView.findViewById(R.id.received_message_text);
             messageTimeTextView = itemView.findViewById(R.id.received_message_time);
         }
+    }
+
+    // Method to add a new message to the list
+    public void addMessage(Message message) {
+        messageList.add(message);
+        notifyItemInserted(messageList.size() - 1);
     }
 }

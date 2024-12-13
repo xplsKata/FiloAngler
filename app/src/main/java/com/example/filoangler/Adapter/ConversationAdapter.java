@@ -2,6 +2,7 @@ package com.example.filoangler.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,6 +110,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             chatIntent.putExtra("CONVERSATION_ID", conversation.getConversationId());
             chatIntent.putExtra("USER_ID", otherUserId);
             context.startActivity(chatIntent);
+            Log.e("ConversationId", conversation.getConversationId());
         });
     }
 
