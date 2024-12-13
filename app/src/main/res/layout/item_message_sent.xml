@@ -8,7 +8,6 @@
     android:paddingVertical="4dp"
     android:paddingHorizontal="16dp">
 
-    <!-- Sent Message Layout -->
     <androidx.cardview.widget.CardView
         android:id="@+id/sent_message_card"
         android:layout_width="wrap_content"
@@ -29,7 +28,6 @@
                 android:id="@+id/sent_message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello, how are you?"
                 android:textColor="#000000" />
 
             <TextView
@@ -38,45 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="4dp"
-                android:text="10:35 AM"
                 android:textColor="#666666"
-                android:textSize="10sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Received Message Layout -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/received_message_card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="56dp"
-        app:cardBackgroundColor="@color/bgBlue"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/received_message_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="I'm doing great, thanks!"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/received_message_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="4dp"
-                android:text="10:36 AM"
-                android:textColor="@color/white"
                 android:textSize="10sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
