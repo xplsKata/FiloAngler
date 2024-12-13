@@ -101,6 +101,7 @@ public class ChatActivity extends AppCompatActivity {
     private void extractIntentExtras() {
         Intent intent = getIntent();
         otherUserId = intent.getStringExtra("USER_ID");
+        conversationId = intent.getStringExtra("CONVERSATION_ID"); // Add this line
 
         // Fetch and set user details
         fetchUserDetails();
@@ -150,6 +151,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void createNewConversation() {
+        // If conversation ID is already provided, skip creating a new one
+        if (!TextUtils.isEmpty(conversationId)) {
+            setupMessageInput();
+            loadMessages();
+            return;
+        }
+
         DatabaseReference conversationsRef = FirebaseDatabase.getInstance(BuildConfig.firebaseDatabaseApiKey)
                 .getReference("Users")
                 .child(currentUserId)
