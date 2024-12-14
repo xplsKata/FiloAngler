@@ -161,46 +161,67 @@ public class UserProfileActivity extends AppCompatActivity {
         // Get current user ID
         String currentUserId = loginManager.GetCurrentUser().getUid();
 
-        // Generate or retrieve conversation ID
-        DatabaseReference conversationsRef = authManager.GetDb().getReference("Conversations");
+        // Reference to the current user's inbox for this other user
+        DatabaseReference inboxRef = authManager.GetDb().getReference("Users")
+                .child(currentUserId)
+                .child("Inbox")
+                .child(otherUserId);
+
+        inboxRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Check if a conversation already exists
+                String existingConversationId = snapshot.child("conversationId").getValue(String.class);
+
+                if (existingConversationId != null) {
+                    // Conversation already exists, start chat with existing ID
+                    startChatActivity(existingConversationId);
+                } else {
+                    // No existing conversation, create a new one
+                    createNewConversation();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UserProfileActivity.this,
+                        "Failed to check conversation: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void createNewConversation() {
+        String currentUserId = loginManager.GetCurrentUser().getUid();
+
+        // Generate a unique conversation ID
+        DatabaseReference conversationsRef = authManager.GetDb().getReference("Users")
+                .child(currentUserId)
+                .child("Inbox")
+                .child(otherUserId);
+
         String conversationId = conversationsRef.push().getKey();
 
-        // Create conversation object with a different structure
-        Map<String, Object> conversationData = new HashMap<>();
+        // Prepare updates for both users' inboxes
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("/" + "Users" + "/" + currentUserId + "/Inbox/" + otherUserId + "/conversationId", conversationId);
+        updates.put("/" + "Users" + "/" + otherUserId + "/Inbox/" + currentUserId + "/conversationId", conversationId);
 
-        // Create a participants map without using '/'
-        Map<String, Boolean> participantsMap = new HashMap<>();
-        participantsMap.put(currentUserId, true);
-        participantsMap.put(otherUserId, true);
-
-        conversationData.put("participants", participantsMap);
-        conversationData.put("createdAt", ServerValue.TIMESTAMP);
-
-        // Optional: Add initial metadata
-        conversationData.put("lastMessage", "");
-        conversationData.put("lastMessageTimestamp", ServerValue.TIMESTAMP);
-
-        // Save conversation
-        conversationsRef.child(conversationId).setValue(conversationData)
+        authManager.GetDb().getReference().updateChildren(updates)
                 .addOnSuccessListener(aVoid -> {
-                    // Update user-specific conversations references
-                    DatabaseReference userConversationsRef = FirebaseDatabase.getInstance().getReference("UserConversations");
-
-                    // Add conversation to current user's conversations
-                    userConversationsRef.child(currentUserId).child(conversationId).setValue(true);
-
-                    // Add conversation to other user's conversations
-                    userConversationsRef.child(otherUserId).child(conversationId).setValue(true);
-
-                    // Start ChatActivity with conversation details
-                    Intent chatIntent = new Intent(UserProfileActivity.this, ChatActivity.class);
-                    chatIntent.putExtra("CONVERSATION_ID", conversationId);
-                    chatIntent.putExtra("USER_ID", otherUserId);
-                    startActivity(chatIntent);
+                    // Start ChatActivity with new conversation details
+                    startChatActivity(conversationId);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to start conversation: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void startChatActivity(String conversationId) {
+        Intent chatIntent = new Intent(UserProfileActivity.this, ChatActivity.class);
+        chatIntent.putExtra("CONVERSATION_ID", conversationId);
+        chatIntent.putExtra("USER_ID", otherUserId);
+        startActivity(chatIntent);
     }
 
     private void viewFollowers(){
