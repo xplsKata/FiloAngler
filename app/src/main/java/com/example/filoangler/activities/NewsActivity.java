@@ -36,10 +36,10 @@ public class NewsActivity extends AppCompatActivity {
             case "International fishing tourney trains spotlight on Siargao Island":
                 Utils.loadImage(imgHeader, R.drawable.news_siargaogamefishing);
                 break;
-            case "Environment":
+            case "Illegal fishing threatens biodiversity in Leyte's Panaon Island":
                 Utils.loadImage(imgHeader, R.drawable.news_illegal);
                 break;
-            case "Gear":
+            case "iReel One IFC Smart Fishing Reel":
                 Utils.loadImage(imgHeader, R.drawable.news_ireel);
         }
 
@@ -62,6 +62,54 @@ public class NewsActivity extends AppCompatActivity {
                         "Of the total number of security forces, <b>216 are from the Surigao del Norte Police Provincial Office</b> and <b>134 are from the Philippine Army</b>.<br><br>" +
                         "\"We maximize the deployment of personnel to safeguard domestic and foreign anglers, as well as the local and international tourists who will be witnessing the event and exploring the beautiful Siargao Islands,\" PRO-13 Director <b>Brig. Gen. Kirby John Kraft</b> said in a statement Friday. (PNA)"
         );
+
+        contentMap.put("iReel One IFC Smart Fishing Reel",
+                "<b>\"INTELLIGENTLY CHANGING THE WAY YOU FISH\"</b><br><br>" +
+                        "Using <b>Bluetooth</b> to pair the iReel One with your smartphone or other Bluetooth devices and the <b>KastKing App</b>, iReel One employs highly accurate motion capture sensors in the spool assembly to provide anglers with precise casting metrics, including:<br>" +
+                        "• Number of casts made<br>" +
+                        "• Average distance<br>" +
+                        "• Farthest cast<br>" +
+                        "• Retrieve speed, and more<br><br>" +
+
+                        "<b>ADVANCED DIGITAL BRAKING TECHNOLOGY</b><br><br>" +
+                        "iReel One introduces <b>Intelligent Frequency Control (IFC)</b> to evaluate casting variables such as spool speed, inertia, and line tension to optimize performance in real-time, eliminating backlashes and ensuring smooth and accurate casts. The IFC microcontroller sensors within the frame and side plate analyze spool data and automatically apply or release a sophisticated <b>electromagnetic braking system</b> in a non-linear fashion.<br><br>" +
+
+                        "<b>ENHANCED CASTABILITY</b><br><br>" +
+                        "The uniquely shaped and rotating <b>Axis Eye</b> presents a very wide line-out aperture and a straight shot off the reel and through the line guides for longer and more accurate casts. The line guide features a <b>super slick silicon nitride coating</b> that offers excellent heat dissipation, allowing braid, monofilament, and fluorocarbon lines to glide freely across the surface with minimal restriction.<br><br>" +
+
+                        "<b>BEAUTY COMBINED WITH COMFORT</b><br><br>" +
+                        "Its sleek and stylish <b>electroplated finish</b> is both attractive and durable while maintaining a low-profile, <b>41.5mm design</b> for ultimate comfort. Ideal for those who palm their reel while twitching jerkbaits or prefer to keep a finger in contact with the line as a lure is falling in deep water.<br><br>" +
+
+                        "<b>SPEED AND STRENGTH</b><br><br>" +
+                        "The <b>7.2:1 gear ratio</b> is ideal for various fishing techniques, including:<br>" +
+                        "• Topwater lures<br>" +
+                        "• Jerkbaits<br>" +
+                        "• Jigs, and more<br><br>" +
+                        "The high gear ratio is useful when anglers need to quickly retrieve lures away from docks, weeds, and other cover. The <b>carbon fiber drag washer</b>, <b>7075 aluminum main gear</b>, and <b>brass pinion gear</b> work together to provide up to <b>16 pounds of smooth, fish-stopping power</b>."
+        );
+
+        contentMap.put("Illegal fishing threatens biodiversity in Leyte's Panaon Island",
+                "<b>By Sarwell Meniano</b><br><br>" +
+                        "Illegal fishing remains a major issue in <b>Southern Leyte's Panaon Island</b>, which is being proposed for inclusion in the <b>Expanded National Integrated Protected Areas System (ENIPAS) Act</b>. Consultations conducted by <b>Oceana</b> highlighted critical threats to marine biodiversity:<br>" +
+                        "• Compressor fishing<br>" +
+                        "• Night spearfishing<br><br>" +
+                        "These activities cause significant environmental damage by:<br>" +
+                        "• Harming coral reefs<br>" +
+                        "• Disrupting marine ecosystems<br>" +
+                        "• Threatening local livelihoods<br><br>" +
+                        "Legislative action is urged to declare Panaon Island as a protected area to ensure sustainable management and conservation.<br><br>" +
+                        "Panaon Island's coral reefs are <b>globally significant</b>, hosting endangered species including:<br>" +
+                        "• Whale sharks<br>" +
+                        "• Sea turtles<br><br>" +
+                        "Despite progress, challenges like typhoon damage and overfishing amplify the urgency for protective measures.<br><br>" +
+                        "The island encompasses the municipalities of:<br>" +
+                        "• Liloan<br>" +
+                        "• San Francisco<br>" +
+                        "• Pintuyan<br>" +
+                        "• San Ricardo<br><br>" +
+                        "The region depends heavily on marine biodiversity for economic survival. (PNA)"
+        );
+
     }
 
     private static String getContentByTitle(String title){

@@ -29,8 +29,8 @@ public class NewsFragment extends Fragment {
         btnGear = view.findViewById(R.id.btnGear);
 
         btnEvents.setOnClickListener(v -> changeIntent("International fishing tourney trains spotlight on Siargao Island"));
-        btnEnvironment.setOnClickListener(v -> changeIntent("Environment"));
-        btnGear.setOnClickListener(v -> changeIntent("Gear"));
+        btnEnvironment.setOnClickListener(v -> changeIntent("Illegal fishing threatens biodiversity in Leyte's Panaon Island"));
+        btnGear.setOnClickListener(v -> changeIntent("iReel One IFC Smart Fishing Reel"));
 
         return view;
     }
