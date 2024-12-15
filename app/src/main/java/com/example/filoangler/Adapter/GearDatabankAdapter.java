@@ -90,6 +90,8 @@ public class GearDatabankAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 intent.putExtra("ImageBig", gear.getImageBig());
                 intent.putExtra("Gear3DModel", gear.getGear3DModel());
                 intent.putExtra("GearDescription", gear.getDescription());
+                intent.putExtra("WellKnownBrands", gear.getWellKnownBrands());
+                intent.putExtra("GoodForBeginners", gear.getGoodForBeginners());
 
                 // Convert lists to String arrays
                 String[] tipsForUse = gear.getTipsForUse() != null

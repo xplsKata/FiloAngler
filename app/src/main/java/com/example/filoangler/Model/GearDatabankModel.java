@@ -10,6 +10,8 @@ public class GearDatabankModel {
     private String GearImage;
     private String Gear3DModel;
     private String ImageBig;
+    private String WellKnownBrands;
+    private String GoodForBeginners;
 
     // Getters
     public String getName() {
@@ -40,4 +42,19 @@ public class GearDatabankModel {
         return ImageBig;
     }
 
+    public String getGoodForBeginners() {
+        return GoodForBeginners;
+    }
+
+    public void setGoodForBeginners(String goodForBeginners) {
+        GoodForBeginners = goodForBeginners;
+    }
+
+    public String getWellKnownBrands() {
+        return WellKnownBrands;
+    }
+
+    public void setWellKnownBrands(String wellKnownBrands) {
+        WellKnownBrands = wellKnownBrands;
+    }
 }

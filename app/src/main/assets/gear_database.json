@@ -10,8 +10,10 @@
         ],
         "maintenance_tips": [
           "Disassemble and clean the internal components regularly to prevent salt buildup.",
-          "Lubricate the reel’s moving parts to maintain smooth operation."
+          "Lubricate the reel's moving parts to maintain smooth operation."
         ],
+        "WellKnownBrands": "<b>Shimano Talica</b>: High-end professional-grade overhead reel known for exceptional durability and smooth performance in saltwater fishing. Price Range: Php 17000- Php 50000.\n\n<b>Penn International</b>: Legendary brand renowned for its robust construction and reliable performance in challenging marine conditions. Price Range: Php 20000 - Php 55000.\n\n<b>Accurate Boss</b>: Premium brand offering precision-engineered overhead reels with exceptional drag systems and lightweight design.\n\n<b>Daiwa Saltiga</b>: High-performance overhead reel with advanced waterproofing and corrosion-resistant materials.",
+        "GoodForBeginners": "<b>Shimano TLD</b>: Budget-friendly overhead reel that offers reliable performance for novice anglers. Features a simple drag system and durable construction. Price Range: Php 6000 - Php 7500.\n\n<b>Penn Rival</b>: Affordable overhead reel with solid performance for beginners learning offshore fishing techniques. Lightweight design with smooth retrieval. Price Range: Php 4000 - 5000.\n\n<b>Daiwa Sealine</b>: Cost-effective overhead reel that provides good value for novice anglers entering saltwater fishing. Easy maintenance and reliable drag system.\n\n<b>Abu Garcia Ambassadeur</b>: Classic overhead reel design that offers reliability and smooth performance at an affordable price point. Versatile for various fishing styles.",
         "GearImage": "gear_trollingreel",
         "Gear3DModel": "gear_trollingreel",
         "ImageBig": "gear_trollingreelbig"

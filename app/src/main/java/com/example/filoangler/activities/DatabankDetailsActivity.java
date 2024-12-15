@@ -2,6 +2,7 @@ package com.example.filoangler.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +28,12 @@ public class DatabankDetailsActivity extends AppCompatActivity {
     private ImageView btnBack;
     private ImageView imgBig;
 
+    private TextView txtLabelFive;
+    private TextView txtDescriptionFive;
+    private TextView txtLabelSix;
+    private TextView txtDescriptionSix;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +57,11 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         txtContentThree = findViewById(R.id.txtFishHabitat);
         txtLabelFour = findViewById(R.id.textView22);
         txtContentFour = findViewById(R.id.txtFishLaw);
+
+        txtDescriptionFive = findViewById(R.id.txtDescriptionFive);
+        txtLabelFive = findViewById(R.id.txtLabelFive);
+        txtDescriptionSix = findViewById(R.id.txtDescriptionSix);
+        txtLabelSix = findViewById(R.id.txtLabelSix);
 
         imgBig = findViewById(R.id.imgBig);
     }
@@ -104,6 +116,8 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         String BigImage = getIntent().getStringExtra("ImageBig");
         String[] tipsForUse = getIntent().getStringArrayExtra("GearTipsForUse");
         String[] maintenanceTips = getIntent().getStringArrayExtra("GearMaintenanceTips");
+        String WellKnownBrands = getIntent().getStringExtra("WellKnownBrands");
+        String GoodForBeginners = getIntent().getStringExtra("GoodForBeginners");
 
         txtName.setText(gearName);
 
@@ -122,6 +136,12 @@ public class DatabankDetailsActivity extends AppCompatActivity {
         // Hide Fishing Law for Gear
         txtLabelFour.setVisibility(View.GONE);
         txtContentFour.setVisibility(View.GONE);
+
+        txtLabelFive.setText("Well Known Brands");
+        txtDescriptionFive.setText(Html.fromHtml(WellKnownBrands, Html.FROM_HTML_MODE_LEGACY));
+
+        txtLabelSix.setText("Good For Beginner Brands");
+        txtDescriptionSix.setText(Html.fromHtml(GoodForBeginners, Html.FROM_HTML_MODE_LEGACY));
 
         if(BigImage != null){
             int resourceId = getResources().getIdentifier(BigImage, "drawable", getPackageName());
