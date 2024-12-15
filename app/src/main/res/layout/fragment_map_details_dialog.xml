@@ -26,16 +26,30 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/txtVisits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:justificationMode="inter_word"
+            android:text="text"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/txtLocationName"
+            app:layout_constraintStart_toStartOf="@+id/txtLocationName"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocationName" />
+
+        <TextView
             android:id="@+id/txtDescriptionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
             android:text="TextView"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtLocationName" />
+            app:layout_constraintTop_toBottomOf="@+id/txtVisits" />
 
         <TextView
             android:id="@+id/txtDescription"

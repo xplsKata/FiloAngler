@@ -60,6 +60,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -873,6 +875,9 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     progressDialog.dismiss();
                     Toast.makeText(PostActivity.this, "Failed to create post", Toast.LENGTH_LONG).show();
                 });
+
+        String description = txtImageDescription.getText().toString();
+        extractLocationAndActivityTags(description);
     }
 
     private void createTagNotifications(String postId) {
@@ -894,6 +899,85 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
 
             notifRef.setValue(notifMap);
         }
+    }
+
+
+    private void extractLocationAndActivityTags(String description) {
+        // Create patterns to detect specific actions and locations
+        Pattern visitPattern = Pattern.compile("(?i)visited\\s+([^\\s]+)");
+        Pattern caughtPattern = Pattern.compile("(?i)caught\\s+([^\\s]+)");
+        Pattern locationPattern = Pattern.compile("in\\s+([^\\s]+)");
+
+        // Match patterns in the description
+        Matcher visitMatcher = visitPattern.matcher(description);
+        Matcher caughtMatcher = caughtPattern.matcher(description);
+        Matcher locationMatcher = locationPattern.matcher(description);
+
+        // Store extracted information
+        if (visitMatcher.find()) {
+            String location = visitMatcher.group(1);
+            updateLocationVisits(location);
+        }
+
+        if (caughtMatcher.find()) {
+            String fish = caughtMatcher.group(1);
+            String location = null;
+            if (locationMatcher.find()) {
+                location = locationMatcher.group(1);
+            }
+            updateFishCatchData(fish, location);
+        }
+    }
+
+    private void updateLocationVisits(String location) {
+        DatabaseReference visitsRef = authManager.GetDb()
+                .getReference("LocationVisits")
+                .child(location)
+                .child(Utils.getDateAndTime());
+
+        visitsRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer currentVisits = mutableData.getValue(Integer.class);
+                if (currentVisits == null) {
+                    mutableData.setValue(1);
+                } else {
+                    mutableData.setValue(currentVisits + 1);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                // Optional: Add logging or additional handling
+            }
+        });
+    }
+
+    private void updateFishCatchData(String fish, String location) {
+        DatabaseReference fishCatchRef = authManager.GetDb()
+                .getReference("FishCatches")
+                .child(location)
+                .child(fish)
+                .child(Utils.getDateAndTime());
+
+        fishCatchRef.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer currentCatches = mutableData.getValue(Integer.class);
+                if (currentCatches == null) {
+                    mutableData.setValue(1);
+                } else {
+                    mutableData.setValue(currentCatches + 1);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                // Optional: Add logging or additional handling
+            }
+        });
     }
 
 

@@ -36,6 +36,7 @@ import com.example.filoangler.LocationMonitoringService;
 import com.example.filoangler.Manager.AuthManager;
 import com.example.filoangler.Model.MapLocationsModel;
 import com.example.filoangler.R;
+import com.example.filoangler.Utils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -45,6 +46,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -53,6 +56,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -64,6 +68,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private LatLngBounds philippinesBounds;
     private AuthManager authManager;
     private HashMap<Marker, String> markerLocationId;
+    private HashMap<Marker, Integer> markerVisitCounts;
+
 
     private Intent serviceIntent;
 
@@ -91,6 +97,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         authManager = new AuthManager();
         markerLocationId = new HashMap<>();
+        markerVisitCounts = new HashMap<>();
 
         // Initialize preferences
         preferences = requireActivity().getSharedPreferences("MapSettings", Context.MODE_PRIVATE);
@@ -262,8 +269,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(@NonNull Marker marker) {
 
                 String locationId = markerLocationId.get(marker);
+                int visitCount = markerVisitCounts.get(marker);
 
-                locationDetailsDialog(locationId);
+                locationDetailsDialog(locationId, visitCount);
 
                 return false;
             }
@@ -308,12 +316,66 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
 
-    public void addMarker(double latitude, double longitude, String locationName, String locationId){
-        Marker marker = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .title(locationName));
+    public void addMarker(double latitude, double longitude, String locationName, String locationId) {
+        // Create a query to find visits for this location using a flexible name matching
+        DatabaseReference visitsRef = authManager.GetDb().getReference("LocationVisits");
 
-        markerLocationId.put(marker, locationId);
+        visitsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int totalVisitCount = 0;
+
+                // Iterate through all location visit entries
+                for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
+                    // Check if the location name contains the marker's location name (case-insensitive)
+                    if (locationName.toLowerCase().contains(locationSnapshot.getKey().toLowerCase())) {
+                        // Sum up visits for matching locations
+                        for (DataSnapshot dateSnapshot : locationSnapshot.getChildren()) {
+                            Integer visitCount = dateSnapshot.getValue(Integer.class);
+                            if (visitCount != null) {
+                                totalVisitCount += visitCount;
+                            }
+                        }
+                    }
+                }
+
+                // Customize marker based on visit count
+                BitmapDescriptor markerIcon;
+                if (totalVisitCount > 0) {
+                    // Change marker color based on visit count
+                    if (totalVisitCount < 1) {
+                        markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                    } else if (totalVisitCount < 5) {
+                        markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                    } else {
+                        markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                    }
+                } else {
+                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+                }
+
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title(locationName)
+                        .snippet("Visits this month: " + totalVisitCount)
+                        .icon(markerIcon));
+
+                markerLocationId.put(marker, locationId);
+                markerVisitCounts.put(marker, totalVisitCount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+                // Add error logging or user notification if needed
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title(locationName)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+                markerLocationId.put(marker, locationId);
+            }
+        });
     }
 
     private void addRestrictedArea(MapLocationsModel location) {
@@ -433,7 +495,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         isPlayingAlert = true;
     }
 
-    public void locationDetailsDialog(String locationId) {
+    public void locationDetailsDialog(String locationId, int visitCount) {
         // Dismiss any showing proximity alert before showing location details
         if (currentAlertDialog != null && currentAlertDialog.isShowing()) {
             currentAlertDialog.dismiss();
@@ -444,7 +506,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         dialog.setContentView(R.layout.fragment_map_details_dialog);
 
         if (locationId != null) {
-            MapDetailsDialog mapDetailsDialog = new MapDetailsDialog(getContext(), locationId);
+            MapDetailsDialog mapDetailsDialog = new MapDetailsDialog(getContext(), locationId, visitCount);
             mapDetailsDialog.showDialog(dialog);
         }
 
