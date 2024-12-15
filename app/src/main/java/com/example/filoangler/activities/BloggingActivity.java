@@ -76,6 +76,8 @@ public class BloggingActivity extends AppCompatActivity {
 
     private Button helpItem;
 
+    private int selectedNavBar = R.id.News;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +128,18 @@ public class BloggingActivity extends AppCompatActivity {
         });
 
         btnMessages.setOnClickListener(v -> {Utils.ChangeIntent(this, InboxActivity.class);});
+
+        if (getIntent().hasExtra("FRAGMENT_TO_LOAD") &&
+                "BLOGGING_FRAGMENT".equals(getIntent().getStringExtra("FRAGMENT_TO_LOAD"))) {
+
+            selectedNavBar = R.id.Home;
+            bottomNavigationView.setSelectedItemId(selectedNavBar);
+
+            selectedFragment = new HomeFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.bloggingActivityFrameLayout, selectedFragment)
+                    .commit();
+        }
     }
 
     private void initializeViews() {
@@ -313,6 +327,9 @@ public class BloggingActivity extends AppCompatActivity {
     }
 
     private void setupNavigationListeners() {
+        // Add this line to set the default selected item
+        bottomNavigationView.setSelectedItemId(selectedNavBar);
+
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (isAccountLoading && !isOfflineMode) {
                 return false;
@@ -338,8 +355,6 @@ public class BloggingActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.News) {
                 selectedFragment = new NewsFragment();
             }
-
-            //NOTIFICATIONS WAS TAKEN OUT
 
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()

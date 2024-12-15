@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -868,7 +869,11 @@ public class PostActivity extends AppCompatActivity implements GalleryAdapterCal
                     // Create notifications for tagged users
                     createTagNotifications(postId);
                     progressDialog.dismiss();
-                    Utils.ChangeIntent(PostActivity.this, BloggingActivity.class);
+
+                    // Navigate to BloggingActivity and load the blogging fragment
+                    Intent intent = new Intent(PostActivity.this, BloggingActivity.class);
+                    intent.putExtra("FRAGMENT_TO_LOAD", "BLOGGING_FRAGMENT");
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {
